@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jun 06, 2025 at 05:16 PM
+-- Generation Time: Jun 06, 2025 at 05:56 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.1.17
 
@@ -230,6 +230,8 @@ CREATE TABLE `business` (
   `stock_expiry_alert_days` int(10) UNSIGNED NOT NULL DEFAULT 30,
   `keyboard_shortcuts` text DEFAULT NULL,
   `pos_settings` text DEFAULT NULL,
+  `manufacturing_settings` text DEFAULT NULL,
+  `essentials_settings` longtext DEFAULT NULL,
   `weighing_scale_setting` text NOT NULL COMMENT 'used to store the configuration of weighing scale',
   `enable_brand` tinyint(1) NOT NULL DEFAULT 1,
   `enable_category` tinyint(1) NOT NULL DEFAULT 1,
@@ -279,8 +281,8 @@ CREATE TABLE `business` (
 -- Dumping data for table `business`
 --
 
-INSERT INTO `business` (`id`, `name`, `currency_id`, `start_date`, `tax_number_1`, `tax_label_1`, `tax_number_2`, `tax_label_2`, `code_label_1`, `code_1`, `code_label_2`, `code_2`, `default_sales_tax`, `default_profit_percent`, `owner_id`, `time_zone`, `fy_start_month`, `accounting_method`, `default_sales_discount`, `sell_price_tax`, `logo`, `sku_prefix`, `enable_product_expiry`, `expiry_type`, `on_product_expiry`, `stop_selling_before`, `enable_tooltip`, `purchase_in_diff_currency`, `purchase_currency_id`, `p_exchange_rate`, `transaction_edit_days`, `stock_expiry_alert_days`, `keyboard_shortcuts`, `pos_settings`, `weighing_scale_setting`, `enable_brand`, `enable_category`, `enable_sub_category`, `enable_price_tax`, `enable_purchase_status`, `enable_lot_number`, `default_unit`, `enable_sub_units`, `enable_racks`, `enable_row`, `enable_position`, `enable_editing_product_from_purchase`, `sales_cmsn_agnt`, `item_addition_method`, `enable_inline_tax`, `currency_symbol_placement`, `enabled_modules`, `date_format`, `time_format`, `currency_precision`, `quantity_precision`, `ref_no_prefixes`, `theme_color`, `created_by`, `enable_rp`, `rp_name`, `amount_for_unit_rp`, `min_order_total_for_rp`, `max_rp_per_order`, `redeem_amount_per_unit_rp`, `min_order_total_for_redeem`, `min_redeem_point`, `max_redeem_point`, `rp_expiry_period`, `rp_expiry_type`, `email_settings`, `sms_settings`, `custom_labels`, `common_settings`, `is_active`, `created_at`, `updated_at`) VALUES
-(1, 'Jewellery', 111, '2025-06-06', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 25.00, 1, 'Asia/Kolkata', 1, 'fifo', NULL, 'includes', NULL, NULL, 0, 'add_expiry', 'keep_selling', 0, 1, 0, NULL, 1.000, 30, 30, '{\"pos\":{\"express_checkout\":\"shift+e\",\"pay_n_ckeckout\":\"shift+p\",\"draft\":\"shift+d\",\"cancel\":\"shift+c\",\"edit_discount\":\"shift+i\",\"edit_order_tax\":\"shift+t\",\"add_payment_row\":\"shift+r\",\"finalize_payment\":\"shift+f\",\"recent_product_quantity\":\"f2\",\"add_new_product\":\"f4\"}}', NULL, '', 1, 1, 1, 1, 1, 0, NULL, 0, 0, 0, 0, 1, NULL, 1, 0, 'before', '[\"purchases\",\"add_sale\",\"pos_sale\",\"stock_transfers\",\"stock_adjustment\",\"expenses\"]', 'm/d/Y', '24', 2, 2, '{\"purchase\":\"PO\",\"stock_transfer\":\"ST\",\"stock_adjustment\":\"SA\",\"sell_return\":\"CN\",\"expense\":\"EP\",\"contacts\":\"CO\",\"purchase_payment\":\"PP\",\"sell_payment\":\"SP\",\"business_location\":\"BL\"}', NULL, NULL, 0, NULL, 1.0000, 1.0000, NULL, 1.0000, 1.0000, NULL, NULL, NULL, 'year', NULL, NULL, NULL, NULL, 1, '2025-06-06 12:07:50', '2025-06-06 12:07:50');
+INSERT INTO `business` (`id`, `name`, `currency_id`, `start_date`, `tax_number_1`, `tax_label_1`, `tax_number_2`, `tax_label_2`, `code_label_1`, `code_1`, `code_label_2`, `code_2`, `default_sales_tax`, `default_profit_percent`, `owner_id`, `time_zone`, `fy_start_month`, `accounting_method`, `default_sales_discount`, `sell_price_tax`, `logo`, `sku_prefix`, `enable_product_expiry`, `expiry_type`, `on_product_expiry`, `stop_selling_before`, `enable_tooltip`, `purchase_in_diff_currency`, `purchase_currency_id`, `p_exchange_rate`, `transaction_edit_days`, `stock_expiry_alert_days`, `keyboard_shortcuts`, `pos_settings`, `manufacturing_settings`, `essentials_settings`, `weighing_scale_setting`, `enable_brand`, `enable_category`, `enable_sub_category`, `enable_price_tax`, `enable_purchase_status`, `enable_lot_number`, `default_unit`, `enable_sub_units`, `enable_racks`, `enable_row`, `enable_position`, `enable_editing_product_from_purchase`, `sales_cmsn_agnt`, `item_addition_method`, `enable_inline_tax`, `currency_symbol_placement`, `enabled_modules`, `date_format`, `time_format`, `currency_precision`, `quantity_precision`, `ref_no_prefixes`, `theme_color`, `created_by`, `enable_rp`, `rp_name`, `amount_for_unit_rp`, `min_order_total_for_rp`, `max_rp_per_order`, `redeem_amount_per_unit_rp`, `min_order_total_for_redeem`, `min_redeem_point`, `max_redeem_point`, `rp_expiry_period`, `rp_expiry_type`, `email_settings`, `sms_settings`, `custom_labels`, `common_settings`, `is_active`, `created_at`, `updated_at`) VALUES
+(1, 'Jewellery', 111, '2025-06-06', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 25.00, 1, 'Asia/Kolkata', 1, 'fifo', NULL, 'includes', NULL, NULL, 0, 'add_expiry', 'keep_selling', 0, 1, 0, NULL, 1.000, 30, 30, '{\"pos\":{\"express_checkout\":\"shift+e\",\"pay_n_ckeckout\":\"shift+p\",\"draft\":\"shift+d\",\"cancel\":\"shift+c\",\"edit_discount\":\"shift+i\",\"edit_order_tax\":\"shift+t\",\"add_payment_row\":\"shift+r\",\"finalize_payment\":\"shift+f\",\"recent_product_quantity\":\"f2\",\"add_new_product\":\"f4\"}}', NULL, NULL, NULL, '', 1, 1, 1, 1, 1, 0, NULL, 0, 0, 0, 0, 1, NULL, 1, 0, 'before', '[\"purchases\",\"add_sale\",\"pos_sale\",\"stock_transfers\",\"stock_adjustment\",\"expenses\"]', 'm/d/Y', '24', 2, 2, '{\"purchase\":\"PO\",\"stock_transfer\":\"ST\",\"stock_adjustment\":\"SA\",\"sell_return\":\"CN\",\"expense\":\"EP\",\"contacts\":\"CO\",\"purchase_payment\":\"PP\",\"sell_payment\":\"SP\",\"business_location\":\"BL\"}', NULL, NULL, 0, NULL, 1.0000, 1.0000, NULL, 1.0000, 1.0000, NULL, NULL, NULL, 'year', NULL, NULL, NULL, NULL, 1, '2025-06-06 12:07:50', '2025-06-06 12:07:50');
 
 -- --------------------------------------------------------
 
@@ -754,6 +756,341 @@ CREATE TABLE `document_and_notes` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `essentials_allowances_and_deductions`
+--
+
+CREATE TABLE `essentials_allowances_and_deductions` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `business_id` int(11) NOT NULL,
+  `description` varchar(191) NOT NULL,
+  `type` enum('allowance','deduction') NOT NULL,
+  `amount` decimal(22,4) NOT NULL,
+  `amount_type` enum('fixed','percent') NOT NULL,
+  `applicable_date` date DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `essentials_attendances`
+--
+
+CREATE TABLE `essentials_attendances` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `business_id` int(11) NOT NULL,
+  `clock_in_time` datetime DEFAULT NULL,
+  `clock_out_time` datetime DEFAULT NULL,
+  `essentials_shift_id` int(11) DEFAULT NULL,
+  `ip_address` varchar(191) DEFAULT NULL,
+  `clock_in_note` text DEFAULT NULL,
+  `clock_out_note` text DEFAULT NULL,
+  `clock_in_location` text DEFAULT NULL,
+  `clock_out_location` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `essentials_documents`
+--
+
+CREATE TABLE `essentials_documents` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `business_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `type` varchar(191) DEFAULT NULL,
+  `name` varchar(191) NOT NULL,
+  `description` varchar(191) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `essentials_document_shares`
+--
+
+CREATE TABLE `essentials_document_shares` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `document_id` int(11) NOT NULL,
+  `value_type` enum('user','role') NOT NULL,
+  `value` int(11) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `essentials_holidays`
+--
+
+CREATE TABLE `essentials_holidays` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `name` varchar(191) DEFAULT NULL,
+  `start_date` date NOT NULL,
+  `end_date` date NOT NULL,
+  `business_id` int(11) NOT NULL,
+  `location_id` int(11) DEFAULT NULL,
+  `note` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `essentials_kb`
+--
+
+CREATE TABLE `essentials_kb` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `business_id` bigint(20) UNSIGNED NOT NULL,
+  `title` varchar(191) NOT NULL,
+  `content` longtext DEFAULT NULL,
+  `status` varchar(191) NOT NULL,
+  `kb_type` varchar(191) NOT NULL,
+  `parent_id` bigint(20) UNSIGNED DEFAULT NULL COMMENT 'id from essentials_kb table',
+  `share_with` varchar(191) DEFAULT NULL COMMENT 'public, private, only_with',
+  `created_by` bigint(20) UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `essentials_kb_users`
+--
+
+CREATE TABLE `essentials_kb_users` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `kb_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `essentials_leaves`
+--
+
+CREATE TABLE `essentials_leaves` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `essentials_leave_type_id` int(11) DEFAULT NULL,
+  `business_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `start_date` date NOT NULL,
+  `end_date` date NOT NULL,
+  `ref_no` varchar(191) DEFAULT NULL,
+  `status` enum('pending','approved','cancelled') DEFAULT NULL,
+  `reason` text DEFAULT NULL,
+  `status_note` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `essentials_leave_types`
+--
+
+CREATE TABLE `essentials_leave_types` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `leave_type` varchar(191) NOT NULL,
+  `max_leave_count` int(11) DEFAULT NULL,
+  `leave_count_interval` enum('month','year') DEFAULT NULL,
+  `business_id` int(11) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `essentials_messages`
+--
+
+CREATE TABLE `essentials_messages` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `business_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `message` text NOT NULL,
+  `location_id` int(11) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `essentials_payroll_groups`
+--
+
+CREATE TABLE `essentials_payroll_groups` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `business_id` int(11) NOT NULL,
+  `location_id` int(11) DEFAULT NULL COMMENT 'payroll for work location',
+  `name` varchar(191) NOT NULL,
+  `status` varchar(191) NOT NULL,
+  `payment_status` varchar(191) NOT NULL DEFAULT 'due',
+  `gross_total` decimal(22,4) NOT NULL DEFAULT 0.0000,
+  `created_by` int(11) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `essentials_payroll_group_transactions`
+--
+
+CREATE TABLE `essentials_payroll_group_transactions` (
+  `payroll_group_id` bigint(20) UNSIGNED NOT NULL,
+  `transaction_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `essentials_reminders`
+--
+
+CREATE TABLE `essentials_reminders` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `business_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `name` varchar(191) NOT NULL,
+  `date` date NOT NULL,
+  `time` time NOT NULL,
+  `end_time` time DEFAULT NULL,
+  `repeat` enum('one_time','every_day','every_week','every_month') NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `essentials_shifts`
+--
+
+CREATE TABLE `essentials_shifts` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `name` varchar(191) NOT NULL,
+  `type` enum('fixed_shift','flexible_shift') NOT NULL DEFAULT 'fixed_shift',
+  `business_id` int(11) NOT NULL,
+  `start_time` time DEFAULT NULL,
+  `end_time` time DEFAULT NULL,
+  `is_allowed_auto_clockout` tinyint(1) NOT NULL DEFAULT 0,
+  `auto_clockout_time` time DEFAULT NULL,
+  `holidays` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `essentials_todos_users`
+--
+
+CREATE TABLE `essentials_todos_users` (
+  `todo_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `essentials_todo_comments`
+--
+
+CREATE TABLE `essentials_todo_comments` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `comment` text NOT NULL,
+  `task_id` int(11) NOT NULL,
+  `comment_by` int(11) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `essentials_to_dos`
+--
+
+CREATE TABLE `essentials_to_dos` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `business_id` int(11) NOT NULL,
+  `task` text NOT NULL,
+  `date` datetime DEFAULT NULL,
+  `end_date` datetime DEFAULT NULL,
+  `task_id` varchar(191) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `status` varchar(191) DEFAULT NULL,
+  `estimated_hours` varchar(191) DEFAULT NULL,
+  `priority` varchar(191) DEFAULT NULL,
+  `created_by` int(11) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `essentials_user_allowance_and_deductions`
+--
+
+CREATE TABLE `essentials_user_allowance_and_deductions` (
+  `user_id` int(11) NOT NULL,
+  `allowance_deduction_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `essentials_user_sales_targets`
+--
+
+CREATE TABLE `essentials_user_sales_targets` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `target_start` decimal(22,4) NOT NULL DEFAULT 0.0000,
+  `target_end` decimal(22,4) NOT NULL DEFAULT 0.0000,
+  `commission_percent` decimal(22,4) NOT NULL DEFAULT 0.0000,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `essentials_user_shifts`
+--
+
+CREATE TABLE `essentials_user_shifts` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `essentials_shift_id` int(11) NOT NULL,
+  `start_date` date DEFAULT NULL,
+  `end_date` date DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `expense_categories`
 --
 
@@ -923,6 +1260,62 @@ CREATE TABLE `media` (
   `model_type` varchar(191) NOT NULL,
   `model_media_type` varchar(191) DEFAULT NULL,
   `model_id` bigint(20) UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `mfg_ingredient_groups`
+--
+
+CREATE TABLE `mfg_ingredient_groups` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `name` varchar(191) NOT NULL,
+  `business_id` int(11) NOT NULL,
+  `description` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `mfg_recipes`
+--
+
+CREATE TABLE `mfg_recipes` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `product_id` int(11) NOT NULL,
+  `variation_id` int(11) NOT NULL,
+  `instructions` text DEFAULT NULL,
+  `waste_percent` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `ingredients_cost` decimal(22,4) NOT NULL DEFAULT 0.0000,
+  `extra_cost` decimal(22,4) NOT NULL DEFAULT 0.0000,
+  `production_cost_type` varchar(191) DEFAULT 'percentage',
+  `total_quantity` decimal(22,4) NOT NULL DEFAULT 0.0000,
+  `final_price` decimal(22,4) NOT NULL,
+  `sub_unit_id` int(11) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `mfg_recipe_ingredients`
+--
+
+CREATE TABLE `mfg_recipe_ingredients` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `mfg_recipe_id` int(10) UNSIGNED NOT NULL,
+  `variation_id` int(11) NOT NULL,
+  `mfg_ingredient_group_id` int(11) DEFAULT NULL,
+  `quantity` decimal(22,4) NOT NULL DEFAULT 0.0000,
+  `waste_percent` decimal(22,4) NOT NULL DEFAULT 0.0000,
+  `sub_unit_id` int(11) DEFAULT NULL,
+  `sort_order` int(11) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1241,7 +1634,56 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (295, '2023_09_15_154404_add_is_kitchen_order_in_transactions', 1),
 (296, '2023_12_06_152840_add_contact_type_in_contacts', 1),
 (297, '2024_10_03_151459_modify_transaction_sell_lines_purchase_lines_table', 1),
-(298, '2025_03_07_114637_add_more_addresh_column_in_contact', 1);
+(298, '2025_03_07_114637_add_more_addresh_column_in_contact', 1),
+(299, '2018_10_01_151252_create_documents_table', 2),
+(300, '2018_10_02_151803_create_document_shares_table', 2),
+(301, '2018_10_09_134558_create_reminders_table', 2),
+(302, '2018_11_16_170756_create_to_dos_table', 2),
+(303, '2019_02_22_120329_essentials_messages', 2),
+(304, '2019_02_22_161513_add_message_permissions', 2),
+(305, '2019_03_29_164339_add_essentials_version_to_system_table', 2),
+(306, '2019_05_17_153306_create_essentials_leave_types_table', 2),
+(307, '2019_05_17_175921_create_essentials_leaves_table', 2),
+(308, '2019_05_21_154517_add_essentials_settings_columns_to_business_table', 2),
+(309, '2019_05_21_181653_create_table_essentials_attendance', 2),
+(310, '2019_05_30_110049_create_essentials_payrolls_table', 2),
+(311, '2019_06_04_105723_create_essentials_holidays_table', 2),
+(312, '2019_06_28_134217_add_payroll_columns_to_transactions_table', 2),
+(313, '2019_08_26_103520_add_approve_leave_permission', 2),
+(314, '2019_08_27_103724_create_essentials_allowance_and_deduction_table', 2),
+(315, '2019_08_27_105236_create_essentials_user_allowances_and_deductions', 2),
+(316, '2019_09_20_115906_add_more_columns_to_essentials_to_dos_table', 2),
+(317, '2019_09_23_120439_create_essentials_todo_comments_table', 2),
+(318, '2019_12_05_170724_add_hrm_columns_to_users_table', 2),
+(319, '2019_12_09_105809_add_allowance_and_deductions_permission', 2),
+(320, '2020_03_28_152838_create_essentials_shift_table', 2),
+(321, '2020_03_30_162029_create_user_shifts_table', 2),
+(322, '2020_03_31_134558_add_shift_id_to_attendance_table', 2),
+(323, '2020_11_05_105157_modify_todos_date_column_type', 2),
+(324, '2020_11_11_174852_add_end_time_column_to_essentials_reminders_table', 2),
+(325, '2020_11_26_170527_create_essentials_kb_table', 2),
+(326, '2020_11_30_112615_create_essentials_kb_users_table', 2),
+(327, '2021_02_12_185514_add_clock_in_location_to_essentials_attendances_table', 2),
+(328, '2021_02_16_190203_add_essentials_module_indexing', 2),
+(329, '2021_02_27_133448_add_columns_to_users_table', 2),
+(330, '2021_03_04_174857_create_payroll_groups_table', 2),
+(331, '2021_03_04_175025_create_payroll_group_transactions_table', 2),
+(332, '2021_03_09_123914_add_auto_clockout_to_essentials_shifts', 2),
+(333, '2021_06_17_121451_add_location_id_to_table', 2),
+(334, '2021_09_28_091541_create_essentials_user_sales_targets_table', 2),
+(335, '2019_07_15_114211_add_manufacturing_module_version_to_system_table', 3),
+(336, '2019_07_15_114403_create_mfg_recipes_table', 3),
+(337, '2019_07_18_180217_add_production_columns_to_transactions_table', 3),
+(338, '2019_07_26_110753_add_manufacturing_settings_column_to_business_table', 3),
+(339, '2019_07_26_170450_add_manufacturing_permissions', 3),
+(340, '2019_08_08_110035_create_mfg_recipe_ingredients_table', 3),
+(341, '2019_08_08_172837_add_recipe_add_edit_permissions', 3),
+(342, '2019_08_12_114610_add_ingredient_waste_percent_columns', 3),
+(343, '2019_11_05_115136_create_ingredient_groups_table', 3),
+(344, '2020_02_22_120303_add_column_to_mfg_recipe_ingredients_table', 3),
+(345, '2020_08_19_103831_add_production_cost_type_to_recipe_and_transaction_table', 3),
+(346, '2021_02_16_190302_add_manufacturing_module_indexing', 3),
+(347, '2021_04_07_154331_add_mfg_ingredient_group_id_to_transaction_sell_lines_table', 3);
 
 -- --------------------------------------------------------
 
@@ -1383,6 +1825,14 @@ CREATE TABLE `oauth_clients` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `oauth_clients`
+--
+
+INSERT INTO `oauth_clients` (`id`, `user_id`, `name`, `secret`, `provider`, `redirect`, `personal_access_client`, `password_client`, `revoked`, `created_at`, `updated_at`) VALUES
+(1, NULL, 'Jewellery Personal Access Client', 'Hc0YRka3u8ScT1lGNtZMFl36OdAnItiH1ygSthDg', NULL, 'http://localhost', 1, 0, 0, '2025-06-06 15:24:22', '2025-06-06 15:24:22'),
+(2, NULL, 'Jewellery Password Grant Client', 'gTflxicro06mSQF74J62Nrt85mutXLIcUrsA8FFl', 'users', 'http://localhost', 0, 1, 0, '2025-06-06 15:24:22', '2025-06-06 15:24:22');
+
 -- --------------------------------------------------------
 
 --
@@ -1395,6 +1845,13 @@ CREATE TABLE `oauth_personal_access_clients` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `oauth_personal_access_clients`
+--
+
+INSERT INTO `oauth_personal_access_clients` (`id`, `client_id`, `created_at`, `updated_at`) VALUES
+(1, 1, '2025-06-06 15:24:22', '2025-06-06 15:24:22');
 
 -- --------------------------------------------------------
 
@@ -1521,7 +1978,16 @@ INSERT INTO `permissions` (`id`, `name`, `guard_name`, `created_at`, `updated_at
 (79, 'expense.access', 'web', '2025-06-06 12:06:55', NULL),
 (80, 'access_all_locations', 'web', '2025-06-06 12:06:55', NULL),
 (81, 'dashboard.data', 'web', '2025-06-06 12:06:55', NULL),
-(82, 'location.1', 'web', '2025-06-06 12:07:50', '2025-06-06 12:07:50');
+(82, 'location.1', 'web', '2025-06-06 12:07:50', '2025-06-06 12:07:50'),
+(83, 'essentials.create_message', 'web', '2025-06-06 15:25:25', '2025-06-06 15:25:25'),
+(84, 'essentials.view_message', 'web', '2025-06-06 15:25:25', '2025-06-06 15:25:25'),
+(85, 'essentials.approve_leave', 'web', '2025-06-06 15:25:25', '2025-06-06 15:25:25'),
+(86, 'essentials.assign_todos', 'web', '2025-06-06 15:25:25', '2025-06-06 15:25:25'),
+(87, 'essentials.add_allowance_and_deduction', 'web', '2025-06-06 15:25:25', '2025-06-06 15:25:25'),
+(88, 'manufacturing.access_recipe', 'web', '2025-06-06 15:26:19', '2025-06-06 15:26:19'),
+(89, 'manufacturing.access_production', 'web', '2025-06-06 15:26:19', '2025-06-06 15:26:19'),
+(90, 'manufacturing.add_recipe', 'web', '2025-06-06 15:26:19', '2025-06-06 15:26:19'),
+(91, 'manufacturing.edit_recipe', 'web', '2025-06-06 15:26:19', '2025-06-06 15:26:19');
 
 -- --------------------------------------------------------
 
@@ -1873,7 +2339,9 @@ CREATE TABLE `system` (
 
 INSERT INTO `system` (`id`, `key`, `value`) VALUES
 (1, 'db_version', '6.7'),
-(2, 'default_business_active_status', '1');
+(2, 'default_business_active_status', '1'),
+(3, 'essentials_version', '4.2'),
+(4, 'manufacturing_version', '3.1');
 
 -- --------------------------------------------------------
 
@@ -1969,6 +2437,16 @@ CREATE TABLE `transactions` (
   `return_parent_id` int(11) DEFAULT NULL,
   `opening_stock_product_id` int(11) DEFAULT NULL,
   `created_by` int(10) UNSIGNED NOT NULL,
+  `mfg_parent_production_purchase_id` int(11) DEFAULT NULL,
+  `mfg_wasted_units` decimal(22,4) DEFAULT NULL,
+  `mfg_production_cost` decimal(22,4) NOT NULL DEFAULT 0.0000,
+  `mfg_production_cost_type` varchar(191) DEFAULT 'percentage',
+  `mfg_is_final` tinyint(1) NOT NULL DEFAULT 0,
+  `essentials_duration` decimal(8,2) NOT NULL,
+  `essentials_duration_unit` varchar(20) DEFAULT NULL,
+  `essentials_amount_per_unit_duration` decimal(22,4) NOT NULL DEFAULT 0.0000,
+  `essentials_allowances` text DEFAULT NULL,
+  `essentials_deductions` text DEFAULT NULL,
   `purchase_requisition_ids` text DEFAULT NULL,
   `prefer_payment_method` varchar(191) DEFAULT NULL,
   `prefer_payment_account` int(11) DEFAULT NULL,
@@ -2057,6 +2535,8 @@ CREATE TABLE `transaction_sell_lines` (
   `product_id` int(10) UNSIGNED NOT NULL,
   `variation_id` int(10) UNSIGNED NOT NULL,
   `quantity` decimal(22,4) NOT NULL DEFAULT 0.0000,
+  `mfg_waste_percent` decimal(22,4) NOT NULL DEFAULT 0.0000,
+  `mfg_ingredient_group_id` int(11) DEFAULT NULL,
   `secondary_unit_quantity` decimal(22,4) NOT NULL DEFAULT 0.0000,
   `quantity_returned` decimal(20,4) NOT NULL DEFAULT 0.0000,
   `unit_price_before_discount` decimal(22,4) NOT NULL DEFAULT 0.0000,
@@ -2163,6 +2643,11 @@ CREATE TABLE `users` (
   `address` text DEFAULT NULL,
   `remember_token` varchar(100) DEFAULT NULL,
   `business_id` int(10) UNSIGNED DEFAULT NULL,
+  `essentials_department_id` int(11) DEFAULT NULL,
+  `essentials_designation_id` int(11) DEFAULT NULL,
+  `essentials_salary` decimal(22,4) DEFAULT NULL,
+  `essentials_pay_period` varchar(191) DEFAULT NULL,
+  `essentials_pay_cycle` varchar(191) DEFAULT NULL,
   `available_at` datetime DEFAULT NULL COMMENT 'Service staff avilable at. Calculated from product preparation_time_in_minutes',
   `paused_at` datetime DEFAULT NULL COMMENT 'Service staff available time paused at, Will be nulled on resume.',
   `max_sales_discount_percent` decimal(5,2) DEFAULT NULL,
@@ -2195,6 +2680,7 @@ CREATE TABLE `users` (
   `bank_details` longtext DEFAULT NULL,
   `id_proof_name` varchar(191) DEFAULT NULL,
   `id_proof_number` varchar(191) DEFAULT NULL,
+  `location_id` int(11) DEFAULT NULL COMMENT 'user primary work location',
   `deleted_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -2204,8 +2690,8 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `user_type`, `surname`, `first_name`, `last_name`, `username`, `email`, `password`, `language`, `contact_no`, `address`, `remember_token`, `business_id`, `available_at`, `paused_at`, `max_sales_discount_percent`, `allow_login`, `status`, `is_enable_service_staff_pin`, `service_staff_pin`, `crm_contact_id`, `is_cmmsn_agnt`, `cmmsn_percent`, `selected_contacts`, `dob`, `gender`, `marital_status`, `blood_group`, `contact_number`, `alt_number`, `family_number`, `fb_link`, `twitter_link`, `social_media_1`, `social_media_2`, `permanent_address`, `current_address`, `guardian_name`, `custom_field_1`, `custom_field_2`, `custom_field_3`, `custom_field_4`, `bank_details`, `id_proof_name`, `id_proof_number`, `deleted_at`, `created_at`, `updated_at`) VALUES
-(1, 'user', 'Mr', 'Admin', NULL, 'admin', 'admin@oduxtech.com', '$2y$10$u54x7gt9xMUm8ZwccvfRQeEMKTh3Cs.1Wp1u1GjE0ZGRZYkI15Ujy', 'en', NULL, NULL, '9zcVt63x1kiZM0M8vUQWLgYS0QB5aZh5RNU6swK3HnhcTpgiV9xy5gGDw9nF', 1, NULL, NULL, NULL, 1, 'active', 0, NULL, NULL, 0, 0.00, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-06-06 12:07:50', '2025-06-06 12:07:50');
+INSERT INTO `users` (`id`, `user_type`, `surname`, `first_name`, `last_name`, `username`, `email`, `password`, `language`, `contact_no`, `address`, `remember_token`, `business_id`, `essentials_department_id`, `essentials_designation_id`, `essentials_salary`, `essentials_pay_period`, `essentials_pay_cycle`, `available_at`, `paused_at`, `max_sales_discount_percent`, `allow_login`, `status`, `is_enable_service_staff_pin`, `service_staff_pin`, `crm_contact_id`, `is_cmmsn_agnt`, `cmmsn_percent`, `selected_contacts`, `dob`, `gender`, `marital_status`, `blood_group`, `contact_number`, `alt_number`, `family_number`, `fb_link`, `twitter_link`, `social_media_1`, `social_media_2`, `permanent_address`, `current_address`, `guardian_name`, `custom_field_1`, `custom_field_2`, `custom_field_3`, `custom_field_4`, `bank_details`, `id_proof_name`, `id_proof_number`, `location_id`, `deleted_at`, `created_at`, `updated_at`) VALUES
+(1, 'user', 'Mr', 'Admin', NULL, 'admin', 'admin@oduxtech.com', '$2y$10$u54x7gt9xMUm8ZwccvfRQeEMKTh3Cs.1Wp1u1GjE0ZGRZYkI15Ujy', 'en', NULL, NULL, '9zcVt63x1kiZM0M8vUQWLgYS0QB5aZh5RNU6swK3HnhcTpgiV9xy5gGDw9nF', 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 'active', 0, NULL, NULL, 0, 0.00, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-06-06 12:07:50', '2025-06-06 12:07:50');
 
 -- --------------------------------------------------------
 
@@ -2517,6 +3003,154 @@ ALTER TABLE `document_and_notes`
   ADD KEY `document_and_notes_created_by_index` (`created_by`);
 
 --
+-- Indexes for table `essentials_allowances_and_deductions`
+--
+ALTER TABLE `essentials_allowances_and_deductions`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `essentials_allowances_and_deductions_business_id_index` (`business_id`);
+
+--
+-- Indexes for table `essentials_attendances`
+--
+ALTER TABLE `essentials_attendances`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `essentials_attendances_user_id_index` (`user_id`),
+  ADD KEY `essentials_attendances_business_id_index` (`business_id`),
+  ADD KEY `essentials_attendances_essentials_shift_id_index` (`essentials_shift_id`);
+
+--
+-- Indexes for table `essentials_documents`
+--
+ALTER TABLE `essentials_documents`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `essentials_document_shares`
+--
+ALTER TABLE `essentials_document_shares`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `essentials_document_shares_document_id_index` (`document_id`),
+  ADD KEY `essentials_document_shares_value_type_index` (`value_type`);
+
+--
+-- Indexes for table `essentials_holidays`
+--
+ALTER TABLE `essentials_holidays`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `essentials_holidays_business_id_index` (`business_id`),
+  ADD KEY `essentials_holidays_location_id_index` (`location_id`);
+
+--
+-- Indexes for table `essentials_kb`
+--
+ALTER TABLE `essentials_kb`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `essentials_kb_business_id_index` (`business_id`),
+  ADD KEY `essentials_kb_parent_id_index` (`parent_id`),
+  ADD KEY `essentials_kb_created_by_index` (`created_by`);
+
+--
+-- Indexes for table `essentials_kb_users`
+--
+ALTER TABLE `essentials_kb_users`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `essentials_kb_users_kb_id_index` (`kb_id`),
+  ADD KEY `essentials_kb_users_user_id_index` (`user_id`);
+
+--
+-- Indexes for table `essentials_leaves`
+--
+ALTER TABLE `essentials_leaves`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `essentials_leaves_essentials_leave_type_id_index` (`essentials_leave_type_id`),
+  ADD KEY `essentials_leaves_business_id_index` (`business_id`),
+  ADD KEY `essentials_leaves_user_id_index` (`user_id`);
+
+--
+-- Indexes for table `essentials_leave_types`
+--
+ALTER TABLE `essentials_leave_types`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `essentials_leave_types_business_id_index` (`business_id`);
+
+--
+-- Indexes for table `essentials_messages`
+--
+ALTER TABLE `essentials_messages`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `essentials_messages_business_id_index` (`business_id`),
+  ADD KEY `essentials_messages_user_id_index` (`user_id`),
+  ADD KEY `essentials_messages_location_id_index` (`location_id`);
+
+--
+-- Indexes for table `essentials_payroll_groups`
+--
+ALTER TABLE `essentials_payroll_groups`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `essentials_payroll_group_transactions`
+--
+ALTER TABLE `essentials_payroll_group_transactions`
+  ADD KEY `essentials_payroll_group_transactions_payroll_group_id_foreign` (`payroll_group_id`);
+
+--
+-- Indexes for table `essentials_reminders`
+--
+ALTER TABLE `essentials_reminders`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `essentials_reminders_business_id_index` (`business_id`),
+  ADD KEY `essentials_reminders_user_id_index` (`user_id`);
+
+--
+-- Indexes for table `essentials_shifts`
+--
+ALTER TABLE `essentials_shifts`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `essentials_shifts_type_index` (`type`),
+  ADD KEY `essentials_shifts_business_id_index` (`business_id`);
+
+--
+-- Indexes for table `essentials_todo_comments`
+--
+ALTER TABLE `essentials_todo_comments`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `essentials_todo_comments_task_id_index` (`task_id`),
+  ADD KEY `essentials_todo_comments_comment_by_index` (`comment_by`);
+
+--
+-- Indexes for table `essentials_to_dos`
+--
+ALTER TABLE `essentials_to_dos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `essentials_to_dos_status_index` (`status`),
+  ADD KEY `essentials_to_dos_priority_index` (`priority`),
+  ADD KEY `essentials_to_dos_created_by_index` (`created_by`),
+  ADD KEY `essentials_to_dos_business_id_index` (`business_id`),
+  ADD KEY `essentials_to_dos_task_id_index` (`task_id`);
+
+--
+-- Indexes for table `essentials_user_allowance_and_deductions`
+--
+ALTER TABLE `essentials_user_allowance_and_deductions`
+  ADD KEY `essentials_user_allowance_and_deductions_user_id_index` (`user_id`),
+  ADD KEY `allow_deduct_index` (`allowance_deduction_id`);
+
+--
+-- Indexes for table `essentials_user_sales_targets`
+--
+ALTER TABLE `essentials_user_sales_targets`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `essentials_user_shifts`
+--
+ALTER TABLE `essentials_user_shifts`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `essentials_user_shifts_user_id_index` (`user_id`),
+  ADD KEY `essentials_user_shifts_essentials_shift_id_index` (`essentials_shift_id`);
+
+--
 -- Indexes for table `expense_categories`
 --
 ALTER TABLE `expense_categories`
@@ -2554,6 +3188,29 @@ ALTER TABLE `media`
   ADD KEY `media_model_type_model_id_index` (`model_type`,`model_id`),
   ADD KEY `media_business_id_index` (`business_id`),
   ADD KEY `media_uploaded_by_index` (`uploaded_by`);
+
+--
+-- Indexes for table `mfg_ingredient_groups`
+--
+ALTER TABLE `mfg_ingredient_groups`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `mfg_recipes`
+--
+ALTER TABLE `mfg_recipes`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `mfg_recipes_product_id_index` (`product_id`),
+  ADD KEY `mfg_recipes_variation_id_index` (`variation_id`);
+
+--
+-- Indexes for table `mfg_recipe_ingredients`
+--
+ALTER TABLE `mfg_recipe_ingredients`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `mfg_recipe_ingredients_mfg_recipe_id_index` (`mfg_recipe_id`),
+  ADD KEY `mfg_recipe_ingredients_variation_id_index` (`variation_id`),
+  ADD KEY `mfg_recipe_ingredients_sub_unit_id_index` (`sub_unit_id`);
 
 --
 -- Indexes for table `migrations`
@@ -2798,7 +3455,8 @@ ALTER TABLE `transactions`
   ADD KEY `transactions_recur_parent_id_index` (`recur_parent_id`),
   ADD KEY `transactions_selling_price_group_id_index` (`selling_price_group_id`),
   ADD KEY `transactions_delivery_date_index` (`delivery_date`),
-  ADD KEY `transactions_delivery_person_index` (`delivery_person`);
+  ADD KEY `transactions_delivery_person_index` (`delivery_person`),
+  ADD KEY `transactions_mfg_parent_production_purchase_id_index` (`mfg_parent_production_purchase_id`);
 
 --
 -- Indexes for table `transaction_payments`
@@ -2859,7 +3517,9 @@ ALTER TABLE `users`
   ADD UNIQUE KEY `users_username_unique` (`username`),
   ADD KEY `users_business_id_foreign` (`business_id`),
   ADD KEY `users_user_type_index` (`user_type`),
-  ADD KEY `users_crm_contact_id_foreign` (`crm_contact_id`);
+  ADD KEY `users_crm_contact_id_foreign` (`crm_contact_id`),
+  ADD KEY `users_essentials_department_id_index` (`essentials_department_id`),
+  ADD KEY `users_essentials_designation_id_index` (`essentials_designation_id`);
 
 --
 -- Indexes for table `user_contact_access`
@@ -3040,6 +3700,108 @@ ALTER TABLE `document_and_notes`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `essentials_allowances_and_deductions`
+--
+ALTER TABLE `essentials_allowances_and_deductions`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `essentials_attendances`
+--
+ALTER TABLE `essentials_attendances`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `essentials_documents`
+--
+ALTER TABLE `essentials_documents`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `essentials_document_shares`
+--
+ALTER TABLE `essentials_document_shares`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `essentials_holidays`
+--
+ALTER TABLE `essentials_holidays`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `essentials_kb`
+--
+ALTER TABLE `essentials_kb`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `essentials_kb_users`
+--
+ALTER TABLE `essentials_kb_users`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `essentials_leaves`
+--
+ALTER TABLE `essentials_leaves`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `essentials_leave_types`
+--
+ALTER TABLE `essentials_leave_types`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `essentials_messages`
+--
+ALTER TABLE `essentials_messages`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `essentials_payroll_groups`
+--
+ALTER TABLE `essentials_payroll_groups`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `essentials_reminders`
+--
+ALTER TABLE `essentials_reminders`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `essentials_shifts`
+--
+ALTER TABLE `essentials_shifts`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `essentials_todo_comments`
+--
+ALTER TABLE `essentials_todo_comments`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `essentials_to_dos`
+--
+ALTER TABLE `essentials_to_dos`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `essentials_user_sales_targets`
+--
+ALTER TABLE `essentials_user_sales_targets`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `essentials_user_shifts`
+--
+ALTER TABLE `essentials_user_shifts`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `expense_categories`
 --
 ALTER TABLE `expense_categories`
@@ -3064,10 +3826,28 @@ ALTER TABLE `media`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `mfg_ingredient_groups`
+--
+ALTER TABLE `mfg_ingredient_groups`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `mfg_recipes`
+--
+ALTER TABLE `mfg_recipes`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `mfg_recipe_ingredients`
+--
+ALTER TABLE `mfg_recipe_ingredients`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=299;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=348;
 
 --
 -- AUTO_INCREMENT for table `notification_templates`
@@ -3079,19 +3859,19 @@ ALTER TABLE `notification_templates`
 -- AUTO_INCREMENT for table `oauth_clients`
 --
 ALTER TABLE `oauth_clients`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `oauth_personal_access_clients`
 --
 ALTER TABLE `oauth_personal_access_clients`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `permissions`
 --
 ALTER TABLE `permissions`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=83;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=92;
 
 --
 -- AUTO_INCREMENT for table `printers`
@@ -3157,7 +3937,7 @@ ALTER TABLE `stock_adjustment_lines`
 -- AUTO_INCREMENT for table `system`
 --
 ALTER TABLE `system`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `tax_rates`
@@ -3330,6 +4110,18 @@ ALTER TABLE `dashboard_configurations`
   ADD CONSTRAINT `dashboard_configurations_business_id_foreign` FOREIGN KEY (`business_id`) REFERENCES `business` (`id`) ON DELETE CASCADE;
 
 --
+-- Constraints for table `essentials_kb`
+--
+ALTER TABLE `essentials_kb`
+  ADD CONSTRAINT `essentials_kb_parent_id_foreign` FOREIGN KEY (`parent_id`) REFERENCES `essentials_kb` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `essentials_payroll_group_transactions`
+--
+ALTER TABLE `essentials_payroll_group_transactions`
+  ADD CONSTRAINT `essentials_payroll_group_transactions_payroll_group_id_foreign` FOREIGN KEY (`payroll_group_id`) REFERENCES `essentials_payroll_groups` (`id`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `expense_categories`
 --
 ALTER TABLE `expense_categories`
@@ -3353,6 +4145,12 @@ ALTER TABLE `invoice_layouts`
 --
 ALTER TABLE `invoice_schemes`
   ADD CONSTRAINT `invoice_schemes_business_id_foreign` FOREIGN KEY (`business_id`) REFERENCES `business` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `mfg_recipe_ingredients`
+--
+ALTER TABLE `mfg_recipe_ingredients`
+  ADD CONSTRAINT `mfg_recipe_ingredients_mfg_recipe_id_foreign` FOREIGN KEY (`mfg_recipe_id`) REFERENCES `mfg_recipes` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `model_has_permissions`
