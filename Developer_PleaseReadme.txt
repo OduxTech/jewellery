@@ -11,6 +11,8 @@
 
 3. Extract Archive.zip 
 
+4. Once extrated there will be a folder created called archive and then cut and paste those folder inside the main folder
+
 
 
 
