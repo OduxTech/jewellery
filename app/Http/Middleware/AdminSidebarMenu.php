@@ -218,7 +218,7 @@ class AdminSidebarMenu
                         if (auth()->user()->can('brand.view') || auth()->user()->can('brand.create')) {
                             $sub->url(
                                 action([\App\Http\Controllers\BrandController::class, 'index']),
-                                __('brand.brands'),
+                                __('brand.carat_value'),
                                 ['icon' => '', 'active' => request()->segment(1) == 'brands']
                             );
                         }

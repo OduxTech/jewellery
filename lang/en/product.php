@@ -11,16 +11,18 @@ return [
     |
     */
 
-    'exc_of_tax' => 'Exc. tax',
+  'exc_of_tax' => 'Exc. tax',
     'inc_of_tax' => 'Inc. tax',
     'profit_percent' => 'x Margin(%)',
+    'cost_percent' => 'Cost(%)',
     'add_new_product' => 'Add new product',
     'add_product_for_labels' => 'Add products to generate Labels',
     'product_type' => 'Product Type',
     'category' => 'Category',
     'sub_category' => 'Sub category',
     'unit' => 'Unit',
-    'brand' => 'Brand',
+    'brand' => 'Carat Value',
+    'carat_value' => 'Carat Value',
     'tax' => 'Tax',
     'sku' => 'SKU',
     'alert_quantity' => 'Alert quantity',
@@ -62,6 +64,5 @@ return [
     'variation_sku_format_help_text' => 'Variation SKU Format -  When variation SKU is empty this format will be used to generate SKU for variations',
     'sku_number' => 'SKU-Number (Example -> ABC-1, ABC-2)',
     'sku_variation_number' => 'SKUVariation (Example -> ABCS, ABCM)'
-
 
 ];

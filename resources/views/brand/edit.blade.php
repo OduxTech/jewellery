@@ -5,13 +5,13 @@
 
     <div class="modal-header">
       <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-      <h4 class="modal-title">@lang( 'brand.edit_brand' )</h4>
+      <h4 class="modal-title">@lang( 'brand.edit_carat_value' )</h4>
     </div>
 
     <div class="modal-body">
       <div class="form-group">
-        {!! Form::label('name', __( 'brand.brand_name' ) . ':*') !!}
-          {!! Form::text('name', $brand->name, ['class' => 'form-control', 'required', 'placeholder' => __( 'brand.brand_name' )]); !!}
+        {!! Form::label('name', __( 'brand.brand_carat_value' ) . ':*') !!}
+          {!! Form::number('name', $brand->name, ['class' => 'form-control', 'required', 'placeholder' => __( 'brand.brand_carat_value' )]); !!}
       </div>
 
       <div class="form-group">

@@ -18,6 +18,7 @@
 
 Please Add Database Modification Queries Below with Comments
 
-
+1.  Cost percentage Row created on the Product table 
+Query : ALTER TABLE `products` ADD `cost_percent` INT(11) UNSIGNED NULL DEFAULT '0' AFTER `updated_at`;
 
 

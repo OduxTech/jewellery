@@ -338,8 +338,8 @@ class ImportProductsController extends Controller
                         }
                     }
 
-                    //Enable IMEI or Serial Number
-                    $enable_sr_no = trim($value[24]);
+                   //Enable IMEI or Serial Number
+                  {{--  $enable_sr_no = trim($value[24]);
                     if (in_array($enable_sr_no, [0, 1])) {
                         $product_array['enable_sr_no'] = $enable_sr_no;
                     } elseif (empty($enable_sr_no)) {
@@ -349,7 +349,7 @@ class ImportProductsController extends Controller
                         $error_msg = "Invalid value for ENABLE IMEI OR SERIAL NUMBER  in row no. $row_no";
                         break;
                     }
-
+                --}}
                     //Weight
                     if (isset($value[25])) {
                         $product_array['weight'] = trim($value[25]);

@@ -86,7 +86,7 @@
 
             <div class="col-sm-4 @if(!session('business.enable_brand')) hide @endif">
               <div class="form-group">
-                {!! Form::label('brand_id', __('product.brand') . ':') !!}
+                {!! Form::label('brand_id', __('product.carat_value') . ':') !!}
                 <div class="input-group">
                   {!! Form::select('brand_id', $brands, $product->brand_id, ['placeholder' => __('messages.please_select'), 'class' => 'form-control select2']); !!}
                   <span class="input-group-btn">
@@ -114,6 +114,18 @@
                 {!! Form::label('product_locations', __('business.business_locations') . ':') !!} @show_tooltip(__('lang_v1.product_location_help'))
                   {!! Form::select('product_locations[]', $business_locations, $product->product_locations->pluck('id'), ['class' => 'form-control select2', 'multiple', 'id' => 'product_locations']); !!}
               </div>
+            </div>
+             
+   <div class="col-sm-4">
+            <div class="form-group">
+                {!! Form::label('cost_percent', __('product.cost_percent') . ':') !!}
+                {!! Form::number('cost_percent', !empty($duplicate_product->name) ? $duplicate_product->name : null, [
+                    'class' => 'form-control',
+                    'required',
+                    'placeholder' => __('product.cost_percent'),
+                    'id' => 'cost_percent'
+                ]) !!}
+            </div>
             </div>
 
             <div class="clearfix"></div>
