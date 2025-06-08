@@ -70,14 +70,9 @@ class HomeController extends Controller
 
         foreach ($types as $type) {
             $latestRates[$type] = GoldRate::where('type', $type)
-                                        ->orderBy('date', 'desc')
+                                        ->orderBy('id', 'desc')
                                         ->first();
         }
-
-
-        $goldRate = GoldRate::where('type', 1)
-                    ->orderBy('date', 'desc')
-                    ->first();
 
 
         $user = auth()->user();
