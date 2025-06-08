@@ -19,6 +19,7 @@ use Datatables;
 use DB;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\DatabaseNotification;
+use App\GoldRate;
 
 class HomeController extends Controller
 {
@@ -64,6 +65,21 @@ class HomeController extends Controller
      */
     public function index()
     {
+        $types = [1, 2, 3];
+        $latestRates = [];
+
+        foreach ($types as $type) {
+            $latestRates[$type] = GoldRate::where('type', $type)
+                                        ->orderBy('date', 'desc')
+                                        ->first();
+        }
+
+
+        $goldRate = GoldRate::where('type', 1)
+                    ->orderBy('date', 'desc')
+                    ->first();
+
+
         $user = auth()->user();
         if ($user->user_type == 'user_customer') {
             return redirect()->action([\Modules\Crm\Http\Controllers\DashboardController::class, 'index']);
@@ -210,7 +226,7 @@ class HomeController extends Controller
         $common_settings = ! empty(session('business.common_settings')) ? session('business.common_settings') : [];
 
 
-        return view('home.index', compact('sells_chart_1', 'sells_chart_2', 'widgets', 'all_locations', 'common_settings', 'is_admin'));
+        return view('home.index', compact('sells_chart_1', 'sells_chart_2', 'widgets', 'all_locations', 'common_settings', 'is_admin' , 'latestRates'));
     }
 
     /**

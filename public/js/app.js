@@ -725,9 +725,12 @@ $(document).ready(function() {
         $(this)
             .closest('.form-group')
             .remove();
+        $('#saveVariationBtn').prop('disabled', false);
     });
+    $(document).on('change', '#variation_values', function() {
+        $('#saveVariationBtn').prop('disabled', false);
 
-
+    });
     $(document).on('submit', 'form#variation_add_form', function(e) {
         e.preventDefault();
         var form = $(this);

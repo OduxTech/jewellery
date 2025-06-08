@@ -3,218 +3,249 @@
 
 @section('content')
 
-    <div class="tw-pb-6 tw-bg-gradient-to-r tw-from-@if(!empty(session('business.theme_color'))){{session('business.theme_color')}}@else{{'primary'}}@endif-800 tw-to-@if(!empty(session('business.theme_color'))){{session('business.theme_color')}}@else{{'primary'}}@endif-900 xl:tw-pb-0 ">
+    <div
+        class="tw-pb-6 tw-bg-gradient-to-r tw-from-@if(!empty(session('business.theme_color'))){{session('business.theme_color')}}@else{{'primary'}}@endif-800 tw-to-@if(!empty(session('business.theme_color'))){{session('business.theme_color')}}@else{{'primary'}}@endif-900 xl:tw-pb-0 ">
         <div class="tw-px-5 tw-pt-3">
             {{-- <div class="sm:tw-flex sm:tw-items-center sm:tw-justify-between sm:tw-gap-12">
                 <h1 class="tw-text-2xl tw-font-medium tw-tracking-tight tw-text-white">
                     {{ __('home.welcome_message', ['name' => Session::get('user.first_name')]) }}
                 </h1>
             </div> --}}
-                    <div class="sm:tw-flex sm:tw-items-center sm:tw-justify-between sm:tw-gap-12">
-                        <div class="tw-mt-2 sm:tw-w-1/2 md:tw-w-1/2">
-                            <h1
-                                class="tw-text-2xl md:tw-text-4xl tw-tracking-tight tw-text-primary-800 tw-font-semibold text-white tw-mb-10 md:tw-mb-0">
-                                {{ __('home.welcome_message', ['name' => Session::get('user.first_name')]) }}
-                            </h1>
-                        </div>
-    
-                        @if (auth()->user()->can('dashboard.data'))
-                            @if ($is_admin)
-                                <div class="tw-mt-2 sm:tw-w-1/3 md:tw-w-1/4 ">
-                                    @if (count($all_locations) > 1)
+            <div class="sm:tw-flex sm:tw-items-center sm:tw-justify-between sm:tw-gap-12">
+                <div class="tw-mt-2 sm:tw-w-1/2 md:tw-w-1/2">
+                    <h1
+                        class="tw-text-2xl md:tw-text-4xl tw-tracking-tight tw-text-primary-800 tw-font-semibold text-white tw-mb-10 md:tw-mb-0">
+                        {{ __('home.welcome_message', ['name' => Session::get('user.first_name')]) }}
+                    </h1>
+                </div>
+
+                @if (auth()->user()->can('dashboard.data'))
+                    @if ($is_admin)
+                            <div class="sm:tw-w-1/2 md:tw-w-1/2">
+                                <div class="tw-rounded-lg tw-shadow-lg tw-p-4 tw-text-white" style="background: linear-gradient(135deg, #FFD700 0%, #B8860B 100%);
+                        box-shadow: 0 4px 10px rgba(184, 134, 11, 0.6);
+                        border: 2px solid #DAA520;">
+
+                                    <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
+                                        <h1 class="tw-text-xl md:tw-text-2xl tw-font-semibold tw-tracking-tight tw-text-gray-900">
+                                            {{ __('home.gold_rate') }}
+                                        </h1>
+                                        <a href=""
+                                            class="tw-text-xs tw-bg-white tw-text-yellow-800 tw-font-bold tw-px-3 tw-py-1 tw-rounded hover:tw-bg-yellow-100 tw-shadow">
+                                            ✏️ Edit
+                                        </a>
+                                    </div>
+
+                                    @foreach ([1 => '24K Gold', 2 => '22K Gold', 3 => 'Silver'] as $type => $label)
+                                        <div class="tw-flex tw-justify-between tw-items-center tw-text-gray-900 tw-text-sm tw-font-medium">
+                                            <div>
+                                                {{ $label }}: Rs.
+                                                {{ isset($latestRates[$type]) ? number_format($latestRates[$type]->price, 2, '.', ',') : 'N/A' }}
+                                            </div>
+                                            <div class="tw-text-xs tw-text-gray-700">
+                                                {{ optional($latestRates[$type])->date?->format('Y-m-d') ?? 'N/A' }}
+                                            </div>
+                                        </div>
+                                    @endforeach
+
+                                </div>
+                            </div>
+
+
+
+
+                            <div class="tw-mt-2 sm:tw-w-1/3 md:tw-w-1/4 ">
+                                @if (count($all_locations) > 1)
                                         {!! Form::select('dashboard_location', $all_locations, null, [
-                                            'class' => 'form-control select2',
-                                            'placeholder' => __('lang_v1.select_location'),
-                                            'id' => 'dashboard_location',
-                                        ]) !!}
-                                    @endif
-                                </div>
-            
-                                <div class="tw-mt-2 sm:tw-w-1/3 md:tw-w-1/4 tw-text-right">
-                                    @if ($is_admin)
-                                        <button type="button" id="dashboard_date_filter"
-                                            class="tw-inline-flex tw-items-center tw-justify-center tw-w-full tw-gap-1 tw-px-3 tw-py-2 tw-text-sm tw-font-medium tw-text-gray-900 tw-transition-all tw-duration-200 tw-bg-white tw-rounded-lg sm:tw-w-auto hover:tw-bg-primary-50">
-                                            <svg aria-hidden="true" class="tw-size-5" xmlns="http://www.w3.org/2000/svg"
-                                                viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none"
-                                                stroke-linecap="round" stroke-linejoin="round">
-                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                                <path
-                                                    d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" />
-                                                <path d="M16 3v4" />
-                                                <path d="M8 3v4" />
-                                                <path d="M4 11h16" />
-                                                <path d="M7 14h.013" />
-                                                <path d="M10.01 14h.005" />
-                                                <path d="M13.01 14h.005" />
-                                                <path d="M16.015 14h.005" />
-                                                <path d="M13.015 17h.005" />
-                                                <path d="M7.01 17h.005" />
-                                                <path d="M10.01 17h.005" />
-                                            </svg>
-                                            <span>
-                                                {{ __('messages.filter_by_date') }}
-                                            </span>
-                                            <svg aria-hidden="true" class="tw-size-4" xmlns="http://www.w3.org/2000/svg"
-                                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                                stroke-linecap="round" stroke-linejoin="round">
-                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                                <path d="M6 9l6 6l6 -6" />
-                                            </svg>
-                                        </button>
-                                    @endif
-                                </div>
-                            @endif
-                        @endif
-                    </div>
-                    @if (auth()->user()->can('dashboard.data'))
-                        @if ($is_admin)
-                            <div class="tw-grid tw-grid-cols-1 tw-gap-4 tw-mt-6 sm:tw-grid-cols-2 xl:tw-grid-cols-4 sm:tw-gap-5">
-                            
-                                <div
-                                    class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm hover:tw-shadow-md tw-rounded-xl  tw-ring-1 tw-ring-gray-200">
-                                    <div class="tw-p-4 sm:tw-p-5">
-                                        <div class="tw-flex tw-items-center tw-gap-4">
-                                            <div
-                                                class="tw-inline-flex tw-items-center tw-justify-center tw-w-10 tw-h-10 tw-rounded-full sm:tw-w-12 sm:tw-h-12 tw-shrink-0 tw-bg-sky-100 tw-text-sky-500">
-                                                <svg aria-hidden="true" class="tw-w-6 tw-h-6" xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                                    stroke-linecap="round" stroke-linejoin="round">
-                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                                    <path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
-                                                    <path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
-                                                    <path d="M17 17h-11v-14h-2" />
-                                                    <path d="M6 5l14 1l-1 7h-13" />
-                                                </svg>
-                                            </div>
+                                        'class' => 'form-control select2',
+                                        'placeholder' => __('lang_v1.select_location'),
+                                        'id' => 'dashboard_location',
+                                    ]) !!}
+                                @endif
+                            </div>
 
-                                            <div class="tw-flex-1 tw-min-w-0">
-                                                <p
-                                                    class="tw-text-sm tw-font-medium tw-text-gray-500 tw-truncate tw-whitespace-nowrap">
-                                                    {{ __('home.total_sell') }}
-                                                </p>
-                                                <p
-                                                    class="total_sell tw-mt-0.5 tw-text-gray-900 tw-text-xl tw-truncate tw-font-semibold tw-tracking-tight tw-font-mono">
-                                                </p>
-                                            </div>
-                                        </div>
+                            <div class="tw-mt-2 sm:tw-w-1/3 md:tw-w-1/4 tw-text-right">
+                                @if ($is_admin)
+                                    <button type="button" id="dashboard_date_filter"
+                                        class="tw-inline-flex tw-items-center tw-justify-center tw-w-full tw-gap-1 tw-px-3 tw-py-2 tw-text-sm tw-font-medium tw-text-gray-900 tw-transition-all tw-duration-200 tw-bg-white tw-rounded-lg sm:tw-w-auto hover:tw-bg-primary-50">
+                                        <svg aria-hidden="true" class="tw-size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                            stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                            <path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" />
+                                            <path d="M16 3v4" />
+                                            <path d="M8 3v4" />
+                                            <path d="M4 11h16" />
+                                            <path d="M7 14h.013" />
+                                            <path d="M10.01 14h.005" />
+                                            <path d="M13.01 14h.005" />
+                                            <path d="M16.015 14h.005" />
+                                            <path d="M13.015 17h.005" />
+                                            <path d="M7.01 17h.005" />
+                                            <path d="M10.01 17h.005" />
+                                        </svg>
+                                        <span>
+                                            {{ __('messages.filter_by_date') }}
+                                        </span>
+                                        <svg aria-hidden="true" class="tw-size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                            stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                            <path d="M6 9l6 6l6 -6" />
+                                        </svg>
+                                    </button>
+                                @endif
+                            </div>
+                    @endif
+                @endif
+            </div>
+            @if (auth()->user()->can('dashboard.data'))
+                @if ($is_admin)
+                    <div class="tw-grid tw-grid-cols-1 tw-gap-4 tw-mt-6 sm:tw-grid-cols-2 xl:tw-grid-cols-4 sm:tw-gap-5">
+
+                        <div
+                            class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm hover:tw-shadow-md tw-rounded-xl  tw-ring-1 tw-ring-gray-200">
+                            <div class="tw-p-4 sm:tw-p-5">
+                                <div class="tw-flex tw-items-center tw-gap-4">
+                                    <div
+                                        class="tw-inline-flex tw-items-center tw-justify-center tw-w-10 tw-h-10 tw-rounded-full sm:tw-w-12 sm:tw-h-12 tw-shrink-0 tw-bg-sky-100 tw-text-sky-500">
+                                        <svg aria-hidden="true" class="tw-w-6 tw-h-6" xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                            <path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                                            <path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                                            <path d="M17 17h-11v-14h-2" />
+                                            <path d="M6 5l14 1l-1 7h-13" />
+                                        </svg>
                                     </div>
-                                </div>
 
-                                <div
-                                    class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm hover:tw-shadow-md tw-rounded-xl hover:tw--translate-y-0.5 tw-ring-1 tw-ring-gray-200">
-                                    <div class="tw-p-4 sm:tw-p-5">
-                                        <div class="tw-flex tw-items-center tw-gap-4">
-                                            <div
-                                                class="tw-inline-flex tw-items-center tw-justify-center tw-w-10 tw-h-10 tw-text-green-500 tw-bg-green-100 tw-rounded-full sm:tw-w-12 sm:tw-h-12 tw-shrink-0">
-                                                <svg aria-hidden="true" class="tw-w-6 tw-h-6" xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                                    stroke-linecap="round" stroke-linejoin="round">
-                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                                    <path
-                                                        d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16l-3 -2l-2 2l-2 -2l-2 2l-2 -2l-3 2">
-                                                    </path>
-                                                    <path
-                                                        d="M14.8 8a2 2 0 0 0 -1.8 -1h-2a2 2 0 1 0 0 4h2a2 2 0 1 1 0 4h-2a2 2 0 0 1 -1.8 -1">
-                                                    </path>
-                                                    <path d="M12 6v10"></path>
-                                                </svg>
-                                            </div>
-
-                                            <div class="tw-flex-1 tw-min-w-0">
-                                                <p
-                                                    class="tw-text-sm tw-font-medium tw-text-gray-500 tw-truncate tw-whitespace-nowrap">
-                                                    {{ __('lang_v1.net') }} @show_tooltip(__('lang_v1.net_home_tooltip'))
-                                                </p>
-                                                <p
-                                                    class="net tw-mt-0.5 tw-text-gray-900 tw-text-xl tw-truncate tw-font-semibold tw-tracking-tight tw-font-mono">
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div
-                                    class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm hover:tw-shadow-md tw-rounded-xl hover:tw--translate-y-0.5 tw-ring-1 tw-ring-gray-200">
-                                    <div class="tw-p-4 sm:tw-p-5">
-                                        <div class="tw-flex tw-items-center tw-gap-4">
-                                            <div
-                                                class="tw-inline-flex tw-items-center tw-justify-center tw-w-10 tw-h-10 tw-text-yellow-500 tw-bg-yellow-100 tw-rounded-full sm:tw-w-12 sm:tw-h-12 shrink-0">
-                                                <svg aria-hidden="true" class="tw-w-6 tw-h-6" xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                                    stroke-linecap="round" stroke-linejoin="round">
-                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                                    <path d="M14 3v4a1 1 0 0 0 1 1h4" />
-                                                    <path
-                                                        d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
-                                                    <path d="M9 7l1 0" />
-                                                    <path d="M9 13l6 0" />
-                                                    <path d="M13 17l2 0" />
-                                                </svg>
-                                            </div>
-
-                                            <div class="tw-flex-1 tw-min-w-0">
-                                                <p
-                                                    class="tw-text-sm tw-font-medium tw-text-gray-500 tw-truncate tw-whitespace-nowrap">
-                                                    {{ __('home.invoice_due') }}
-                                                </p>
-                                                <p
-                                                    class="invoice_due tw-mt-0.5 tw-text-gray-900 tw-text-xl tw-truncate tw-font-semibold tw-tracking-tight tw-font-mono">
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div
-                                    class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm hover:tw-shadow-md tw-rounded-xl hover:tw--translate-y-0.5 tw-ring-1 tw-ring-gray-200">
-                                    <div class="tw-p-4 sm:tw-p-5">
-                                        <div class="tw-flex tw-items-center tw-gap-4">
-                                            <div
-                                                class="tw-inline-flex tw-items-center tw-justify-center tw-w-10 tw-h-10 tw-text-red-500 tw-bg-red-100 tw-rounded-full sm:tw-w-12 sm:tw-h-12 shrink-0">
-                                                <svg aria-hidden="true" class="tw-w-6 tw-h-6" xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                                    stroke-linecap="round" stroke-linejoin="round">
-                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                                    <path d="M21 7l-18 0" />
-                                                    <path d="M18 10l3 -3l-3 -3" />
-                                                    <path d="M6 20l-3 -3l3 -3" />
-                                                    <path d="M3 17l18 0" />
-                                                </svg>
-                                            </div>
-
-                                            <div class="tw-flex-1 tw-min-w-0">
-                                                <p
-                                                    class="tw-text-sm tw-font-medium tw-text-gray-500 tw-truncate tw-whitespace-nowrap">
-                                                    {{ __('lang_v1.total_sell_return') }}
-                                                    <i class="fa fa-info-circle text-info hover-q no-print" aria-hidden="true" data-container="body"
-                                                    data-toggle="popover" data-placement="auto bottom" id="total_srp"
-                                                    data-value="{{ __('lang_v1.total_sell_return') }}-{{ __('lang_v1.total_sell_return_paid') }}"
-                                                    data-content="" data-html="true" data-trigger="hover"></i>
-                                                </p>
-                                                <p
-                                                    class="total_sell_return tw-mt-0.5 tw-text-gray-900 tw-text-xl tw-truncate tw-font-semibold tw-tracking-tight tw-font-mono">
-                                                </p>
-                                                {{-- <p class="mb-0 text-muted fs-10 mt-5">{{ __('lang_v1.total_sell_return') }}: <span
-                                                        class="total_sr"></span><br>
-                                                    {{ __('lang_v1.total_sell_return_paid') }}<span class="total_srp"></span></p> --}}
-                                            </div>
-                                        </div>
+                                    <div class="tw-flex-1 tw-min-w-0">
+                                        <p class="tw-text-sm tw-font-medium tw-text-gray-500 tw-truncate tw-whitespace-nowrap">
+                                            {{ __('home.total_sell') }}
+                                        </p>
+                                        <p
+                                            class="total_sell tw-mt-0.5 tw-text-gray-900 tw-text-xl tw-truncate tw-font-semibold tw-tracking-tight tw-font-mono">
+                                        </p>
                                     </div>
                                 </div>
                             </div>
-                        @endif
-                    @endif
-              
+                        </div>
+
+                        <div
+                            class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm hover:tw-shadow-md tw-rounded-xl hover:tw--translate-y-0.5 tw-ring-1 tw-ring-gray-200">
+                            <div class="tw-p-4 sm:tw-p-5">
+                                <div class="tw-flex tw-items-center tw-gap-4">
+                                    <div
+                                        class="tw-inline-flex tw-items-center tw-justify-center tw-w-10 tw-h-10 tw-text-green-500 tw-bg-green-100 tw-rounded-full sm:tw-w-12 sm:tw-h-12 tw-shrink-0">
+                                        <svg aria-hidden="true" class="tw-w-6 tw-h-6" xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16l-3 -2l-2 2l-2 -2l-2 2l-2 -2l-3 2">
+                                            </path>
+                                            <path
+                                                d="M14.8 8a2 2 0 0 0 -1.8 -1h-2a2 2 0 1 0 0 4h2a2 2 0 1 1 0 4h-2a2 2 0 0 1 -1.8 -1">
+                                            </path>
+                                            <path d="M12 6v10"></path>
+                                        </svg>
+                                    </div>
+
+                                    <div class="tw-flex-1 tw-min-w-0">
+                                        <p class="tw-text-sm tw-font-medium tw-text-gray-500 tw-truncate tw-whitespace-nowrap">
+                                            {{ __('lang_v1.net') }} @show_tooltip(__('lang_v1.net_home_tooltip'))
+                                        </p>
+                                        <p
+                                            class="net tw-mt-0.5 tw-text-gray-900 tw-text-xl tw-truncate tw-font-semibold tw-tracking-tight tw-font-mono">
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div
+                            class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm hover:tw-shadow-md tw-rounded-xl hover:tw--translate-y-0.5 tw-ring-1 tw-ring-gray-200">
+                            <div class="tw-p-4 sm:tw-p-5">
+                                <div class="tw-flex tw-items-center tw-gap-4">
+                                    <div
+                                        class="tw-inline-flex tw-items-center tw-justify-center tw-w-10 tw-h-10 tw-text-yellow-500 tw-bg-yellow-100 tw-rounded-full sm:tw-w-12 sm:tw-h-12 shrink-0">
+                                        <svg aria-hidden="true" class="tw-w-6 tw-h-6" xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                            <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                                            <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
+                                            <path d="M9 7l1 0" />
+                                            <path d="M9 13l6 0" />
+                                            <path d="M13 17l2 0" />
+                                        </svg>
+                                    </div>
+
+                                    <div class="tw-flex-1 tw-min-w-0">
+                                        <p class="tw-text-sm tw-font-medium tw-text-gray-500 tw-truncate tw-whitespace-nowrap">
+                                            {{ __('home.invoice_due') }}
+                                        </p>
+                                        <p
+                                            class="invoice_due tw-mt-0.5 tw-text-gray-900 tw-text-xl tw-truncate tw-font-semibold tw-tracking-tight tw-font-mono">
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div
+                            class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm hover:tw-shadow-md tw-rounded-xl hover:tw--translate-y-0.5 tw-ring-1 tw-ring-gray-200">
+                            <div class="tw-p-4 sm:tw-p-5">
+                                <div class="tw-flex tw-items-center tw-gap-4">
+                                    <div
+                                        class="tw-inline-flex tw-items-center tw-justify-center tw-w-10 tw-h-10 tw-text-red-500 tw-bg-red-100 tw-rounded-full sm:tw-w-12 sm:tw-h-12 shrink-0">
+                                        <svg aria-hidden="true" class="tw-w-6 tw-h-6" xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                            <path d="M21 7l-18 0" />
+                                            <path d="M18 10l3 -3l-3 -3" />
+                                            <path d="M6 20l-3 -3l3 -3" />
+                                            <path d="M3 17l18 0" />
+                                        </svg>
+                                    </div>
+
+                                    <div class="tw-flex-1 tw-min-w-0">
+                                        <p class="tw-text-sm tw-font-medium tw-text-gray-500 tw-truncate tw-whitespace-nowrap">
+                                            {{ __('lang_v1.total_sell_return') }}
+                                            <i class="fa fa-info-circle text-info hover-q no-print" aria-hidden="true"
+                                                data-container="body" data-toggle="popover" data-placement="auto bottom"
+                                                id="total_srp"
+                                                data-value="{{ __('lang_v1.total_sell_return') }}-{{ __('lang_v1.total_sell_return_paid') }}"
+                                                data-content="" data-html="true" data-trigger="hover"></i>
+                                        </p>
+                                        <p
+                                            class="total_sell_return tw-mt-0.5 tw-text-gray-900 tw-text-xl tw-truncate tw-font-semibold tw-tracking-tight tw-font-mono">
+                                        </p>
+                                        {{-- <p class="mb-0 text-muted fs-10 mt-5">{{ __('lang_v1.total_sell_return') }}: <span
+                                                class="total_sr"></span><br>
+                                            {{ __('lang_v1.total_sell_return_paid') }}<span class="total_srp"></span></p> --}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+            @endif
+
         </div>
         @if (auth()->user()->can('dashboard.data'))
             @if ($is_admin)
                 <div class="tw-relative">
                     <div class="tw-absolute tw-inset-0 tw-grid" aria-hidden="true">
-                        <div class="tw-bg-gradient-to-r tw-from-@if(!empty(session('business.theme_color'))){{session('business.theme_color')}}@else{{'primary'}}@endif-800 tw-to-@if(!empty(session('business.theme_color'))){{session('business.theme_color')}}@else{{'primary'}}@endif-900"></div>
-                        <div class="tw-bg-gradient-to-r tw-from-@if(!empty(session('business.theme_color'))){{session('business.theme_color')}}@else{{'primary'}}@endif-800 tw-to-@if(!empty(session('business.theme_color'))){{session('business.theme_color')}}@else{{'primary'}}@endif-900 xl:tw-bg-none xl:tw-bg-gray-100">
+                        <div
+                            class="tw-bg-gradient-to-r tw-from-@if(!empty(session('business.theme_color'))){{session('business.theme_color')}}@else{{'primary'}}@endif-800 tw-to-@if(!empty(session('business.theme_color'))){{session('business.theme_color')}}@else{{'primary'}}@endif-900">
+                        </div>
+                        <div
+                            class="tw-bg-gradient-to-r tw-from-@if(!empty(session('business.theme_color'))){{session('business.theme_color')}}@else{{'primary'}}@endif-800 tw-to-@if(!empty(session('business.theme_color'))){{session('business.theme_color')}}@else{{'primary'}}@endif-900 xl:tw-bg-none xl:tw-bg-gray-100">
                         </div>
                     </div>
                     <div class="tw-px-5 tw-isolate">
@@ -226,10 +257,9 @@
                                     <div class="tw-flex tw-items-center tw-gap-4">
                                         <div
                                             class="tw-inline-flex tw-items-center tw-justify-center tw-w-10 tw-h-10 tw-rounded-full sm:tw-w-12 sm:tw-h-12 shrink-0 bg-sky-100 tw-text-sky-500">
-                                            <svg aria-hidden="true" class="tw-w-6 tw-h-6"
-                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2"
-                                                stroke="currentColor" fill="none" stroke-linecap="round"
-                                                stroke-linejoin="round">
+                                            <svg aria-hidden="true" class="tw-w-6 tw-h-6" xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                                stroke-linecap="round" stroke-linejoin="round">
                                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                                                 <path d="M12 3v12"></path>
@@ -239,8 +269,7 @@
                                         </div>
 
                                         <div class="tw-flex-1 tw-min-w-0">
-                                            <p
-                                                class="tw-text-sm tw-font-medium tw-text-gray-500 tw-truncate tw-whitespace-nowrap">
+                                            <p class="tw-text-sm tw-font-medium tw-text-gray-500 tw-truncate tw-whitespace-nowrap">
                                                 {{ __('home.total_purchase') }}
                                             </p>
                                             <p
@@ -256,10 +285,9 @@
                                     <div class="tw-flex tw-items-center tw-gap-4">
                                         <div
                                             class="tw-inline-flex tw-items-center tw-justify-center tw-w-10 tw-h-10 tw-text-yellow-500 tw-bg-yellow-100 tw-rounded-full sm:tw-w-12 sm:tw-h-12 shrink-0">
-                                            <svg aria-hidden="true" class="tw-w-6 tw-h-6"
-                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2"
-                                                stroke="currentColor" fill="none" stroke-linecap="round"
-                                                stroke-linejoin="round">
+                                            <svg aria-hidden="true" class="tw-w-6 tw-h-6" xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                                stroke-linecap="round" stroke-linejoin="round">
                                                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                                 <path d="M12 9v4" />
                                                 <path
@@ -287,10 +315,9 @@
                                     <div class="tw-flex tw-items-center tw-gap-4">
                                         <div
                                             class="tw-inline-flex tw-items-center tw-justify-center tw-w-10 tw-h-10 tw-text-red-500 tw-bg-red-100 tw-rounded-full sm:tw-w-12 sm:tw-h-12 shrink-0">
-                                            <svg aria-hidden="true" class="tw-w-6 tw-h-6"
-                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2"
-                                                stroke="currentColor" fill="none" stroke-linecap="round"
-                                                stroke-linejoin="round">
+                                            <svg aria-hidden="true" class="tw-w-6 tw-h-6" xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                                stroke-linecap="round" stroke-linejoin="round">
                                                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                                 <path
                                                     d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16l-3 -2l-2 2l-2 -2l-2 2l-2 -2l-3 2" />
@@ -299,22 +326,21 @@
                                         </div>
 
                                         <div class="tw-flex-1 tw-min-w-0">
-                                            <p
-                                                class="tw-text-sm tw-font-medium tw-text-gray-500 tw-truncate tw-whitespace-nowrap">
+                                            <p class="tw-text-sm tw-font-medium tw-text-gray-500 tw-truncate tw-whitespace-nowrap">
                                                 {{ __('lang_v1.total_purchase_return') }}
-                                                <i class="fa fa-info-circle text-info hover-q no-print" aria-hidden="true" data-container="body"
-                                                data-toggle="popover" data-placement="auto bottom" id="total_prp"
-                                                data-value="{{ __('lang_v1.total_purchase_return') }}-{{ __('lang_v1.total_purchase_return_paid') }}"
-                                                data-content="" data-html="true" data-trigger="hover"></i>
+                                                <i class="fa fa-info-circle text-info hover-q no-print" aria-hidden="true"
+                                                    data-container="body" data-toggle="popover" data-placement="auto bottom"
+                                                    id="total_prp"
+                                                    data-value="{{ __('lang_v1.total_purchase_return') }}-{{ __('lang_v1.total_purchase_return_paid') }}"
+                                                    data-content="" data-html="true" data-trigger="hover"></i>
                                             </p>
                                             <p
                                                 class="total_purchase_return tw-mt-0.5 tw-text-gray-900 tw-text-xl tw-truncate tw-font-semibold tw-tracking-tight tw-font-mono">
                                             </p>
                                             {{-- <p class="mb-0 text-muted fs-10 mt-5">
-                                                {{ __('lang_v1.total_purchase_return') }}: <span
-                                                    class="total_pr"></span><br>
-                                                {{ __('lang_v1.total_purchase_return_paid') }}<span
-                                                    class="total_prp"></span></p> --}}
+                                                {{ __('lang_v1.total_purchase_return') }}: <span class="total_pr"></span><br>
+                                                {{ __('lang_v1.total_purchase_return_paid') }}<span class="total_prp"></span></p>
+                                            --}}
                                         </div>
                                     </div>
                                 </div>
@@ -326,10 +352,9 @@
                                     <div class="tw-flex tw-items-center tw-gap-4">
                                         <div
                                             class="tw-inline-flex tw-items-center tw-justify-center tw-w-10 tw-h-10 tw-text-red-500 tw-bg-red-100 tw-rounded-full sm:tw-w-12 sm:tw-h-12 shrink-0">
-                                            <svg aria-hidden="true" class="tw-w-6 tw-h-6"
-                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2"
-                                                stroke="currentColor" fill="none" stroke-linecap="round"
-                                                stroke-linejoin="round">
+                                            <svg aria-hidden="true" class="tw-w-6 tw-h-6" xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                                stroke-linecap="round" stroke-linejoin="round">
                                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                                                 <path
@@ -343,8 +368,7 @@
                                         </div>
 
                                         <div class="tw-flex-1 tw-min-w-0">
-                                            <p
-                                                class="tw-text-sm tw-font-medium tw-text-gray-500 tw-truncate tw-whitespace-nowrap">
+                                            <p class="tw-text-sm tw-font-medium tw-text-gray-500 tw-truncate tw-whitespace-nowrap">
                                                 {{ __('lang_v1.expense') }}
                                             </p>
                                             <p
@@ -359,9 +383,9 @@
                     </div>
                 </div>
                 {{-- @if (!empty($widgets['after_sale_purchase_totals']))
-                    @foreach ($widgets['after_sale_purchase_totals'] as $widget)
-                        {!! $widget !!}
-                    @endforeach
+                @foreach ($widgets['after_sale_purchase_totals'] as $widget)
+                {!! $widget !!}
+                @endforeach
                 @endif --}}
             @endif
         @endif
@@ -375,12 +399,10 @@
                             class="tw-transition-all lg:tw-col-span-2 xl:tw-col-span-2 tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
                             <div class="tw-p-4 sm:tw-p-5">
                                 <div class="tw-flex tw-items-center tw-gap-2.5">
-                                    <div
-                                        class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
+                                    <div class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
                                         <svg aria-hidden="true" class="tw-size-5 tw-text-sky-500 tw-shrink-0"
                                             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2"
-                                            stroke="currentColor" fill="none" stroke-linecap="round"
-                                            stroke-linejoin="round">
+                                            stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                                             <path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
                                             <path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
@@ -406,21 +428,19 @@
                     @endif
 
                     {{-- @if (!empty($widgets['after_sales_last_30_days']))
-                        @foreach ($widgets['after_sales_last_30_days'] as $widget)
-                            {!! $widget !!}
-                        @endforeach
+                    @foreach ($widgets['after_sales_last_30_days'] as $widget)
+                    {!! $widget !!}
+                    @endforeach
                     @endif --}}
                     @if (!empty($all_locations))
                         <div
                             class="tw-transition-all lg:tw-col-span-2 xl:tw-col-span-2 tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
                             <div class="tw-p-4 sm:tw-p-5">
                                 <div class="tw-flex tw-items-center tw-gap-2.5">
-                                    <div
-                                        class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
+                                    <div class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
                                         <svg aria-hidden="true" class="tw-size-5 tw-text-sky-500 tw-shrink-0"
                                             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2"
-                                            stroke="currentColor" fill="none" stroke-linecap="round"
-                                            stroke-linejoin="round">
+                                            stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                                             <path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
                                             <path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
@@ -445,21 +465,19 @@
                     @endif
                 @endif
                 {{-- @if (!empty($widgets['after_sales_current_fy']))
-                    @foreach ($widgets['after_sales_current_fy'] as $widget)
-                        {!! $widget !!}
-                    @endforeach
+                @foreach ($widgets['after_sales_current_fy'] as $widget)
+                {!! $widget !!}
+                @endforeach
                 @endif --}}
                 @if (auth()->user()->can('sell.view') || auth()->user()->can('direct_sell.view'))
                     <div
                         class="tw-transition-all lg:tw-col-span-1 tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
                         <div class="tw-p-4 sm:tw-p-5">
                             <div class="tw-flex tw-items-center tw-gap-2.5">
-                                <div
-                                    class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
+                                <div class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
                                     <svg aria-hidden="true" class="tw-text-yellow-500 tw-size-5 tw-shrink-0"
                                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2"
-                                        stroke="currentColor" fill="none" stroke-linecap="round"
-                                        stroke-linejoin="round">
+                                        stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                         <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                                         <path d="M12 9v4"></path>
                                         <path
@@ -477,10 +495,10 @@
                                     </div>
                                     <div class="tw-w-full sm:tw-w-1/2 md:tw-w-1/2">
                                         {!! Form::select('sales_payment_dues_location', $all_locations, null, [
-                                            'class' => 'form-control select2',
-                                            'placeholder' => __('lang_v1.select_location'),
-                                            'id' => 'sales_payment_dues_location',
-                                        ]) !!}
+                        'class' => 'form-control select2',
+                        'placeholder' => __('lang_v1.select_location'),
+                        'id' => 'sales_payment_dues_location',
+                    ]) !!}
                                     </div>
                                 </div>
                             </div>
@@ -511,8 +529,7 @@
                         class="tw-transition-all lg:tw-col-span-1 tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
                         <div class="tw-p-4 sm:tw-p-5">
                             <div class="tw-flex tw-items-center tw-gap-2.5">
-                                <div
-                                    class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
+                                <div class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
                                     <svg aria-hidden="true" class="tw-text-yellow-500 tw-size-5 tw-shrink-0"
                                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2"
                                         stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -533,7 +550,7 @@
                                     </div>
                                     <div class="tw-w-full sm:tw-w-1/2 md:tw-w-1/2">
                                         @if (count($all_locations) > 1)
-                                            {!! Form::select('purchase_payment_dues_location', $all_locations, null, [
+                                                            {!! Form::select('purchase_payment_dues_location', $all_locations, null, [
                                                 'class' => 'form-control select2 ',
                                                 'placeholder' => __('lang_v1.select_location'),
                                                 'id' => 'purchase_payment_dues_location',
@@ -568,8 +585,7 @@
                         class="tw-transition-all lg:tw-col-span-2 tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
                         <div class="tw-p-4 sm:tw-p-5">
                             <div class="tw-flex tw-items-center tw-gap-2.5">
-                                <div
-                                    class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
+                                <div class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
                                     <svg aria-hidden="true" class="tw-text-yellow-500 tw-size-5 tw-shrink-0"
                                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2"
                                         stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -588,7 +604,7 @@
                                     </div>
                                     <div class="tw-w-full sm:tw-w-1/2 md:tw-w-1/2">
                                         @if (count($all_locations) > 1)
-                                            {!! Form::select('stock_alert_location', $all_locations, null, [
+                                                            {!! Form::select('stock_alert_location', $all_locations, null, [
                                                 'class' => 'form-control select2',
                                                 'placeholder' => __('lang_v1.select_location'),
                                                 'id' => 'stock_alert_location',
@@ -620,12 +636,10 @@
                             class="tw-transition-all lg:tw-col-span-1 tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
                             <div class="tw-p-4 sm:tw-p-5">
                                 <div class="tw-flex tw-items-center tw-gap-2.5">
-                                    <div
-                                        class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
+                                    <div class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
                                         <svg aria-hidden="true" class="tw-text-yellow-500 tw-size-5 tw-shrink-0"
                                             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2"
-                                            stroke="currentColor" fill="none" stroke-linecap="round"
-                                            stroke-linejoin="round">
+                                            stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                                             <path d="M12 9v4"></path>
                                             <path
@@ -673,12 +687,10 @@
                         class="tw-transition-all lg:tw-col-span-2 tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
                         <div class="tw-p-4 sm:tw-p-5">
                             <div class="tw-flex tw-items-center tw-gap-2.5">
-                                <div
-                                    class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
+                                <div class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
                                     <svg aria-hidden="true" class="tw-text-yellow-500 tw-size-5 tw-shrink-0"
                                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2"
-                                        stroke="currentColor" fill="none" stroke-linecap="round"
-                                        stroke-linejoin="round">
+                                        stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                         <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                                         <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
                                         <path d="M12 8v4"></path>
@@ -693,7 +705,7 @@
                                     </div>
                                     <div class="tw-w-full sm:tw-w-1/2 md:tw-w-1/2">
                                         @if (count($all_locations) > 1)
-                                            {!! Form::select('so_location', $all_locations, null, [
+                                                            {!! Form::select('so_location', $all_locations, null, [
                                                 'class' => 'form-control select2',
                                                 'placeholder' => __('lang_v1.select_location'),
                                                 'id' => 'so_location',
@@ -705,8 +717,7 @@
                             <div class="tw-flow-root tw-mt-5  tw-border-gray-200">
                                 <div class="tw--mx-4 tw--my-2 tw-overflow-x-auto sm:tw--mx-5">
                                     <div class="tw-inline-block tw-min-w-full tw-py-2 tw-align-middle sm:tw-px-5">
-                                        <table class="table table-bordered table-striped ajax_view"
-                                            id="sales_order_table">
+                                        <table class="table table-bordered table-striped ajax_view" id="sales_order_table">
                                             <thead>
                                                 <tr>
                                                     <th>@lang('messages.action')</th>
@@ -729,18 +740,17 @@
                     </div>
                 @endif
                 @if (
-                    !empty($common_settings['enable_purchase_requisition']) &&
-                        (auth()->user()->can('purchase_requisition.view_all') || auth()->user()->can('purchase_requisition.view_own')))
+                        !empty($common_settings['enable_purchase_requisition']) &&
+                        (auth()->user()->can('purchase_requisition.view_all') || auth()->user()->can('purchase_requisition.view_own'))
+                    )
                     <div
                         class="tw-transition-all lg:tw-col-span-2 tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
                         <div class="tw-p-4 sm:tw-p-5">
                             <div class="tw-flex tw-items-center tw-gap-2.5">
-                                <div
-                                    class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
+                                <div class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
                                     <svg aria-hidden="true" class="tw-text-yellow-500 tw-size-5 tw-shrink-0"
                                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2"
-                                        stroke="currentColor" fill="none" stroke-linecap="round"
-                                        stroke-linejoin="round">
+                                        stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                         <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                                         <path d="M10 10v4a1 1 0 0 0 1 1h2a1 1 0 0 0 1 -1v-4"></path>
                                         <path d="M9 6h6"></path>
@@ -760,7 +770,7 @@
                                     <div class="tw-w-full sm:tw-w-1/2 md:tw-w-1/2">
                                         @if (count($all_locations) > 1)
                                             @if (count($all_locations) > 1)
-                                                {!! Form::select('pr_location', $all_locations, null, [
+                                                            {!! Form::select('pr_location', $all_locations, null, [
                                                     'class' => 'form-control select2',
                                                     'placeholder' => __('lang_v1.select_location'),
                                                     'id' => 'pr_location',
@@ -773,8 +783,8 @@
                             <div class="tw-flow-root tw-mt-5  tw-border-gray-200">
                                 <div class="tw--mx-4 tw--my-2 tw-overflow-x-auto sm:tw--mx-5">
                                     <div class="tw-inline-block tw-min-w-full tw-py-2 tw-align-middle sm:tw-px-5">
-                                        <table class="table table-bordered table-striped ajax_view"
-                                            id="purchase_requisition_table" style="width: 100%;">
+                                        <table class="table table-bordered table-striped ajax_view" id="purchase_requisition_table"
+                                            style="width: 100%;">
                                             <thead>
                                                 <tr>
                                                     <th>@lang('messages.action')</th>
@@ -795,19 +805,18 @@
                 @endif
 
                 @if (
-                    !empty($common_settings['enable_purchase_order']) &&
-                        (auth()->user()->can('purchase_order.view_all') || auth()->user()->can('purchase_order.view_own')))
+                        !empty($common_settings['enable_purchase_order']) &&
+                        (auth()->user()->can('purchase_order.view_all') || auth()->user()->can('purchase_order.view_own'))
+                    )
 
                     <div
                         class="tw-transition-all lg:tw-col-span-2 tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
                         <div class="tw-p-4 sm:tw-p-5">
                             <div class="tw-flex tw-items-center tw-gap-2.5">
-                                <div
-                                    class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
+                                <div class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
                                     <svg aria-hidden="true" class="tw-text-yellow-500 tw-size-5 tw-shrink-0"
                                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2"
-                                        stroke="currentColor" fill="none" stroke-linecap="round"
-                                        stroke-linejoin="round">
+                                        stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                         <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                         <rect x="4" y="4" width="16" height="16" rx="2" />
                                         <line x1="4" y1="10" x2="20" y2="10" />
@@ -823,7 +832,7 @@
                                     </div>
                                     <div class="tw-w-full sm:tw-w-1/2 md:tw-w-1/2">
                                         @if (count($all_locations) > 1)
-                                            {!! Form::select('po_location', $all_locations, null, [
+                                                            {!! Form::select('po_location', $all_locations, null, [
                                                 'class' => 'form-control select2',
                                                 'placeholder' => __('lang_v1.select_location'),
                                                 'id' => 'po_location',
@@ -835,8 +844,8 @@
                             <div class="tw-flow-root tw-mt-5  tw-border-gray-200">
                                 <div class="tw--mx-4 tw--my-2 tw-overflow-x-auto sm:tw--mx-5">
                                     <div class="tw-inline-block tw-min-w-full tw-py-2 tw-align-middle sm:tw-px-5">
-                                        <table class="table table-bordered table-striped ajax_view"
-                                            id="purchase_order_table" style="width: 100%;">
+                                        <table class="table table-bordered table-striped ajax_view" id="purchase_order_table"
+                                            style="width: 100%;">
                                             <thead>
                                                 <tr>
                                                     <th>@lang('messages.action')</th>
@@ -857,19 +866,19 @@
                     </div>
 
                 @endif
-                @if (auth()->user()->can('access_pending_shipments_only') ||
+                @if (
+                        auth()->user()->can('access_pending_shipments_only') ||
                         auth()->user()->can('access_shipping') ||
-                        auth()->user()->can('access_own_shipping'))
+                        auth()->user()->can('access_own_shipping')
+                    )
                     <div
                         class="tw-transition-all lg:tw-col-span-2 tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
                         <div class="tw-p-4 sm:tw-p-5">
                             <div class="tw-flex tw-items-center tw-gap-2.5">
-                                <div
-                                    class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
+                                <div class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
                                     <svg aria-hidden="true" class="tw-text-yellow-500 tw-size-5 tw-shrink-0"
                                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2"
-                                        stroke="currentColor" fill="none" stroke-linecap="round"
-                                        stroke-linejoin="round">
+                                        stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                         <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                                         <path d="M7 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
                                         <path d="M17 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
@@ -885,7 +894,7 @@
                                     </div>
                                     <div class="tw-w-full sm:tw-w-1/2 md:tw-w-1/2">
                                         @if (count($all_locations) > 1)
-                                            {!! Form::select('pending_shipments_location', $all_locations, null, [
+                                                            {!! Form::select('pending_shipments_location', $all_locations, null, [
                                                 'class' => 'form-control select2 ',
                                                 'placeholder' => __('lang_v1.select_location'),
                                                 'id' => 'pending_shipments_location',
@@ -948,12 +957,10 @@
                         class="tw-transition-all lg:tw-col-span-2 tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
                         <div class="tw-p-4 sm:tw-p-5">
                             <div class="tw-flex tw-items-center tw-gap-2.5">
-                                <div
-                                    class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
+                                <div class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
                                     <svg aria-hidden="true" class="tw-text-yellow-500 tw-size-5 tw-shrink-0"
                                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2"
-                                        stroke="currentColor" fill="none" stroke-linecap="round"
-                                        stroke-linejoin="round">
+                                        stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                         <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                                         <path d="M12 9v4"></path>
                                         <path
@@ -1004,9 +1011,9 @@
                     </div>
                 @endif
                 {{-- @if (!empty($widgets['after_dashboard_reports']))
-                    @foreach ($widgets['after_dashboard_reports'] as $widget)
-                        {!! $widget !!}
-                    @endforeach
+                @foreach ($widgets['after_dashboard_reports'] as $widget)
+                {!! $widget !!}
+                @endforeach
                 @endif --}}
             </div>
         </div>
@@ -1039,11 +1046,11 @@
         {!! $sells_chart_2->script() !!}
     @endif
     <script type="text/javascript">
-        $(document).ready(function() {
+        $(document).ready(function () {
             sales_order_table = $('#sales_order_table').DataTable({
                 processing: true,
                 serverSide: true,
-                fixedHeader:false,
+                fixedHeader: false,
                 scrollY: "75vh",
                 scrollX: true,
                 scrollCollapse: true,
@@ -1052,7 +1059,7 @@
                 ],
                 "ajax": {
                     "url": '{{ action([\App\Http\Controllers\SellController::class, 'index']) }}?sale_type=sales_order',
-                    "data": function(d) {
+                    "data": function (d) {
                         d.for_dashboard_sales_order = true;
 
                         if ($('#so_location').length > 0) {
@@ -1066,46 +1073,46 @@
                     "searchable": false
                 }],
                 columns: [{
-                        data: 'action',
-                        name: 'action'
-                    },
-                    {
-                        data: 'transaction_date',
-                        name: 'transaction_date'
-                    },
-                    {
-                        data: 'invoice_no',
-                        name: 'invoice_no'
-                    },
-                    {
-                        data: 'conatct_name',
-                        name: 'conatct_name'
-                    },
-                    {
-                        data: 'mobile',
-                        name: 'contacts.mobile'
-                    },
-                    {
-                        data: 'business_location',
-                        name: 'bl.name'
-                    },
-                    {
-                        data: 'status',
-                        name: 'status'
-                    },
-                    {
-                        data: 'shipping_status',
-                        name: 'shipping_status'
-                    },
-                    {
-                        data: 'so_qty_remaining',
-                        name: 'so_qty_remaining',
-                        "searchable": false
-                    },
-                    {
-                        data: 'added_by',
-                        name: 'u.first_name'
-                    },
+                    data: 'action',
+                    name: 'action'
+                },
+                {
+                    data: 'transaction_date',
+                    name: 'transaction_date'
+                },
+                {
+                    data: 'invoice_no',
+                    name: 'invoice_no'
+                },
+                {
+                    data: 'conatct_name',
+                    name: 'conatct_name'
+                },
+                {
+                    data: 'mobile',
+                    name: 'contacts.mobile'
+                },
+                {
+                    data: 'business_location',
+                    name: 'bl.name'
+                },
+                {
+                    data: 'status',
+                    name: 'status'
+                },
+                {
+                    data: 'shipping_status',
+                    name: 'shipping_status'
+                },
+                {
+                    data: 'so_qty_remaining',
+                    name: 'so_qty_remaining',
+                    "searchable": false
+                },
+                {
+                    data: 'added_by',
+                    name: 'u.first_name'
+                },
                 ]
             });
 
@@ -1115,10 +1122,10 @@
                 cash_flow_table = $('#cash_flow_table').DataTable({
                     processing: true,
                     serverSide: true,
-                    fixedHeader:false,
+                    fixedHeader: false,
                     "ajax": {
                         "url": "{{ action([\App\Http\Controllers\AccountController::class, 'cashFlow']) }}",
-                        "data": function(d) {
+                        "data": function (d) {
                             d.type = 'credit';
                             d.only_payment_recovered = true;
                         }
@@ -1126,43 +1133,43 @@
                     "ordering": false,
                     "searching": false,
                     columns: [{
-                            data: 'operation_date',
-                            name: 'operation_date'
-                        },
-                        {
-                            data: 'account_name',
-                            name: 'account_name'
-                        },
-                        {
-                            data: 'sub_type',
-                            name: 'sub_type'
-                        },
-                        {
-                            data: 'method',
-                            name: 'TP.method'
-                        },
-                        {
-                            data: 'payment_details',
-                            name: 'payment_details',
-                            searchable: false
-                        },
-                        {
-                            data: 'credit',
-                            name: 'amount'
-                        },
-                        {
-                            data: 'balance',
-                            name: 'balance'
-                        },
-                        {
-                            data: 'total_balance',
-                            name: 'total_balance'
-                        },
+                        data: 'operation_date',
+                        name: 'operation_date'
+                    },
+                    {
+                        data: 'account_name',
+                        name: 'account_name'
+                    },
+                    {
+                        data: 'sub_type',
+                        name: 'sub_type'
+                    },
+                    {
+                        data: 'method',
+                        name: 'TP.method'
+                    },
+                    {
+                        data: 'payment_details',
+                        name: 'payment_details',
+                        searchable: false
+                    },
+                    {
+                        data: 'credit',
+                        name: 'amount'
+                    },
+                    {
+                        data: 'balance',
+                        name: 'balance'
+                    },
+                    {
+                        data: 'total_balance',
+                        name: 'total_balance'
+                    },
                     ],
-                    "fnDrawCallback": function(oSettings) {
+                    "fnDrawCallback": function (oSettings) {
                         __currency_convert_recursively($('#cash_flow_table'));
                     },
-                    "footerCallback": function(row, data, start, end, display) {
+                    "footerCallback": function (row, data, start, end, display) {
                         var footer_total_credit = 0;
 
                         for (var r in data) {
@@ -1174,7 +1181,7 @@
                 });
             @endif
 
-            $('#so_location').change(function() {
+            $('#so_location').change(function () {
                 sales_order_table.ajax.reload();
             });
             @if (!empty($common_settings['enable_purchase_order']))
@@ -1182,7 +1189,7 @@
                 purchase_order_table = $('#purchase_order_table').DataTable({
                     processing: true,
                     serverSide: true,
-                    fixedHeader:false,
+                    fixedHeader: false,
                     aaSorting: [
                         [1, 'desc']
                     ],
@@ -1191,7 +1198,7 @@
                     scrollCollapse: true,
                     ajax: {
                         url: '{{ action([\App\Http\Controllers\PurchaseOrderController::class, 'index']) }}',
-                        data: function(d) {
+                        data: function (d) {
                             d.from_dashboard = true;
 
                             if ($('#po_location').length > 0) {
@@ -1200,44 +1207,44 @@
                         },
                     },
                     columns: [{
-                            data: 'action',
-                            name: 'action',
-                            orderable: false,
-                            searchable: false
-                        },
-                        {
-                            data: 'transaction_date',
-                            name: 'transaction_date'
-                        },
-                        {
-                            data: 'ref_no',
-                            name: 'ref_no'
-                        },
-                        {
-                            data: 'location_name',
-                            name: 'BS.name'
-                        },
-                        {
-                            data: 'name',
-                            name: 'contacts.name'
-                        },
-                        {
-                            data: 'status',
-                            name: 'transactions.status'
-                        },
-                        {
-                            data: 'po_qty_remaining',
-                            name: 'po_qty_remaining',
-                            "searchable": false
-                        },
-                        {
-                            data: 'added_by',
-                            name: 'u.first_name'
-                        }
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'transaction_date',
+                        name: 'transaction_date'
+                    },
+                    {
+                        data: 'ref_no',
+                        name: 'ref_no'
+                    },
+                    {
+                        data: 'location_name',
+                        name: 'BS.name'
+                    },
+                    {
+                        data: 'name',
+                        name: 'contacts.name'
+                    },
+                    {
+                        data: 'status',
+                        name: 'transactions.status'
+                    },
+                    {
+                        data: 'po_qty_remaining',
+                        name: 'po_qty_remaining',
+                        "searchable": false
+                    },
+                    {
+                        data: 'added_by',
+                        name: 'u.first_name'
+                    }
                     ]
                 })
 
-                $('#po_location').change(function() {
+                $('#po_location').change(function () {
                     purchase_order_table.ajax.reload();
                 });
             @endif
@@ -1247,7 +1254,7 @@
                 purchase_requisition_table = $('#purchase_requisition_table').DataTable({
                     processing: true,
                     serverSide: true,
-                    fixedHeader:false,
+                    fixedHeader: false,
                     aaSorting: [
                         [1, 'desc']
                     ],
@@ -1256,7 +1263,7 @@
                     scrollCollapse: true,
                     ajax: {
                         url: '{{ action([\App\Http\Controllers\PurchaseRequisitionController::class, 'index']) }}',
-                        data: function(d) {
+                        data: function (d) {
                             d.from_dashboard = true;
 
                             if ($('#pr_location').length > 0) {
@@ -1265,43 +1272,43 @@
                         },
                     },
                     columns: [{
-                            data: 'action',
-                            name: 'action',
-                            orderable: false,
-                            searchable: false
-                        },
-                        {
-                            data: 'transaction_date',
-                            name: 'transaction_date'
-                        },
-                        {
-                            data: 'ref_no',
-                            name: 'ref_no'
-                        },
-                        {
-                            data: 'location_name',
-                            name: 'BS.name'
-                        },
-                        {
-                            data: 'status',
-                            name: 'status'
-                        },
-                        {
-                            data: 'delivery_date',
-                            name: 'delivery_date'
-                        },
-                        {
-                            data: 'added_by',
-                            name: 'u.first_name'
-                        },
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'transaction_date',
+                        name: 'transaction_date'
+                    },
+                    {
+                        data: 'ref_no',
+                        name: 'ref_no'
+                    },
+                    {
+                        data: 'location_name',
+                        name: 'BS.name'
+                    },
+                    {
+                        data: 'status',
+                        name: 'status'
+                    },
+                    {
+                        data: 'delivery_date',
+                        name: 'delivery_date'
+                    },
+                    {
+                        data: 'added_by',
+                        name: 'u.first_name'
+                    },
                     ]
                 })
 
-                $('#pr_location').change(function() {
+                $('#pr_location').change(function () {
                     purchase_requisition_table.ajax.reload();
                 });
 
-                $(document).on('click', 'a.delete-purchase-requisition', function(e) {
+                $(document).on('click', 'a.delete-purchase-requisition', function (e) {
                     e.preventDefault();
                     swal({
                         title: LANG.sure,
@@ -1315,7 +1322,7 @@
                                 method: 'DELETE',
                                 url: href,
                                 dataType: 'json',
-                                success: function(result) {
+                                success: function (result) {
                                     if (result.success == true) {
                                         toastr.success(result.msg);
                                         purchase_requisition_table.ajax.reload();
@@ -1332,7 +1339,7 @@
             sell_table = $('#shipments_table').DataTable({
                 processing: true,
                 serverSide: true,
-                fixedHeader:false,
+                fixedHeader: false,
                 aaSorting: [
                     [1, 'desc']
                 ],
@@ -1341,7 +1348,7 @@
                 scrollCollapse: true,
                 "ajax": {
                     "url": '{{ action([\App\Http\Controllers\SellController::class, 'index']) }}',
-                    "data": function(d) {
+                    "data": function (d) {
                         d.only_pending_shipments = true;
                         if ($('#pending_shipments_location').length > 0) {
                             d.location_id = $('#pending_shipments_location').val();
@@ -1349,88 +1356,88 @@
                     }
                 },
                 columns: [{
-                        data: 'action',
-                        name: 'action',
-                        searchable: false,
-                        orderable: false
-                    },
-                    {
-                        data: 'transaction_date',
-                        name: 'transaction_date'
-                    },
-                    {
-                        data: 'invoice_no',
-                        name: 'invoice_no'
-                    },
-                    {
-                        data: 'conatct_name',
-                        name: 'conatct_name'
-                    },
-                    {
-                        data: 'mobile',
-                        name: 'contacts.mobile'
-                    },
-                    {
-                        data: 'business_location',
-                        name: 'bl.name'
-                    },
-                    {
-                        data: 'shipping_status',
-                        name: 'shipping_status'
-                    },
+                    data: 'action',
+                    name: 'action',
+                    searchable: false,
+                    orderable: false
+                },
+                {
+                    data: 'transaction_date',
+                    name: 'transaction_date'
+                },
+                {
+                    data: 'invoice_no',
+                    name: 'invoice_no'
+                },
+                {
+                    data: 'conatct_name',
+                    name: 'conatct_name'
+                },
+                {
+                    data: 'mobile',
+                    name: 'contacts.mobile'
+                },
+                {
+                    data: 'business_location',
+                    name: 'bl.name'
+                },
+                {
+                    data: 'shipping_status',
+                    name: 'shipping_status'
+                },
                     @if (!empty($custom_labels['shipping']['custom_field_1']))
-                        {
+                                                                                                {
                             data: 'shipping_custom_field_1',
                             name: 'shipping_custom_field_1'
                         },
                     @endif
-                    @if (!empty($custom_labels['shipping']['custom_field_2']))
-                        {
-                            data: 'shipping_custom_field_2',
-                            name: 'shipping_custom_field_2'
-                        },
-                    @endif
-                    @if (!empty($custom_labels['shipping']['custom_field_3']))
-                        {
-                            data: 'shipping_custom_field_3',
-                            name: 'shipping_custom_field_3'
-                        },
-                    @endif
-                    @if (!empty($custom_labels['shipping']['custom_field_4']))
-                        {
-                            data: 'shipping_custom_field_4',
-                            name: 'shipping_custom_field_4'
-                        },
-                    @endif
-                    @if (!empty($custom_labels['shipping']['custom_field_5']))
-                        {
-                            data: 'shipping_custom_field_5',
-                            name: 'shipping_custom_field_5'
-                        },
-                    @endif {
-                        data: 'payment_status',
-                        name: 'payment_status'
+                @if (!empty($custom_labels['shipping']['custom_field_2']))
+                                                                        {
+                        data: 'shipping_custom_field_2',
+                        name: 'shipping_custom_field_2'
                     },
-                    {
-                        data: 'waiter',
-                        name: 'ss.first_name',
-                        @if (empty($is_service_staff_enabled))
-                            visible: false
-                        @endif
-                    }
-                ],
-                "fnDrawCallback": function(oSettings) {
+                @endif
+                @if (!empty($custom_labels['shipping']['custom_field_3']))
+                                                                        {
+                        data: 'shipping_custom_field_3',
+                        name: 'shipping_custom_field_3'
+                    },
+                @endif
+                @if (!empty($custom_labels['shipping']['custom_field_4']))
+                                                                        {
+                        data: 'shipping_custom_field_4',
+                        name: 'shipping_custom_field_4'
+                    },
+                @endif
+                @if (!empty($custom_labels['shipping']['custom_field_5']))
+                                                                        {
+                        data: 'shipping_custom_field_5',
+                        name: 'shipping_custom_field_5'
+                    },
+                @endif{
+                    data: 'payment_status',
+                    name: 'payment_status'
+                },
+                {
+                    data: 'waiter',
+                    name: 'ss.first_name',
+                    @if (empty($is_service_staff_enabled))
+                        visible: false
+                    @endif
+                                            }
+                                        ],
+                "fnDrawCallback": function (oSettings) {
                     __currency_convert_recursively($('#sell_table'));
                 },
-                createdRow: function(row, data, dataIndex) {
+                createdRow: function (row, data, dataIndex) {
                     $(row).find('td:eq(4)').attr('class', 'clickable_td');
                 }
-            });
+                                    });
 
-            $('#pending_shipments_location').change(function() {
-                sell_table.ajax.reload();
-            });
+        $('#pending_shipments_location').change(function () {
+            sell_table.ajax.reload();
         });
+                                });
     </script>
-    
+
 @endsection

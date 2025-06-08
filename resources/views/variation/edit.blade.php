@@ -43,7 +43,7 @@
     </div>
 
     <div class="modal-footer">
-      <button type="submit" class="tw-dw-btn tw-dw-btn-primary tw-text-white">@lang('messages.update')</button>
+      <button type="submit" id="saveVariationBtn" class="tw-dw-btn tw-dw-btn-primary tw-text-white">@lang('messages.update')</button>
       <button type="button" class="tw-dw-btn tw-dw-btn-neutral tw-text-white" data-dismiss="modal">@lang('messages.close')</button>
     </div>
 
