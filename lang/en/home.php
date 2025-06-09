@@ -12,7 +12,7 @@ return [
     */
     'home' => 'Home',
     'welcome_message' => 'Welcome :name, 👋',
-    'gold_rate' => 'Today Gold Price 🧈',
+    'gold_rate' => 'Gold Price Today 🧈',
     'total_sell' => 'Total Sales',
     'total_purchase' => 'Total purchase',
     'invoice_due' => 'Invoice due',

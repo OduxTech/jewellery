@@ -338,7 +338,8 @@
 
         <div class="clearfix"></div>
 --}}
-        <div class="col-sm-4">
+{{-- // made the product type as variable by default --}}
+        <div class="col-sm-4">       
             <div class="form-group">
                 {!! Form::label('type', __('product.product_type') . ':*') !!} @show_tooltip(__('tooltip.product_type'))
                 {!! Form::select('type', $product_types, !empty($duplicate_product->type) ? $duplicate_product->type : null, ['class' => 'form-control select2',
@@ -350,6 +351,24 @@
             @include('product.partials.single_product_form_part', ['profit_percent' => $default_profit_percent])
             
         </div>
+
+{{-- <div class="col-sm-4">
+    <div class="form-group">
+        {!! Form::label('type', __('product.product_type') . ':*') !!} 
+        @show_tooltip(__('tooltip.product_type'))
+        
+        {!! Form::select('type', $product_types, 'variable', [
+            'class' => 'form-control select2',
+            'required',
+            'data-action' => !empty($duplicate_product) ? 'duplicate' : 'add',
+            'data-product_id' => !empty($duplicate_product) ? $duplicate_product->id : '0'
+        ]) !!}
+    </div>
+</div>
+
+<div class="form-group col-sm-12" id="product_form_part">
+    @include('product.partials.single_product_form_part', ['profit_percent' => $default_profit_percent])
+</div> --}}
 
 
 

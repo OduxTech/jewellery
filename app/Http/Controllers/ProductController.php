@@ -420,7 +420,7 @@ class ProductController extends Controller
 
         //product screen view from module
         $pos_module_data = $this->moduleUtil->getModuleData('get_product_screen_top_view');
-
+      
         return view('product.create')
             ->with(compact('categories', 'brands', 'units', 'taxes', 'barcode_types', 'default_profit_percent', 'tax_attributes', 'barcode_default', 'business_locations', 'duplicate_product', 'sub_categories', 'rack_details', 'selling_price_group_count', 'module_form_parts', 'product_types', 'common_settings', 'warranties', 'pos_module_data'));
     }
@@ -428,8 +428,8 @@ class ProductController extends Controller
     private function product_types()
     {
         //Product types also includes modifier.
-        return ['single' => __('lang_v1.single'),
-            'variable' => __('lang_v1.variable'),
+        return ['variable' => __('lang_v1.variable'),
+            'single' => __('lang_v1.single'),
             'combo' => __('lang_v1.combo'),
         ];
     }

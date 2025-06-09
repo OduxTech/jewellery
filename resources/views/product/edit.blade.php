@@ -227,7 +227,7 @@
             </div>
           </div>
           @endif
-          <div class="col-sm-4">
+          {{-- <div class="col-sm-4">
             <div class="checkbox">
               <label>
                 {!! Form::checkbox('enable_sr_no', 1, $product->enable_sr_no, ['class' => 'input-icheck']); !!} <strong>@lang('lang_v1.enable_imei_or_sr_no')</strong>
@@ -243,7 +243,7 @@
               {!! Form::checkbox('not_for_selling', 1, $product->not_for_selling, ['class' => 'input-icheck']); !!} <strong>@lang('lang_v1.not_for_selling')</strong>
             </label> @show_tooltip(__('lang_v1.tooltip_not_for_selling'))
           </div>
-        </div>
+        </div> --}}
 
         <div class="clearfix"></div>
 
@@ -286,7 +286,7 @@
         @endif
 
 
-        <div class="col-sm-4">
+        {{-- <div class="col-sm-4">
           <div class="form-group">
             {!! Form::label('weight',  __('lang_v1.weight') . ':') !!}
             {!! Form::text('weight', $product->weight, ['class' => 'form-control', 'placeholder' => __('lang_v1.weight')]); !!}
@@ -351,7 +351,8 @@
               </div>
             </div>
 
-            <div class="clearfix"></div>
+            <div class="clearfix"></div> --}}
+
             <div class="col-sm-4">
               <div class="form-group">
                 {!! Form::label('type', __('product.product_type') . ':*') !!} @show_tooltip(__('tooltip.product_type'))

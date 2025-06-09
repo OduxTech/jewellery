@@ -39,11 +39,12 @@ return [
     'default_purchase_price' => 'Default Purchase Price',
     'default_selling_price' => 'Default Selling Price',
     'value' => 'Value',
-    'variation_name' => 'Variation Name',
-    'variation_values' => 'Variation Values',
+    'variation_name' => 'Weight',
+    'variation_values' => 'Weight Range',
+    
     'use_template' => 'Use Template',
-    'variation_values' => 'Variation Values',
-    'add_variation' => 'Add Variation',
+    'add_variation' => 'Add Weight',
+    
     'product_added_success' => 'Product added successfully',
     'product_updated_success' => 'Product updated successfully',
     'enable_product_expiry' => 'Enable Product Expiry',
@@ -56,13 +57,13 @@ return [
     'exp_date' => 'EXP Date',
     'view_product' => 'View Product',
     'add_product' => 'Add Product',
-    'variations' => 'Variations',
+    'variations' => 'Weight',
     'import_products' => 'Import Products',
     'file_to_import' => 'File To Import',
     'file_imported_successfully' => 'File imported successfully',
-    'variation_sku_format' => 'Variation SKU Format',
-    'variation_sku_format_help_text' => 'Variation SKU Format -  When variation SKU is empty this format will be used to generate SKU for variations',
+    'variation_sku_format' => 'Weight SKU Format',
+    'variation_sku_format_help_text' => 'Variation SKU Format -  When Weight SKU is empty this format will be used to generate SKU for WEight',
     'sku_number' => 'SKU-Number (Example -> ABC-1, ABC-2)',
-    'sku_variation_number' => 'SKUVariation (Example -> ABCS, ABCM)'
+    'sku_variation_number' => 'SKUWeight (Example -> ABCS, ABCM)'
 
 ];
