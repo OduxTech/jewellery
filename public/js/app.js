@@ -372,6 +372,119 @@ $(document).ready(function() {
         });
     });
 
+    //End: CRUD for unit
+
+    //Start: CRUD for GoldPrice
+
+    //Gold Rate table
+    var units_table = $('#gold_rate_table').DataTable({
+        processing: true,
+        serverSide: true,
+        fixedHeader:false,
+        ajax: '/gold_rate',
+        columnDefs: [
+            {
+                targets: 3,
+                orderable: false,
+                searchable: false,
+            },
+        ],
+        columns: [
+            { data: 'actual_name', name: 'actual_name' },
+            { data: 'short_name', name: 'short_name' },
+            { data: 'allow_decimal', name: 'allow_decimal' },
+            { data: 'action', name: 'action' },
+        ],
+    });
+
+    $(document).on('submit', 'form#gold_rate_add_form', function(e) {
+        e.preventDefault();
+        var form = $(this);
+        var data = form.serialize();
+
+        $.ajax({
+            method: 'POST',
+            url: $(this).attr('action'),
+            dataType: 'json',
+            data: data,
+            beforeSend: function(xhr) {
+                __disable_submit_button(form.find('button[type="submit"]'));
+            },
+            success: function(result) {
+                if (result.success == true) {
+                    $('div.gold_rate_modal').modal('hide');
+                    toastr.success(result.msg);
+                    units_table.ajax.reload();
+                } else {
+                    toastr.error(result.msg);
+                }
+            },
+        });
+    });
+
+    $(document).on('click', 'button.edit_unit_button', function() {
+        $('div.gold_rate_modal').load($(this).data('href'), function() {
+            $(this).modal('show');
+
+            $('form#gold_rate_edit_form').submit(function(e) {
+                e.preventDefault();
+                var form = $(this);
+                var data = form.serialize();
+
+                $.ajax({
+                    method: 'POST',
+                    url: $(this).attr('action'),
+                    dataType: 'json',
+                    data: data,
+                    beforeSend: function(xhr) {
+                        __disable_submit_button(form.find('button[type="submit"]'));
+                    },
+                    success: function(result) {
+                        if (result.success == true) {
+                            $('div.gold_rate_modal').modal('hide');
+                            toastr.success(result.msg);
+                            units_table.ajax.reload();
+                        } else {
+                            toastr.error(result.msg);
+                        }
+                    },
+                });
+            });
+        });
+    });
+
+    $(document).on('click', 'button.delete_gold_rate_button', function() {
+        swal({
+            title: LANG.sure,
+            text: LANG.confirm_delete_unit,
+            icon: 'warning',
+            buttons: true,
+            dangerMode: true,
+        }).then(willDelete => {
+            if (willDelete) {
+                var href = $(this).data('href');
+                var data = $(this).serialize();
+
+                $.ajax({
+                    method: 'DELETE',
+                    url: href,
+                    dataType: 'json',
+                    data: data,
+                    success: function(result) {
+                        if (result.success == true) {
+                            toastr.success(result.msg);
+                            units_table.ajax.reload();
+                        } else {
+                            toastr.error(result.msg);
+                        }
+                    },
+                });
+            }
+        });
+    });
+
+    //End: CRUD for gold rate
+
     //Start: CRUD for Contacts
     //contacts table
     var contact_table_type = $('#contact_type').val();

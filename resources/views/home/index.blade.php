@@ -21,81 +21,87 @@
 
                 @if (auth()->user()->can('dashboard.data'))
                     @if ($is_admin)
-                            <div class="sm:tw-w-1/2 md:tw-w-1/2">
-                                <div class="tw-rounded-lg tw-shadow-lg tw-p-4 tw-text-white" style="background: linear-gradient(135deg, #FFD700 0%, #B8860B 100%);
-                        box-shadow: 0 4px 10px rgba(184, 134, 11, 0.6);
-                        border: 2px solid #DAA520;">
+                        <div class="sm:tw-w-1/2 md:tw-w-1/2">
+                            <div class="tw-rounded-lg tw-shadow-lg tw-p-4 tw-text-white" style="background: linear-gradient(135deg, #FFD700 0%, #B8860B 100%);
+                                                box-shadow: 0 4px 10px rgba(184, 134, 11, 0.6);
+                                                border: 2px solid #DAA520;">
 
-                                    <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
-                                        <h1 class="tw-text-xl md:tw-text-2xl tw-font-semibold tw-tracking-tight tw-text-gray-900">
-                                            {{ __('home.gold_rate') }}
-                                        </h1>
-                                        <a href=""
-                                            class="tw-text-xs tw-bg-white tw-text-yellow-800 tw-font-bold tw-px-3 tw-py-1 tw-rounded hover:tw-bg-yellow-100 tw-shadow">
-                                            ✏️ Edit
+                                <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
+                                    <h1 class="tw-text-xl md:tw-text-2xl tw-font-semibold tw-tracking-tight tw-text-gray-900">
+                                        {{ __('home.gold_rate') }}
+                                    </h1>
+                                    
+                                    <div class="box-tools">
+
+                                        <a class="tw-dw-btn tw-bg-gradient-to-r tw-from-indigo-600 tw-to-blue-500 tw-font-bold tw-text-white tw-border-none tw-rounded-full btn-modal pull-right"
+                                            data-href="{{action([\App\Http\Controllers\GoldRateController::class, 'store'])}}"
+                                            data-container=".gold_rate_modal">
+                                            
+                                            @lang('messages.update')
                                         </a>
                                     </div>
-
-                                    @foreach ([1 => '24K Gold', 2 => '22K Gold', 3 => 'Silver'] as $type => $label)
-                                        <div class="tw-flex tw-justify-between tw-items-center tw-text-gray-900 tw-text-sm tw-font-medium">
-                                            <div>
-                                                {{ $label }}: Rs.
-                                                {{ isset($latestRates[$type]) ? number_format($latestRates[$type]->price, 2, '.', ',') : 'N/A' }}
-                                            </div>
-                                            <div class="tw-text-xs tw-text-gray-700">
-                                                {{ optional($latestRates[$type])->date?->format('Y-m-d') ?? 'N/A' }}
-                                            </div>
-                                        </div>
-                                    @endforeach
-
                                 </div>
+
+                                @foreach ([1 => '24K Gold', 2 => '22K Gold', 3 => 'Silver'] as $type => $label)
+                                    <div class="tw-flex tw-justify-between tw-items-center tw-text-gray-900 tw-text-sm tw-font-medium">
+                                        <div>
+                                            {{ $label }}: Rs.
+                                            {{ isset($latestRates[$type]) ? number_format($latestRates[$type]->price, 2, '.', ',') : 'N/A' }}
+                                        </div>
+                                        <div class="tw-text-xs tw-text-gray-700">
+                                            {{ optional($latestRates[$type])->date?->format('Y-m-d') ?? 'N/A' }}
+                                        </div>
+                                    </div>
+                                @endforeach
+
                             </div>
+                        </div>
 
 
 
 
-                            <div class="tw-mt-2 sm:tw-w-1/3 md:tw-w-1/4 ">
-                                @if (count($all_locations) > 1)
-                                        {!! Form::select('dashboard_location', $all_locations, null, [
-                                        'class' => 'form-control select2',
-                                        'placeholder' => __('lang_v1.select_location'),
-                                        'id' => 'dashboard_location',
-                                    ]) !!}
-                                @endif
-                            </div>
+                        <div class="tw-mt-2 sm:tw-w-1/3 md:tw-w-1/4 ">
+                            @if (count($all_locations) > 1)
+                                    {!! Form::select('dashboard_location', $all_locations, null, [
+                                    'class' => 'form-control select2',
+                                    'placeholder' => __('lang_v1.select_location'),
+                                    'id' => 'dashboard_location',
+                                ]) !!}
+                            @endif
+                        </div>
 
-                            <div class="tw-mt-2 sm:tw-w-1/3 md:tw-w-1/4 tw-text-right">
-                                @if ($is_admin)
-                                    <button type="button" id="dashboard_date_filter"
-                                        class="tw-inline-flex tw-items-center tw-justify-center tw-w-full tw-gap-1 tw-px-3 tw-py-2 tw-text-sm tw-font-medium tw-text-gray-900 tw-transition-all tw-duration-200 tw-bg-white tw-rounded-lg sm:tw-w-auto hover:tw-bg-primary-50">
-                                        <svg aria-hidden="true" class="tw-size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-                                            stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round"
-                                            stroke-linejoin="round">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                            <path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" />
-                                            <path d="M16 3v4" />
-                                            <path d="M8 3v4" />
-                                            <path d="M4 11h16" />
-                                            <path d="M7 14h.013" />
-                                            <path d="M10.01 14h.005" />
-                                            <path d="M13.01 14h.005" />
-                                            <path d="M16.015 14h.005" />
-                                            <path d="M13.015 17h.005" />
-                                            <path d="M7.01 17h.005" />
-                                            <path d="M10.01 17h.005" />
-                                        </svg>
-                                        <span>
-                                            {{ __('messages.filter_by_date') }}
-                                        </span>
-                                        <svg aria-hidden="true" class="tw-size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-                                            stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
-                                            stroke-linejoin="round">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                            <path d="M6 9l6 6l6 -6" />
-                                        </svg>
-                                    </button>
-                                @endif
-                            </div>
+                        <div class="tw-mt-2 sm:tw-w-1/3 md:tw-w-1/4 tw-text-right">
+                            @if ($is_admin)
+                                <button type="button" id="dashboard_date_filter"
+                                    class="tw-inline-flex tw-items-center tw-justify-center tw-w-full tw-gap-1 tw-px-3 tw-py-2 tw-text-sm tw-font-medium tw-text-gray-900 tw-transition-all tw-duration-200 tw-bg-white tw-rounded-lg sm:tw-w-auto hover:tw-bg-primary-50">
+                                    <svg aria-hidden="true" class="tw-size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                        <path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" />
+                                        <path d="M16 3v4" />
+                                        <path d="M8 3v4" />
+                                        <path d="M4 11h16" />
+                                        <path d="M7 14h.013" />
+                                        <path d="M10.01 14h.005" />
+                                        <path d="M13.01 14h.005" />
+                                        <path d="M16.015 14h.005" />
+                                        <path d="M13.015 17h.005" />
+                                        <path d="M7.01 17h.005" />
+                                        <path d="M10.01 17h.005" />
+                                    </svg>
+                                    <span>
+                                        {{ __('messages.filter_by_date') }}
+                                    </span>
+                                    <svg aria-hidden="true" class="tw-size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                        stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                        <path d="M6 9l6 6l6 -6" />
+                                    </svg>
+                                </button>
+                            @endif
+                        </div>
                     @endif
                 @endif
             </div>
@@ -1028,6 +1034,9 @@
 <div class="modal fade edit_payment_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
 </div>
 
+<div class="modal fade gold_rate_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+</div>
+
 @section('css')
     <style>
         .select2-container {
@@ -1386,31 +1395,31 @@
                     name: 'shipping_status'
                 },
                     @if (!empty($custom_labels['shipping']['custom_field_1']))
-                                                                                                {
+                                                                                                                        {
                             data: 'shipping_custom_field_1',
                             name: 'shipping_custom_field_1'
                         },
                     @endif
                 @if (!empty($custom_labels['shipping']['custom_field_2']))
-                                                                        {
+                                                                                        {
                         data: 'shipping_custom_field_2',
                         name: 'shipping_custom_field_2'
                     },
                 @endif
                 @if (!empty($custom_labels['shipping']['custom_field_3']))
-                                                                        {
+                                                                                        {
                         data: 'shipping_custom_field_3',
                         name: 'shipping_custom_field_3'
                     },
                 @endif
                 @if (!empty($custom_labels['shipping']['custom_field_4']))
-                                                                        {
+                                                                                        {
                         data: 'shipping_custom_field_4',
                         name: 'shipping_custom_field_4'
                     },
                 @endif
                 @if (!empty($custom_labels['shipping']['custom_field_5']))
-                                                                        {
+                                                                                        {
                         data: 'shipping_custom_field_5',
                         name: 'shipping_custom_field_5'
                     },
@@ -1424,20 +1433,20 @@
                     @if (empty($is_service_staff_enabled))
                         visible: false
                     @endif
-                                            }
-                                        ],
+                                                    }
+                                                ],
                 "fnDrawCallback": function (oSettings) {
                     __currency_convert_recursively($('#sell_table'));
                 },
                 createdRow: function (row, data, dataIndex) {
                     $(row).find('td:eq(4)').attr('class', 'clickable_td');
                 }
-                                    });
+                                            });
 
         $('#pending_shipments_location').change(function () {
             sell_table.ajax.reload();
         });
-                                });
+                                        });
     </script>
 
 @endsection
