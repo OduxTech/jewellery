@@ -123,6 +123,12 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
     Route::get('/gold-rate/today', [GoldRateController::class, 'showTodayRate']);
 
+    Route::get('/test-log', function () {
+    \Log::info('This is a test log entry.');
+    return 'Log test done';
+    });
+
+
     Route::post('/test-email', [BusinessController::class, 'testEmailConfiguration']);
     Route::post('/test-sms', [BusinessController::class, 'testSmsConfiguration']);
     Route::get('/business/settings', [BusinessController::class, 'getBusinessSettings'])->name('business.getBusinessSettings');

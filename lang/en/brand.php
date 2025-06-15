@@ -31,5 +31,6 @@ return [
     'add_carat_value' => 'Add Carat Value',
     'edit_brand' => 'Edit brand',
     'edit_carat_value' => 'Edit Carat Value',
+    'updated_gold_success' => 'Gold Price updated successfully',
 
 ];

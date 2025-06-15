@@ -23,36 +23,42 @@
                     @if ($is_admin)
                         <div class="sm:tw-w-1/2 md:tw-w-1/2">
                             <div class="tw-rounded-lg tw-shadow-lg tw-p-4 tw-text-white" style="background: linear-gradient(135deg, #FFD700 0%, #B8860B 100%);
-                                                box-shadow: 0 4px 10px rgba(184, 134, 11, 0.6);
-                                                border: 2px solid #DAA520;">
+                                                                        box-shadow: 0 4px 10px rgba(184, 134, 11, 0.6);
+                                                                        border: 2px solid #DAA520;">
 
                                 <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
                                     <h1 class="tw-text-xl md:tw-text-2xl tw-font-semibold tw-tracking-tight tw-text-gray-900">
                                         {{ __('home.gold_rate') }}
                                     </h1>
-                                    
+
                                     <div class="box-tools">
 
                                         <a class="tw-dw-btn tw-bg-gradient-to-r tw-from-indigo-600 tw-to-blue-500 tw-font-bold tw-text-white tw-border-none tw-rounded-full btn-modal pull-right"
-                                            data-href="{{action([\App\Http\Controllers\GoldRateController::class, 'store'])}}"
+                                            data-href="{{action([\App\Http\Controllers\GoldRateController::class, 'create'])}}"
                                             data-container=".gold_rate_modal">
-                                            
+
                                             @lang('messages.update')
                                         </a>
                                     </div>
                                 </div>
 
-                                @foreach ([1 => '24K Gold', 2 => '22K Gold', 3 => 'Silver'] as $type => $label)
-                                    <div class="tw-flex tw-justify-between tw-items-center tw-text-gray-900 tw-text-sm tw-font-medium">
-                                        <div>
-                                            {{ $label }}: Rs.
-                                            {{ isset($latestRates[$type]) ? number_format($latestRates[$type]->price, 2, '.', ',') : 'N/A' }}
-                                        </div>
-                                        <div class="tw-text-xs tw-text-gray-700">
-                                            {{ optional($latestRates[$type])->date?->format('Y-m-d') ?? 'N/A' }}
-                                        </div>
+
+
+                                @foreach ([1 => '24K Gold', 3 => 'Silver'] as $type => $label)
+                                    <div class="tw-flex-1 tw-min-w-0">
+                                        <p class="tw-text-sm tw-font-medium tw-text-gray-500 tw-truncate tw-whitespace-nowrap">
+                                            {{ $label }} (1 Pawn) Price as of   {{ optional($latestRates[$type])->created_at?->format('Y-m-d H:i:s') ?? 'N/A' }}
+                                        </p>
+                                        <p
+                                            class="tw-mt-0.5 tw-text-gray-900 tw-text-xl tw-truncate tw-font-semibold tw-tracking-tight tw-font-mono">
+                                            Rs.{{ isset($latestRates[$type]) ? number_format($latestRates[$type]->price, 2, '.', ',') : 'N/A' }}
+                                        </p>
                                     </div>
+                                    
+
+                                    
                                 @endforeach
+
 
                             </div>
                         </div>
@@ -1395,31 +1401,31 @@
                     name: 'shipping_status'
                 },
                     @if (!empty($custom_labels['shipping']['custom_field_1']))
-                                                                                                                        {
+                                                                                                                                                {
                             data: 'shipping_custom_field_1',
                             name: 'shipping_custom_field_1'
                         },
                     @endif
                 @if (!empty($custom_labels['shipping']['custom_field_2']))
-                                                                                        {
+                                                                                                        {
                         data: 'shipping_custom_field_2',
                         name: 'shipping_custom_field_2'
                     },
                 @endif
                 @if (!empty($custom_labels['shipping']['custom_field_3']))
-                                                                                        {
+                                                                                                        {
                         data: 'shipping_custom_field_3',
                         name: 'shipping_custom_field_3'
                     },
                 @endif
                 @if (!empty($custom_labels['shipping']['custom_field_4']))
-                                                                                        {
+                                                                                                        {
                         data: 'shipping_custom_field_4',
                         name: 'shipping_custom_field_4'
                     },
                 @endif
                 @if (!empty($custom_labels['shipping']['custom_field_5']))
-                                                                                        {
+                                                                                                        {
                         data: 'shipping_custom_field_5',
                         name: 'shipping_custom_field_5'
                     },
@@ -1433,20 +1439,20 @@
                     @if (empty($is_service_staff_enabled))
                         visible: false
                     @endif
-                                                    }
-                                                ],
+                                                            }
+                                                        ],
                 "fnDrawCallback": function (oSettings) {
                     __currency_convert_recursively($('#sell_table'));
                 },
                 createdRow: function (row, data, dataIndex) {
                     $(row).find('td:eq(4)').attr('class', 'clickable_td');
                 }
-                                            });
+                                                    });
 
         $('#pending_shipments_location').change(function () {
             sell_table.ajax.reload();
         });
-                                        });
+                                                });
     </script>
 
 @endsection
