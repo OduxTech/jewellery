@@ -764,7 +764,7 @@ function append_purchase_lines(data, row_count, trigger_change = false) {
             $('#purchase_entry_table tbody').append(
                 update_purchase_entry_row_values(row)
             );
-            update_row_price_for_exchange_rate(row);
+           // update_row_price_for_exchange_rate(row);
 
             update_inline_profit_percentage(row);
 
