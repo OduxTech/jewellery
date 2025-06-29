@@ -150,28 +150,59 @@ class GoldRateController extends Controller
             $gold_price = $request->input('gold_price');
             $gold_price = round($gold_price / 8, 2);
 
+            $silver_price = $request->input('silver_price');
+
             $margin = 5; // Set your margin here, e.g. 0 for no margin
 
-            //$gold_price = ($gold_price / 24)  ; // Convert to per gram price
-
-
-            // Get all 24K gold products (brand_id = 24)
-            $gold_products = Product::with('variations', 'product_tax')
+            // Get all 24K gold products (brand_id = 1)
+            $gold_products = Product::with('variations', 'product_tax',)
                 ->where('business_id', $business_id)
-                ->where('brand_id', 1)
+                ->whereIn('brand_id', [1,2,3,4,5,6,7,8])
                 ->get();
 
-            foreach ($gold_products as $product) {
-                $tax_percent = optional($product->product_tax()->first())->amount ?? 0;
-                $cost_percent = $product->cost_percent ?? 0;
+            foreach ($gold_products as $g_product) {
+                $tax_percent = optional($g_product->product_tax()->first())->amount ?? 0;
+                $cost_percent = $g_product->cost_percent ?? 0;
+                $carrat = (int) ($g_product->brand->name ?? 0);
+                $gold_price = $gold_price * ($carrat / 24); // Adjust gold price based on carat
 
-                foreach ($product->variations as $variation) {
+                foreach ($g_product->variations as $variation) {
+                    // Get weight in grams from variation name
+                    $grams = floatval($variation->name); // e.g. "1", "2", etc.
+
+                    // Final price = gold_rate * grams + making charge
+                    $base_price = ($gold_price * $grams) * ($cost_percent/100);
+                    $base_price = $base_price + ($margin/100 * $base_price );
+                    
+
+                    $variation->sell_price_inc_tax = $base_price;
+                    $variation->default_sell_price =  $base_price;
+                    $variation->profit_percent = $this->commonUtil->get_percent(
+                        $variation->default_purchase_price,
+                        $variation->default_sell_price
+                    );
+                    $variation->update();
+                }
+            }
+
+
+            // Get all 24K gold products (brand_id = 1)
+            $silver_products = Product::with('variations', 'product_tax')
+                ->where('business_id', $business_id)
+                ->where('brand_id', 9)
+                ->get();
+
+            foreach ($silver_products as $s_product) {
+                $tax_percent = optional($s_product->product_tax()->first())->amount ?? 0;
+                $cost_percent = $s_product->cost_percent ?? 0;
+
+                foreach ($s_product->variations as $variation) {
                     // Get weight in grams from variation name
                     $grams = floatval($variation->name); // e.g. "1", "2", etc.
                     $making_charge = $variation->making_charge ?? 0;
 
                     // Final price = gold_rate * grams + making charge
-                    $base_price = ($gold_price * $grams) * ($cost_percent/100);
+                    $base_price = ($silver_price * $grams) * ($cost_percent/100);
                     $base_price = $base_price * ($margin/100) + $base_price ;
 
                     $variation->sell_price_inc_tax = $base_price;
