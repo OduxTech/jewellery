@@ -33,5 +33,5 @@ Query : "CREATE TABLE gold_rates (
             updated_at TIMESTAMP NULL DEFAULT NULL
         );"
 
-
-
+3. Sales margin Row created on the Product table
+Query : ALTER TABLE `products` ADD `sale_margin` INT(11) UNSIGNED NULL DEFAULT '0' AFTER `updated_at`;
