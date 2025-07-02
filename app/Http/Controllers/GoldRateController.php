@@ -162,13 +162,14 @@ public function store(Request $request)
         foreach ($gold_products as $g_product) {
             $tax_percent = optional($g_product->product_tax()->first())->amount ?? 0;
             $cost_percent = $g_product->cost_percent ?? 0;
+            $sale_margin = $g_product->sale_margin ?? 0;
             $carat = (int) ($g_product->brand->name ?? 0);
             $adjusted_gold_price = $original_gold_price * ($carat / 24); // Adjusted for carat
 
             foreach ($g_product->variations as $variation) {
                 $grams = floatval($variation->name);
                 $base_price = ($adjusted_gold_price * $grams) * ($cost_percent / 100);
-                $base_price += ($margin / 100) * $base_price;
+                $base_price += ($sale_margin / 100) * $base_price;
 
                 $variation->sell_price_inc_tax = $base_price;
                 $variation->default_sell_price = $base_price;
@@ -189,13 +190,13 @@ public function store(Request $request)
         foreach ($silver_products as $s_product) {
             $tax_percent = optional($s_product->product_tax()->first())->amount ?? 0;
             $cost_percent = $s_product->cost_percent ?? 0;
-
+            $sale_margin = $s_product->sale_margin ?? 0;  
             foreach ($s_product->variations as $variation) {
                 $grams = floatval($variation->name);
                 $making_charge = $variation->making_charge ?? 0;
 
                 $base_price = ($original_silver_price * $grams) * ($cost_percent / 100);
-                $base_price += ($margin / 100) * $base_price;
+                $base_price += ($sale_margin / 100) * $base_price;
 
                 $variation->sell_price_inc_tax = $base_price;
                 $variation->default_sell_price = $base_price;

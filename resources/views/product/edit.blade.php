@@ -144,7 +144,23 @@
                 {!! Form::text('alert_quantity', $alert_quantity, ['class' => 'form-control input_number',
                 'placeholder' => __('product.alert_quantity') , 'min' => '0']) !!}
               </div>
+                  
+        </div>
+        <div class="col-sm-4">
+        <div class="form-group">
+    {!! Form::label('sale_margin', __('product.sale_margin') . ':') !!}
+    {!! Form::number('sale_margin', $product->sale_margin, [
+        'class' => 'form-control',
+        'required',
+        'placeholder' => __('product.sale_margin'),
+        'id' => 'sale_margin',
+        'min' => 5,
+        'max' => 100
+    ]) !!}
+</div>
+            
             </div>
+            
             @if(!empty($common_settings['enable_product_warranty']))
             <div class="col-sm-4">
               <div class="form-group">
