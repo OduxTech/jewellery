@@ -507,6 +507,7 @@ class ProductUtil extends Util
             'p.category_id',
             'p.tax as tax_id',
             'p.enable_stock',
+            'p.enable_serial',
             'p.enable_sr_no',
             'p.type as product_type',
             'p.name as product_actual_name',
@@ -1258,6 +1259,49 @@ class ProductUtil extends Util
                 if ($transaction->status == 'received') {
                     $this->updateProductQuantity($transaction->location_id, $data['product_id'], $data['variation_id'], $new_quantity_f, 0, $currency_details);
                 }
+
+                // ✅ Auto-generate serial numbers with Category prefix 
+                if ($transaction->type == 'purchase' && $transaction->status == 'received') {
+
+                    $product = Product::with('category')->find($purchase_line->product_id);
+
+
+                    if ($product->enable_serial) {
+
+                        $qty = (int) $new_quantity;
+                        $prefix = optional($product->category)->short_code ?? 'XX'; // fallback 'XX' if no category
+
+                        // Get latest serial for CH prefix
+                        $latest_serial = DB::table('product_serials')
+                            ->where('serial_number', 'like', $prefix . '-%')
+                            ->orderByDesc('id')
+                            ->first();
+
+                        $last_no = 0;
+                        if ($latest_serial) {
+                            $parts = explode('-', $latest_serial->serial_number);
+                            $last_no = intval(end($parts));
+                        }
+
+                        for ($i = 1; $i <= $qty; $i++) {
+                            $serial = $prefix . '-' . str_pad($last_no + $i, 5, '0', STR_PAD_LEFT);
+
+                            DB::table('product_serials')->insert([
+                                'product_id' => $purchase_line->product_id,
+                                'variation_id' => $purchase_line->variation_id,
+                                'purchase_line_id' => $purchase_line->id,
+                                'transaction_id' => $transaction->id,
+                                'serial_number' => $serial,
+                                'status' => 'available',
+                                'business_id' => $transaction->business_id,
+                                'created_at' => now(),
+                                'updated_at' => now(),
+                            ]);
+                        }
+                    }
+
+
+                }
             }
 
             $purchase_line->quantity = $new_quantity;
@@ -1870,6 +1914,7 @@ class ProductUtil extends Util
             'p.id as product_id',
             'units.short_name as unit',
             'p.enable_stock as enable_stock',
+            'p.enable_serial as enable_serial',
             'variations.sell_price_inc_tax as unit_price',
             'pv.name as product_variation',
             'variations.name as variation_name',
@@ -2298,6 +2343,7 @@ class ProductUtil extends Util
             'p.sku as sku',
             'units.short_name as unit',
             'p.enable_stock as enable_stock',
+            'p.enable_serial as enable_serial',
             'variations.sell_price_inc_tax as unit_price',
             'pv.name as product_variation',
             'variations.name as variation_name',

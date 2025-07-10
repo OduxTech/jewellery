@@ -41,3 +41,23 @@ Query : ALTER TABLE `products` ADD `sale_margin` INT(11) UNSIGNED NULL DEFAULT '
 
 4. New Row added for variation table
 Query : ALTER TABLE `variations` ADD `minimum_selling_price` DECIMAL(22,4) NULL DEFAULT NULL AFTER `combo_variations`;
+
+5. For Store Serial 
+    Query :    CREATE TABLE `product_serials` (
+                            `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+                            `product_id` BIGINT(20) DEFAULT NULL,
+                            `variation_id` BIGINT(20) DEFAULT NULL,
+                            `purchase_line_id` BIGINT(20) DEFAULT NULL,
+                            `transaction_id` BIGINT(20) DEFAULT NULL,
+                            `serial_number` VARCHAR(255) DEFAULT NULL,
+                            `status` ENUM('available','sold','returned') DEFAULT 'available',
+                            `business_id` BIGINT(20) DEFAULT NULL,
+                            `location_id` BIGINT(20) DEFAULT NULL,
+                            `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
+                            `updated_at` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00',
+                            PRIMARY KEY (`id`),
+                            UNIQUE KEY `serial_number` (`serial_number`)
+                            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+6. For Turn On Off Serial From Product page
+    Query:  ALTER TABLE `products` ADD `enable_serial` TINYINT(1) NOT NULL DEFAULT '0' AFTER `enable_stock`;
