@@ -121,6 +121,7 @@ class ProductController extends Controller
                 'products.sku',
                 'products.image',
                 'products.enable_stock',
+                'products.enable_serial',
                 'products.is_inactive',
                 'products.not_for_selling',
                 'products.product_custom_field1', 'products.product_custom_field2', 'products.product_custom_field3', 'products.product_custom_field4', 'products.product_custom_field5', 'products.product_custom_field6',
@@ -460,6 +461,7 @@ class ProductController extends Controller
             $product_details['created_by'] = $request->session()->get('user.id');
 
             $product_details['enable_stock'] = (! empty($request->input('enable_stock')) && $request->input('enable_stock') == 1) ? 1 : 0;
+            $product_details['enable_serial'] = (! empty($request->input('enable_serial')) && $request->input('enable_serial') == 1) ? 1 : 0;
             $product_details['not_for_selling'] = (! empty($request->input('not_for_selling')) && $request->input('not_for_selling') == 1) ? 1 : 0;
 
             if (! empty($request->input('sub_category_id'))) {
@@ -739,6 +741,11 @@ class ProductController extends Controller
                 $product->enable_stock = 1;
             } else {
                 $product->enable_stock = 0;
+            }
+            if (! empty($request->input('enable_serial')) && $request->input('enable_serial') == 1) {
+                $product->enable_serial = 1;
+            } else {
+                $product->enable_serial = 0;
             }
 
             $product->not_for_selling = (! empty($request->input('not_for_selling')) && $request->input('not_for_selling') == 1) ? 1 : 0;

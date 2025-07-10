@@ -133,6 +133,12 @@
                 <label>
                     {!! Form::checkbox('enable_stock', 1, !empty($duplicate_product) ? $duplicate_product->enable_stock : true, ['class' => 'input-icheck', 'id' => 'enable_stock']); !!} <strong>@lang('product.manage_stock')</strong>
                 </label>@show_tooltip(__('tooltip.enable_stock')) <p class="help-block"><i>@lang('product.enable_stock_help')</i></p>
+
+ 
+                <label>
+                    {!! Form::checkbox('enable_serial', 1, !empty($duplicate_product) ? $duplicate_product->enable_serial : true, ['class' => 'input-icheck', 'id' => 'enable_serial']); !!} <strong>@lang('product.manage_serial')</strong>
+                </label>@show_tooltip(__('tooltip.enable_serial')) <p class="help-block"><i>@lang('product.enable_serial_help')</i></p>
+
             </div>
         </div>
         <div class="col-sm-4 @if(!empty($duplicate_product) && $duplicate_product->enable_stock == 0) hide @endif" id="alert_quantity_div">
@@ -144,17 +150,17 @@
             
         </div>
         <div class="col-sm-4">
- <div class="form-group">
-    {!! Form::label('sale_margin', __('product.sale_margin') . ':') !!}
-    {!! Form::number('sale_margin', $product->sale_margin, [
-        'class' => 'form-control',
-        'required',
-        'placeholder' => __('product.sale_margin'),
-        'id' => 'sale_margin',
-        'min' => 5,
-        'max' => 100
-    ]) !!}
-</div>
+            <div class="form-group">
+                {!! Form::label('sale_margin', __('product.sale_margin') . ':') !!}
+                {!! Form::number('sale_margin', 5, [
+                    'class' => 'form-control',
+                    'required',
+                    'placeholder' => __('product.sale_margin'),
+                    'id' => 'sale_margin',
+                    'min' => 5,
+                    'max' => 100
+                ]) !!}
+            </div>
             
         </div>
         @if(!empty($common_settings['enable_product_warranty']))

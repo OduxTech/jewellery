@@ -136,6 +136,9 @@
                 <label>
                   {!! Form::checkbox('enable_stock', 1, $product->enable_stock, ['class' => 'input-icheck', 'id' => 'enable_stock']) !!} <strong>@lang('product.manage_stock')</strong>
                 </label>@show_tooltip(__('tooltip.enable_stock')) <p class="help-block"><i>@lang('product.enable_stock_help')</i></p>
+                <label>
+                  {!! Form::checkbox('enable_serial', 1, $product->enable_serial, ['class' => 'input-icheck', 'id' => 'enable_serial']) !!} <strong>@lang('product.manage_serial')</strong>
+                </label>@show_tooltip(__('tooltip.enable_serial')) <p class="help-block"><i>@lang('product.enable_serial_help')</i></p>
               </div>
             </div>
             <div class="col-sm-4" id="alert_quantity_div" @if(!$product->enable_stock) style="display:none" @endif>
