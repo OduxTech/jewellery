@@ -315,6 +315,21 @@ class SellPosController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+
+
+     public function getProduct($id)
+{
+    $product = Product::with('variations')->findOrFail($id);
+
+    foreach ($product->variations as $variation) {
+        $variation->minimum_selling_price = $variation->minimum_selling_price;
+    }
+
+    return response()->json([
+        'product' => $product,
+    ]);
+}
+
     public function store(Request $request)
     {
         if (!auth()->user()->can('sell.create') && !auth()->user()->can('direct_sell.access') && !auth()->user()->can('so.create')) {
@@ -1778,6 +1793,8 @@ class SellPosController extends Controller
 
             $output = $this->getSellLineRow($variation_id, $location_id, $quantity, $row_count, $is_direct_sell, $is_serial_no);
 
+   
+        
             if ($this->transactionUtil->isModuleEnabled('modifiers') && !$is_direct_sell) {
                 $variation = Variation::find($variation_id);
                 $business_id = request()->session()->get('user.business_id');
@@ -1796,6 +1813,9 @@ class SellPosController extends Controller
             $output['success'] = false;
             $output['msg'] = __('lang_v1.item_out_of_stock');
         }
+        
+  
+        $output['success'] = true;
 
         return $output;
     }

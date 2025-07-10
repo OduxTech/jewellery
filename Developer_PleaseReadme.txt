@@ -35,3 +35,9 @@ Query : "CREATE TABLE gold_rates (
 
 3. Sales margin Row created on the Product table
 Query : ALTER TABLE `products` ADD `sale_margin` INT(11) UNSIGNED NULL DEFAULT '0' AFTER `updated_at`;
+
+
+
+
+4. New Row added for variation table
+Query : ALTER TABLE `variations` ADD `minimum_selling_price` DECIMAL(22,4) NULL DEFAULT NULL AFTER `combo_variations`;

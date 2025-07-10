@@ -169,10 +169,14 @@ public function store(Request $request)
             foreach ($g_product->variations as $variation) {
                 $grams = floatval($variation->name);
                 $base_price = ($adjusted_gold_price * $grams) * ($cost_percent / 100);
+                $base1_price=(($adjusted_gold_price * $grams) * ($cost_percent / 100))* 1.05;
                 $base_price += ($sale_margin / 100) * $base_price;
 
                 $variation->sell_price_inc_tax = $base_price;
                 $variation->default_sell_price = $base_price;
+                $variation->minimum_selling_price = $base1_price;
+                
+             $variation->save();
                 $variation->profit_percent = $this->commonUtil->get_percent(
                     $variation->default_purchase_price,
                     $variation->default_sell_price
@@ -195,11 +199,15 @@ public function store(Request $request)
                 $grams = floatval($variation->name);
                 $making_charge = $variation->making_charge ?? 0;
 
-                $base_price = ($original_silver_price * $grams) * ($cost_percent / 100);
+                $base_price = ($adjusted_gold_price * $grams) * ($cost_percent / 100);
+                $base1_price=(($adjusted_gold_price * $grams) * ($cost_percent / 100))* 1.05;
                 $base_price += ($sale_margin / 100) * $base_price;
 
                 $variation->sell_price_inc_tax = $base_price;
                 $variation->default_sell_price = $base_price;
+                $variation->minimum_selling_price = $base1_price;
+              $variation->save();
+
                 $variation->profit_percent = $this->commonUtil->get_percent(
                     $variation->default_purchase_price,
                     $variation->default_sell_price

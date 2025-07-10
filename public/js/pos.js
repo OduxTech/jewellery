@@ -469,33 +469,37 @@ $(document).ready(function() {
     });
 
     //Change in row discount type or discount amount
-    $('table#pos_table tbody').on(
-        'change',
-        'select.row_discount_type, input.row_discount_amount',
-        function() {
-            var tr = $(this).parents('tr');
+$('table#pos_table tbody').on(
+    'change',
+    'select.row_discount_type, input.row_discount_amount',
+    function() {
+        var tr = $(this).closest('tr');
+        var discounted_unit_price = calculate_discounted_unit_price(tr);
 
-            //calculate discounted unit price
-            var discounted_unit_price = calculate_discounted_unit_price(tr);
-
-            var tax_rate = tr
-                .find('select.tax_id')
-                .find(':selected')
-                .data('rate');
-            var quantity = __read_number(tr.find('input.pos_quantity'));
-
-            var unit_price_inc_tax = __add_percent(discounted_unit_price, tax_rate);
-            var line_total = quantity * unit_price_inc_tax;
-
-            __write_number(tr.find('input.pos_unit_price_inc_tax'), unit_price_inc_tax);
-            __write_number(tr.find('input.pos_line_total'), line_total, false);
-            tr.find('span.pos_line_total_text').text(__currency_trans_from_en(line_total, true));
-            pos_each_row(tr);
-            pos_total_row();
-            round_row_to_iraqi_dinnar(tr);
+        // ✅ Only update the modal linked to this row (if open)
+        var modal = tr.find('.row_edit_product_price_model');
+        if (modal.is(':visible')) {
+            modal.find('.price_after_discount').val(__currency_trans_from_en(discounted_unit_price, true));
         }
-    );
 
+        // Continue updating totals
+        var tax_rate = tr.find('select.tax_id').find(':selected').data('rate');
+        var quantity = __read_number(tr.find('input.pos_quantity'));
+        var unit_price_inc_tax = __add_percent(discounted_unit_price, tax_rate);
+        var line_total = quantity * unit_price_inc_tax;
+
+        __write_number(tr.find('input.pos_unit_price_inc_tax'), unit_price_inc_tax);
+        __write_number(tr.find('input.pos_line_total'), line_total, false);
+        tr.find('span.pos_line_total_text').text(__currency_trans_from_en(line_total, true));
+
+        pos_each_row(tr);
+        pos_total_row();
+        round_row_to_iraqi_dinnar(tr);
+    }
+);
+
+
+// newly appointed price after discount is applied 
     //Remove row on click on remove row
     $('table#pos_table tbody').on('click', 'i.pos_remove_row', function() {
         $(this)
@@ -554,7 +558,7 @@ $(document).ready(function() {
     });
 
     //Save invoice as Quotation
-    $('button#pos-quotation').click(function() {
+    $('button#pos-draft').click(function() {
         //Check if product is present or not.
         if ($('table#pos_table tbody').find('.product_row').length <= 0) {
             toastr.warning(LANG.no_products_added);
@@ -861,32 +865,55 @@ $(document).ready(function() {
         calculate_balance_due();
     });
 
-    //Update discount
+    // //Update discount
+    // $('button#posEditDiscountModalUpdate').click(function() {
+
+    //     //if discount amount is not valid return false
+    //     if (!$("#discount_amount_modal").valid()) {
+    //         return false;
+    //     }
+    //     //Close modal
+    //     $('div#posEditDiscountModal').modal('hide');
+
+    //     //Update values
+    //     $('input#discount_type').val($('select#discount_type_modal').val());
+    //     __write_number($('input#discount_amount'), __read_number($('input#discount_amount_modal')));
+
+    //     if ($('#reward_point_enabled').length) {
+    //         var reward_validation = isValidatRewardPoint();
+    //         if (!reward_validation['is_valid']) {
+    //             toastr.error(reward_validation['msg']);
+    //             $('#rp_redeemed_modal').val(0);
+    //             $('#rp_redeemed_modal').change();
+    //         }
+    //         updateRedeemedAmount();
+    //     }
+
+    //     pos_total_row();
+    // }); ///  the function for the total bill discount is this.
+
     $('button#posEditDiscountModalUpdate').click(function() {
+    $('div#posEditDiscountModal').modal('hide');
+    // Prevent total discount update by not updating #discount_amount
+    // Simply skip these two lines:
+    // $('input#discount_type').val($('select#discount_type_modal').val());
+    // __write_number($('input#discount_amount'), __read_number($('input#discount_amount_modal')));
 
-        //if discount amount is not valid return false
-        if (!$("#discount_amount_modal").valid()) {
-            return false;
+    // Keep reward points part if needed
+    if ($('#reward_point_enabled').length) {
+        var reward_validation = isValidatRewardPoint();
+        if (!reward_validation['is_valid']) {
+            toastr.error(reward_validation['msg']);
+            $('#rp_redeemed_modal').val(0);
+            $('#rp_redeemed_modal').change();
         }
-        //Close modal
-        $('div#posEditDiscountModal').modal('hide');
+        updateRedeemedAmount();
+    }
 
-        //Update values
-        $('input#discount_type').val($('select#discount_type_modal').val());
-        __write_number($('input#discount_amount'), __read_number($('input#discount_amount_modal')));
+    pos_total_row();
+});
 
-        if ($('#reward_point_enabled').length) {
-            var reward_validation = isValidatRewardPoint();
-            if (!reward_validation['is_valid']) {
-                toastr.error(reward_validation['msg']);
-                $('#rp_redeemed_modal').val(0);
-                $('#rp_redeemed_modal').change();
-            }
-            updateRedeemedAmount();
-        }
-
-        pos_total_row();
-    });
+// the above function disable the total bill discount 
 
     //Shipping
     $('button#posShippingModalUpdate').click(function() {
@@ -1734,12 +1761,22 @@ function pos_product_row(variation_id = null, purchase_line_id = null, weighing_
                         this_row.find('select.sub_unit').trigger('change');
                     }
 
-                    if (result.enable_sr_no == '1') {
-                        var new_row = $('table#pos_table tbody')
-                            .find('tr')
-                            .last();
-                        new_row.find('.row_edit_product_price_model').modal('show');
-                    }
+if (result.enable_sr_no == '1') {
+    var new_row = $('table#pos_table tbody').find('tr').last();
+
+    var modal = new_row.find('.row_edit_product_price_model');
+    modal.modal('show');
+
+    var discounted_price = calculate_discounted_unit_price(new_row);
+
+    // ✅ Set price after discount in the modal
+    modal.find('.price_after_discount').val(__currency_trans_from_en(discounted_price, true));
+
+    // ✅ Store current row in the modal for future updates
+    modal.data('current-row', new_row);
+}
+
+
 
                     round_row_to_iraqi_dinnar(this_row);
                     __currency_convert_recursively(this_row);
