@@ -1260,48 +1260,7 @@ class ProductUtil extends Util
                     $this->updateProductQuantity($transaction->location_id, $data['product_id'], $data['variation_id'], $new_quantity_f, 0, $currency_details);
                 }
 
-                // ✅ Auto-generate serial numbers with Category prefix 
-                if ($transaction->type == 'purchase' && $transaction->status == 'received') {
-
-                    $product = Product::with('category')->find($purchase_line->product_id);
-
-
-                    if ($product->enable_serial) {
-
-                        $qty = (int) $new_quantity;
-                        $prefix = optional($product->category)->short_code ?? 'XX'; // fallback 'XX' if no category
-
-                        // Get latest serial for CH prefix
-                        $latest_serial = DB::table('product_serials')
-                            ->where('serial_number', 'like', $prefix . '-%')
-                            ->orderByDesc('id')
-                            ->first();
-
-                        $last_no = 0;
-                        if ($latest_serial) {
-                            $parts = explode('-', $latest_serial->serial_number);
-                            $last_no = intval(end($parts));
-                        }
-
-                        for ($i = 1; $i <= $qty; $i++) {
-                            $serial = $prefix . '-' . str_pad($last_no + $i, 5, '0', STR_PAD_LEFT);
-
-                            DB::table('product_serials')->insert([
-                                'product_id' => $purchase_line->product_id,
-                                'variation_id' => $purchase_line->variation_id,
-                                'purchase_line_id' => $purchase_line->id,
-                                'transaction_id' => $transaction->id,
-                                'serial_number' => $serial,
-                                'status' => 'available',
-                                'business_id' => $transaction->business_id,
-                                'created_at' => now(),
-                                'updated_at' => now(),
-                            ]);
-                        }
-                    }
-
-
-                }
+                
             }
 
             $purchase_line->quantity = $new_quantity;
@@ -1391,11 +1350,71 @@ class ProductUtil extends Util
             }
         }
 
-        //update purchase lines
+        // Save all purchase lines first
         if (!empty($updated_purchase_lines)) {
             $transaction->purchase_lines()->saveMany($updated_purchase_lines);
         }
 
+        // Generate serial numbers for saved lines
+foreach ($updated_purchase_lines as $purchase_line) {
+    if ($transaction->type == 'purchase' && $transaction->status == 'received') {
+        $product = Product::with('category')->find($purchase_line->product_id);
+
+        if ($product->enable_serial) {
+            // Count existing serials for this purchase line
+            $existing_serials_count = DB::table('product_serials')
+                ->where('purchase_line_id', $purchase_line->id)
+                ->count();
+
+            $qty_difference = (int)$purchase_line->quantity - $existing_serials_count;
+
+            // Handle quantity increase (generate new serials)
+            if ($qty_difference > 0) {
+                $prefix = optional($product->category)->short_code ?? 'XX';
+
+                // Get latest serial number for this prefix
+                $latest_serial = DB::table('product_serials')
+                    ->where('serial_number', 'like', $prefix.'-%')
+                    ->orderByDesc('id')
+                    ->first();
+
+                $last_no = $latest_serial ? intval(explode('-', $latest_serial->serial_number)[1]) : 0;
+
+                // Generate new serials
+                $new_serials = [];
+                for ($i = 1; $i <= $qty_difference; $i++) {
+                    $new_serials[] = [
+                        'product_id' => $purchase_line->product_id,
+                        'variation_id' => $purchase_line->variation_id,
+                        'purchase_line_id' => $purchase_line->id,
+                        'transaction_id' => $transaction->id,
+                        'serial_number' => $prefix.'-'.str_pad($last_no + $i, 5, '0', STR_PAD_LEFT),
+                        'status' => 'available',
+                        'business_id' => $transaction->business_id,
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ];
+                }
+
+                DB::table('product_serials')->insert($new_serials);
+            }
+            // Handle quantity decrease (delete last serials)
+            elseif ($qty_difference < 0) {
+                // Get the last created serials for this purchase line
+                $last_serials = DB::table('product_serials')
+                    ->where('purchase_line_id', $purchase_line->id)
+                    ->orderByDesc('id')
+                    ->take(abs($qty_difference))
+                    ->pluck('id');
+
+                // Delete them
+                DB::table('product_serials')
+                    ->whereIn('id', $last_serials)
+                    ->delete();
+            }
+        }
+    }
+}
         return $delete_purchase_lines;
     }
 
