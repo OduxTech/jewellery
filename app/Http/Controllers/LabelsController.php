@@ -136,7 +136,9 @@ class LabelsController extends Controller
                 if (! empty($value['lot_number'])) {
                     $details->lot_number = $value['lot_number'];
                 }
-
+  // Add brand information
+$product = Product::where('id', $details->product_id)->first();
+$details->brand = $product->brand ?? null;vb
                 if (! empty($value['price_group_id'])) {
                     $tax_id = $print['price_type'] == 'inclusive' ?: $details->tax_id;
 

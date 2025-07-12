@@ -20,7 +20,7 @@
                 </div>
 
                 @if (auth()->user()->can('dashboard.data'))
-                    @if ($is_admin)
+                   <!-- Gold Rate Card (Visible to All Users) -->
                         <div class="sm:tw-w-1/2 md:tw-w-1/2">
                             <div class="tw-rounded-lg tw-shadow-lg tw-p-4 tw-text-white" style="background: linear-gradient(135deg, #FFD700 0%, #B8860B 100%);
                                                                         box-shadow: 0 4px 10px rgba(184, 134, 11, 0.6);
@@ -109,7 +109,7 @@
                             @endif
                         </div>
                     @endif
-                @endif
+                {{-- @endif --}}
             </div>
             @if (auth()->user()->can('dashboard.data'))
                 @if ($is_admin)

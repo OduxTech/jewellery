@@ -176,6 +176,7 @@ return [
     'subtotal_label' => 'Subtotal Label',
     'product_details_to_be_shown' => 'Product details to be shown',
     'show_brand' => 'Show brand',
+    'brand' => 'Carat Value',
     'show_sku' => 'Show SKU',
     'show_cat_code' => 'Show category code or HSN code',
     'show_client_id' => 'Show client ID',
