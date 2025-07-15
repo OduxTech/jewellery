@@ -62,6 +62,7 @@ use App\Http\Controllers\WarrantyController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\GoldRateController;
+use Illuminate\Support\Facades\Artisan;
 
 /*
 |--------------------------------------------------------------------------
@@ -101,6 +102,12 @@ Route::middleware(['setData'])->group(function () {
 
 //Routes for authenticated users only
 Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 'AdminSidebarMenu', 'CheckUserLogin'])->group(function () {
+
+    Route::get('/clear-cache', function () {
+    Artisan::call('optimize:clear');
+    return 'All caches cleared!';
+    });
+    
     Route::get('pos/payment/{id}', [SellPosController::class, 'edit'])->name('edit-pos-payment');
     Route::get('service-staff-availability', [SellPosController::class, 'showServiceStaffAvailibility']);
     Route::get('pause-resume-service-staff-timer/{user_id}', [SellPosController::class, 'pauseResumeServiceStaffTimer']);
