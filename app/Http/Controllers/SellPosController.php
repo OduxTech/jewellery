@@ -514,6 +514,21 @@ class SellPosController extends Controller
 
                 $this->transactionUtil->createOrUpdateSellLines($transaction, $input['products'], $input['location_id']);
 
+                // 🔁 Update status of sold serial numbers
+                foreach ($input['products'] as $product_line) {
+
+                    if (!empty($product_line['enable_serial']) && $product_line['enable_serial'] && !empty($product_line['serial_id'])) {
+                        DB::table('product_serials')
+                            ->where('id', $product_line['serial_id'])
+                            ->update([
+                                'status' => 'sold',
+                                'sold_transaction_id' => $transaction->id ?? null,
+                                'updated_at' => now(),
+                            ]);
+                    }
+                }
+
+
                 $change_return['amount'] = $input['change_return'] ?? 0;
                 $change_return['is_return'] = 1;
 
@@ -566,7 +581,15 @@ class SellPosController extends Controller
                                 $input['location_id'],
                                 $decrease_qty
                             );
+                            DB::table('product_serials')
+                            ->where('id', $product['serial_id'])
+                            ->update([
+                                'status' => 'sold',
+         
+                            ]);
                         }
+
+
 
                         if ($product['product_type'] == 'combo') {
                             //Decrease quantity of combo as well.
