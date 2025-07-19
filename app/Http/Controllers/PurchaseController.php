@@ -822,6 +822,10 @@ class PurchaseController extends Controller
 
                 $transaction_status = $transaction->status;
                 if ($transaction_status != 'received') {
+                    // Delete associated serial numbers first
+                DB::table('product_serials')
+                    ->where('transaction_id', $transaction->id)
+                    ->delete();
                     $transaction->delete();
                 } else {
                     //Delete purchase lines first
@@ -834,6 +838,10 @@ class PurchaseController extends Controller
                             $transaction->location_id,
                             $purchase_line->quantity
                         );
+                        // Delete associated serial numbers
+                    DB::table('product_serials')
+                        ->where('purchase_line_id', $purchase_line->id)
+                        ->delete();
                     }
                     PurchaseLine::where('transaction_id', $transaction->id)
                                 ->whereIn('id', $delete_purchase_line_ids)
@@ -1400,6 +1408,7 @@ class PurchaseController extends Controller
             $before_status = $transaction->status;
 
             $update_data['status'] = $request->input('status');
+            $new_status = $request->input('status');
 
             DB::beginTransaction();
 
@@ -1409,6 +1418,16 @@ class PurchaseController extends Controller
             $currency_details = $this->transactionUtil->purchaseCurrencyDetails($business_id);
             foreach ($transaction->purchase_lines as $purchase_line) {
                 $this->productUtil->updateProductStock($before_status, $transaction, $purchase_line->product_id, $purchase_line->variation_id, $purchase_line->quantity, $purchase_line->quantity, $currency_details);
+            }
+
+            // Handle serial numbers for products that require them
+            if ($purchase_line->product->enable_serial) {
+                $this->handleSerialNumbersOnStatusChange(
+                    $before_status,
+                    $new_status,
+                    $transaction,
+                    $purchase_line
+                );
             }
 
             //Update mapping of purchase & Sell.
@@ -1432,5 +1451,59 @@ class PurchaseController extends Controller
         }
 
         return $output;
+    }
+
+    protected function handleSerialNumbersOnStatusChange($before_status, $new_status, $transaction, $purchase_line)
+    {
+        // Case 1: Changing from non-received to received status
+        if ($before_status != 'received' && $new_status == 'received') {
+            $this->generateSerialNumbers(
+                $transaction,
+                $purchase_line->product_id,
+                $purchase_line->variation_id,
+                $purchase_line->quantity
+            );
+        }
+        // Case 2: Changing from received to non-received status
+        elseif ($before_status == 'received' && $new_status != 'received') {
+            DB::table('product_serials')
+                ->where('transaction_id', $transaction->id)
+                ->where('product_id', $purchase_line->product_id)
+                ->where('variation_id', $purchase_line->variation_id)
+                ->delete();
+        }
+        // Case 3: Remains received (quantity might have changed - handled in updateProductStock)
+    }
+
+    protected function generateSerialNumbers($transaction, $product_id, $variation_id, $quantity)
+    {
+        $product = Product::with('category')->find($product_id);
+        $prefix = optional($product->category)->short_code ?? 'XX';
+
+        // Get latest serial number for this prefix
+        $latest_serial = DB::table('product_serials')
+            ->where('serial_number', 'like', $prefix.'-%')
+            ->orderByDesc('id')
+            ->first();
+
+        $last_no = $latest_serial ? intval(explode('-', $latest_serial->serial_number)[1]) : 0;
+
+        // Generate new serials
+        $new_serials = [];
+        for ($i = 1; $i <= $quantity; $i++) {
+            $new_serials[] = [
+                'product_id' => $product_id,
+                'variation_id' => $variation_id,
+                'purchase_line_id' => null, // Will be updated after save
+                'transaction_id' => $transaction->id,
+                'serial_number' => $prefix.'-'.str_pad($last_no + $i, 5, '0', STR_PAD_LEFT),
+                'status' => 'available',
+                'business_id' => $transaction->business_id,
+                'created_at' => now(),
+                'updated_at' => now()
+            ];
+        }
+
+        DB::table('product_serials')->insert($new_serials);
     }
 }

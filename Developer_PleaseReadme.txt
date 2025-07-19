@@ -61,3 +61,10 @@ Query : ALTER TABLE `variations` ADD `minimum_selling_price` DECIMAL(22,4) NULL 
 
 6. For Turn On Off Serial From Product page
     Query:  ALTER TABLE `products` ADD `enable_serial` TINYINT(1) NOT NULL DEFAULT '0' AFTER `enable_stock`;
+
+7. cost_percent and sale_margin need to be changed from int to decimals
+    Query: 
+    ALTER TABLE `products` DROP `cost_percent`;
+    ALTER TABLE `products` DROP `sale_margin`;
+    ALTER TABLE `products` ADD `cost_percent` DECIMAL(6,3) NOT NULL DEFAULT '0.000' AFTER `updated_at`;
+    ALTER TABLE `products` ADD `sale_margin` DECIMAL(6,3) NOT NULL DEFAULT '0.000' AFTER `cost_percent`;
