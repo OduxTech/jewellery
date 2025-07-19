@@ -14,8 +14,9 @@
 						{{$product->brand->name ?? '--' }}<br>
 						<b>@lang('product.unit'): </b>
 						{{$product->unit->short_name ?? '--' }}<br>
-						<b>@lang('product.barcode_type'): </b>
-						{{$product->barcode_type ?? '--' }}
+						<b>@lang('product.sale_margin'): </b>
+						{{$product->sale_margin ?? '--' }}
+						
 						@php 
     						$custom_labels = json_decode(session('business.custom_labels'), true);
 						@endphp
@@ -54,9 +55,10 @@
 	      			<div class="col-sm-4 invoice-col">
 						<b>@lang('product.category'): </b>
 						{{$product->category->name ?? '--' }}<br>
-						<b>@lang('product.sub_category'): </b>
-						{{$product->sub_category->name ?? '--' }}<br>	
-						
+						{{-- <b>@lang('product.sub_category'): </b>
+						{{$product->sub_category->name ?? '--' }}<br>	 --}}
+						<b>@lang('product.cost_percent'): </b>
+						{{$product->cost_percent ?? '--' }}<br>
 						<b>@lang('product.manage_stock'): </b>
 						@if($product->enable_stock)
 							@lang('messages.yes')
@@ -77,7 +79,7 @@
 	      			</div>
 					
 	      			<div class="col-sm-4 invoice-col">
-	      				<b>@lang('product.expires_in'): </b>
+	      				{{-- <b>@lang('product.expires_in'): </b>
 	      				@php
 	  						$expiry_array = ['months'=>__('product.months'), 'days'=>__('product.days'), '' =>__('product.not_applicable') ];
 	  					@endphp
@@ -90,16 +92,16 @@
 						@if($product->weight)
 							<b>@lang('lang_v1.weight'): </b>
 							{{$product->weight }}<br>
-						@endif
-						<b>@lang('product.applicable_tax'): </b>
-						{{$product->product_tax->name ?? __('lang_v1.none') }}<br>
+						@endif --}}
+						{{-- <b>@lang('product.applicable_tax'): </b>
+						{{$product->product_tax->name ?? __('lang_v1.none') }}<br> --}}
 						@php
 							$tax_type = ['inclusive' => __('product.inclusive'), 'exclusive' => __('product.exclusive')];
 						@endphp
-						<b>@lang('product.selling_price_tax_type'): </b>
+						{{-- <b>@lang('product.selling_price_tax_type'): </b>
 						{{$tax_type[$product->tax_type]  }}<br>
 						<b>@lang('product.product_type'): </b>
-						@lang('lang_v1.' . $product->type)
+						@lang('lang_v1.' . $product->type) --}}
 						
 	      			</div>
 	      			<div class="clearfix"></div>
