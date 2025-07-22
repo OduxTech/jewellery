@@ -195,12 +195,15 @@ public function store(Request $request)
             $tax_percent = optional($s_product->product_tax()->first())->amount ?? 0;
             $cost_percent = $s_product->cost_percent ?? 0;
             $sale_margin = $s_product->sale_margin ?? 0;  
+
             foreach ($s_product->variations as $variation) {
                 $grams = floatval($variation->name);
                 $making_charge = $variation->making_charge ?? 0;
 
-                $base_price = ($adjusted_gold_price * $grams) * ($cost_percent / 100);
-                $base1_price=(($adjusted_gold_price * $grams) * ($cost_percent / 100))* 1.05;
+                //$base_price = ($original_silver_price * $grams) * ($cost_percent / 100);
+                $base_price = ($original_silver_price * $grams);
+                $base1_price= ($original_silver_price * $grams) * 1.05;
+                //$base1_price=(($original_silver_price * $grams) * ($cost_percent / 100))* 1.05;
                 $base_price += ($sale_margin / 100) * $base_price;
 
                 $variation->sell_price_inc_tax = $base_price;
