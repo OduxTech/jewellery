@@ -1400,7 +1400,7 @@ foreach ($updated_purchase_lines as $purchase_line) {
                         'product_id' => $purchase_line->product_id,
                         'variation_id' => $purchase_line->variation_id,
                         'purchase_line_id' => $purchase_line->id,
-                        'transaction_id' => $transaction->id,
+                        'purchase_transaction_id' => $transaction->id,
                         'serial_number' => $prefix.'-'.str_pad($last_no + $i, 5, '0', STR_PAD_LEFT),
                         'status' => 'available',
                         'business_id' => $transaction->business_id,

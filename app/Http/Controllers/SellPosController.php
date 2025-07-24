@@ -514,19 +514,19 @@ class SellPosController extends Controller
 
                 $this->transactionUtil->createOrUpdateSellLines($transaction, $input['products'], $input['location_id']);
 
-                // 🔁 Update status of sold serial numbers
-                foreach ($input['products'] as $product_line) {
+                // // 🔁 Update status of sold serial numbers
+                // foreach ($input['products'] as $product_line) {
 
-                    if (!empty($product_line['enable_serial']) && $product_line['enable_serial'] && !empty($product_line['serial_id'])) {
-                        DB::table('product_serials')
-                            ->where('id', $product_line['serial_id'])
-                            ->update([
-                                'status' => 'sold',
-                                'sold_transaction_id' => $transaction->id ?? null,
-                                'updated_at' => now(),
-                            ]);
-                    }
-                }
+                //     if (!empty($product_line['enable_serial']) && $product_line['enable_serial'] && !empty($product_line['serial_id'])) {
+                //         DB::table('product_serials')
+                //             ->where('id', $product_line['serial_id'])
+                //             ->update([
+                //                 'status' => 'sold',
+                //                 'sell_transaction_id' => $transaction->id ?? null,
+                //                 'updated_at' => now(),
+                //             ]);
+                //     }
+                // }
 
 
                 $change_return['amount'] = $input['change_return'] ?? 0;
@@ -585,6 +585,7 @@ class SellPosController extends Controller
                             ->where('id', $product['serial_id'])
                             ->update([
                                 'status' => 'sold',
+                                'sell_transaction_id' => $transaction->id ?? null,
          
                             ]);
                         }

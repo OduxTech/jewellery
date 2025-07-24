@@ -28,6 +28,11 @@ class TransactionSellLine extends Model
         return $this->belongsTo(\App\Variation::class, 'variation_id');
     }
 
+    public function serialNumbers()
+    {
+        return $this->belongsTo(\App\SerialNumber::class, 'serial_id');
+    }
+
     public function modifiers()
     {
         return $this->hasMany(\App\TransactionSellLine::class, 'parent_sell_line_id')
