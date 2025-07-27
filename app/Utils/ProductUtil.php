@@ -21,6 +21,7 @@ use App\VariationLocationDetails;
 use App\VariationTemplate;
 use App\VariationValueTemplate;
 use Illuminate\Support\Facades\DB;
+use App\SerialNumber;
 
 class ProductUtil extends Util
 {
@@ -467,7 +468,7 @@ class ProductUtil extends Util
      * @param  bool  $check_qty (If false qty_available is not checked)
      * @return array
      */
-    public function getDetailsFromVariation($variation_id, $business_id, $location_id = null, $check_qty = true)
+    public function getDetailsFromVariation($variation_id, $business_id, $location_id = null, $check_qty = true, $serial_no ='' )
     {
         $variation = Variation::with('media')->findOrFail($variation_id);
 
@@ -563,6 +564,18 @@ class ProductUtil extends Util
 
             $product->combo_products = $this->calculateComboDetails($location_id, $product->combo_variations);
         }
+
+        if ($product->enable_serial) {
+            $serial_query = SerialNumber::where('variation_id', $variation_id)
+                ->where('status', 'available');
+
+            if (!empty($business_id)) {
+                $serial_query->where('business_id', $business_id);
+            }
+
+            $product->available_serials = $serial_query->pluck('serial_number', 'id');
+        }
+
 
         return $product;
     }
@@ -1387,7 +1400,7 @@ foreach ($updated_purchase_lines as $purchase_line) {
                         'product_id' => $purchase_line->product_id,
                         'variation_id' => $purchase_line->variation_id,
                         'purchase_line_id' => $purchase_line->id,
-                        'transaction_id' => $transaction->id,
+                        'purchase_transaction_id' => $transaction->id,
                         'serial_number' => $prefix.'-'.str_pad($last_no + $i, 5, '0', STR_PAD_LEFT),
                         'status' => 'available',
                         'business_id' => $transaction->business_id,

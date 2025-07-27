@@ -34,7 +34,13 @@
                 $brand = $sell_line->product->brand;
                 @endphp
                 @if(!empty($brand->name))
-                , {{$brand->name}}
+                , {{$brand->name}} Carat
+                @endif
+                @php
+                $serialNo = $sell_line->serialNumbers;
+                @endphp
+                @if(!empty($serialNo->serial_number))
+                , {{$serialNo->serial_number}}
                 @endif
 
                 @if(!empty($sell_line->sell_line_note))

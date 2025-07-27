@@ -224,6 +224,9 @@
 					<th class="text-center tw-text-sm md:!tw-text-base tw-font-bold col-md-3">
 						@lang('sale.qty')
 					</th>
+					<th class="text-center tw-text-sm md:!tw-text-base tw-font-bold col-md-3">
+						@lang('product.serial')
+					</th>
 					@if(!empty($pos_settings['inline_service_staff']))
 						<th class="text-center tw-text-sm md:!tw-text-base tw-font-bold col-md-2">
 							@lang('restaurant.service_staff')

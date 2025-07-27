@@ -824,7 +824,7 @@ class PurchaseController extends Controller
                 if ($transaction_status != 'received') {
                     // Delete associated serial numbers first
                 DB::table('product_serials')
-                    ->where('transaction_id', $transaction->id)
+                    ->where('purchase_transaction_id', $transaction->id)
                     ->delete();
                     $transaction->delete();
                 } else {
@@ -1467,7 +1467,7 @@ class PurchaseController extends Controller
         // Case 2: Changing from received to non-received status
         elseif ($before_status == 'received' && $new_status != 'received') {
             DB::table('product_serials')
-                ->where('transaction_id', $transaction->id)
+                ->where('purchase_transaction_id', $transaction->id)
                 ->where('product_id', $purchase_line->product_id)
                 ->where('variation_id', $purchase_line->variation_id)
                 ->delete();
@@ -1495,7 +1495,7 @@ class PurchaseController extends Controller
                 'product_id' => $product_id,
                 'variation_id' => $variation_id,
                 'purchase_line_id' => null, // Will be updated after save
-                'transaction_id' => $transaction->id,
+                'purchase_transaction_id' => $transaction->id,
                 'serial_number' => $prefix.'-'.str_pad($last_no + $i, 5, '0', STR_PAD_LEFT),
                 'status' => 'available',
                 'business_id' => $transaction->business_id,

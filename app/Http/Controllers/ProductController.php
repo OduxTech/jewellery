@@ -1275,8 +1275,9 @@ class ProductController extends Controller
     }
 
     public function getVarationDetail($variation_id, $location_id){
+  
         $business_id = request()->session()->get('user.business_id');
-        $product = $this->productUtil->getDetailsFromVariation($variation_id, $business_id, $location_id, null);
+        $product = $this->productUtil->getDetailsFromVariation($variation_id, $business_id, $location_id, true);
         return $product;
     }
 
