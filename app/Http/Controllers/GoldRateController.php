@@ -164,12 +164,12 @@ public function store(Request $request)
             $cost_percent = $g_product->cost_percent ?? 0;
             $sale_margin = $g_product->sale_margin ?? 0;
             $carat = (int) ($g_product->brand->name ?? 0);
-            $adjusted_gold_price = $original_gold_price * ($carat / 24); // Adjusted for carat
-
+            $adjusted_gold_price = $original_gold_price * ($cost_percent / 100); // Adjusted for carat
+           // $adjusted_gold_price = $adjusted_gold_price1 * ($carat / 24);
             foreach ($g_product->variations as $variation) {
                 $grams = floatval($variation->name);
-                $base_price = ($adjusted_gold_price * $grams) * ($cost_percent / 100);
-                $base1_price=(($adjusted_gold_price * $grams) * ($cost_percent / 100))* 1.05;
+                $base_price = ($adjusted_gold_price * $grams) ;
+                $base1_price=  ($adjusted_gold_price * $grams) * 1.05;
                 $base_price += ($sale_margin / 100) * $base_price;
 
                 $variation->sell_price_inc_tax = $base_price;
