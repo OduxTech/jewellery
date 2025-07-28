@@ -730,3 +730,24 @@ $(document).on('click', 'button.apply-all', function(){
         element.change();
     });
 });
+
+$(document).ready(function () {
+
+        function toggleCostPercentBasedOnBrand() {
+            var selectedBrandId = $("#brand_id").val();
+            if (selectedBrandId == "9") {
+                $('#cost_percent_wrapper').fadeOut(); // Hide if silver
+            } else {
+                $('#cost_percent_wrapper').fadeIn();  // Show otherwise
+            }
+        }
+
+        // Call on page load
+        toggleCostPercentBasedOnBrand();
+
+        // Call when brand changes
+        $(document).on('change', '#brand_id', function () {
+            toggleCostPercentBasedOnBrand();
+        });
+
+    });

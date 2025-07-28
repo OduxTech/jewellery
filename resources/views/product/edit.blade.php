@@ -116,7 +116,7 @@
               </div>
             </div>
              
-            <div class="col-sm-4">
+            <div class="col-sm-4" id="cost_percent_wrapper">
             <div class="form-group">
                 {!! Form::label('cost_percent', __('product.cost_percent') . ':*') !!}
                 {!! Form::number('cost_percent', $product->cost_percent, [
