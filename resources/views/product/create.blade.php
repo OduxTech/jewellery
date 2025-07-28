@@ -112,10 +112,10 @@
                 {!! Form::select('product_locations[]', $business_locations, $default_location, ['class' => 'form-control select2', 'multiple', 'id' => 'product_locations']); !!}
             </div>
         </div>
-      <div class="col-sm-4" id="cost_percent_wrapper">
+<div class="col-sm-4" id="cost_percent_wrapper">
             <div class="form-group">
                 {!! Form::label('cost_percent', __('product.cost_percent') . ':') !!}
-                {!! Form::number('cost_percent', !empty($duplicate_product->name) ? $duplicate_product->name : null, [
+                {!! Form::number('cost_percent', !empty($duplicate_product->name) ? $duplicate_product->name : old('cost_percent', 1), [
                     'class' => 'form-control',
                     'required',
                     'placeholder' => __('product.cost_percent'),
