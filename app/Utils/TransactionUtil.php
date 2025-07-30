@@ -2,6 +2,7 @@
 
 namespace App\Utils;
 
+use App;
 use App\AccountTransaction;
 use App\Business;
 use App\BusinessLocation;
@@ -370,6 +371,7 @@ class TransactionUtil extends Util
                     'product_id' => $product['product_id'],
                     'variation_id' => $product['variation_id'],
                     'quantity' => $uf_quantity * $multiplier,
+                    'serial_id' => ! empty($product['serial_id']) ? $product['serial_id'] : null,
                     'unit_price_before_discount' => $unit_price_before_discount,
                     'unit_price' => $unit_price,
                     'line_discount_type' => ! empty($product['line_discount_type']) ? $product['line_discount_type'] : null,
@@ -653,7 +655,20 @@ class TransactionUtil extends Util
             foreach ($sell_lines as $line) {
                 if ($adjust_qty) {
                     $this->adjustQuantity($location_id, $line->product_id, $line->variation_id, $line->quantity);
+
+                    $serialId = $line->serial_id;
+                    if (! empty($serialId)) {
+                        //Delete the serial number
+                        App\SerialNumber::where('id', $serialId)
+                            ->update(['status' => 'available',
+                                'transaction_sell_lines_id' => null,
+                                'sell_transaction_id' => null,
+                            ]);
+
+                    }
                 }
+
+                
 
                 //Update purchase order line quantity received
                 $this->updateSalesOrderLine($line->so_line_id, 0, $line->quantity);

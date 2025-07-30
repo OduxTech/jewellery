@@ -574,7 +574,7 @@ class SellPosController extends Controller
                             $decrease_qty = $decrease_qty * $product['base_unit_multiplier'];
                         }
 
-                        if ($product['enable_stock']) {
+                        if ($product['enable_stock']==1) {
                             $this->productUtil->decreaseProductQuantity(
                                 $product['product_id'],
                                 $product['variation_id'],
