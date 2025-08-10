@@ -1648,7 +1648,7 @@ class SellPosController extends Controller
         ];
     }
     // is_serial_no to display serial number in sale screen
-    private function getSellLineRow($variation_id, $location_id, $quantity, $row_count, $is_direct_sell, $is_serial_no, $so_line = null)
+    private function getSellLineRow($variation_id, $location_id, $quantity, $row_count, $is_direct_sell, $is_serial_no, $so_line = null, $serial_number ='')
     {
         $business_id = request()->session()->get('user.business_id');
         $business_details = $this->businessUtil->getDetails($business_id);
@@ -1670,7 +1670,7 @@ class SellPosController extends Controller
             $pos_settings['allow_overselling'] = true;
         }
 
-        $product = $this->productUtil->getDetailsFromVariation($variation_id, $business_id, $location_id, $check_qty);
+        $product = $this->productUtil->getDetailsFromVariation($variation_id, $business_id, $location_id, $check_qty, $serial_number);
 
         if (!isset($product->quantity_ordered)) {
             $product->quantity_ordered = $quantity;
@@ -1782,7 +1782,7 @@ class SellPosController extends Controller
      * @param  int  $location_id
      * @return \Illuminate\Http\Response
      */
-    public function getProductRow($variation_id, $location_id)
+    public function getProductRow($variation_id, $location_id, $serial_number = '')
     {
         $output = [];
 
@@ -1791,6 +1791,7 @@ class SellPosController extends Controller
             $row_count = $row_count + 1;
             $quantity = request()->get('quantity', 1);
             $weighing_barcode = request()->get('weighing_scale_barcode', null);
+            $serial_number= request()->get('serial_number', '');
 
             $is_direct_sell = false;
             if (request()->get('is_direct_sell') == 'true') {
@@ -1815,7 +1816,7 @@ class SellPosController extends Controller
                 }
             }
 
-            $output = $this->getSellLineRow($variation_id, $location_id, $quantity, $row_count, $is_direct_sell, $is_serial_no);
+            $output = $this->getSellLineRow($variation_id, $location_id, $quantity, $row_count, $is_direct_sell, $is_serial_no, null, $serial_number);
 
    
         
