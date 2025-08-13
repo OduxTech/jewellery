@@ -237,7 +237,7 @@ $(document).ready(function() {
 
                         //Pre select lot number only if the searched term is same as the lot number
                         var purchase_line_id = ui.item.purchase_line_id && searched_term == ui.item.lot_number ? ui.item.purchase_line_id : null;
-                        pos_product_row(ui.item.variation_id, purchase_line_id);
+                        pos_product_row(ui.item.variation_id, purchase_line_id,null,1,ui.item.serial_number);
                     } else {
                         alert(LANG.out_of_stock);
                     }
@@ -291,7 +291,7 @@ $(document).ready(function() {
                 string += ' (' + item.sub_sku + ')' + '<br> Price: ' + __currency_trans_from_en(selling_price, false, false, __currency_precision, true);
                 if (item.enable_stock == 1) {
                     var qty_available = __currency_trans_from_en(item.qty_available, false, false, __currency_precision, true);
-                    string += ' - ' + qty_available + item.unit;
+                    string += ' - ' + qty_available + item.unit + ' - ' + item.serial_number ;
                 }
                 string += '</div>';
 
@@ -1614,7 +1614,7 @@ function get_recent_transactions(status, element_obj) {
 }
 
 //variation_id is null when weighing_scale_barcode is used.
-function pos_product_row(variation_id = null, purchase_line_id = null, weighing_scale_barcode = null, quantity = 1) {
+function pos_product_row(variation_id = null, purchase_line_id = null, weighing_scale_barcode = null, quantity = 1, serial_number = '') {
 
     //Get item addition method
     var item_addtn_method = 0;
@@ -1735,7 +1735,8 @@ function pos_product_row(variation_id = null, purchase_line_id = null, weighing_
                 quantity: quantity,
                 is_sales_order: is_sales_order,
                 disable_qty_alert: disable_qty_alert,
-                is_draft: is_draft
+                is_draft: is_draft,
+                serial_number: serial_number,
             },
             dataType: 'json',
             success: function(result) {

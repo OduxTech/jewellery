@@ -1263,7 +1263,7 @@ class ProductController extends Controller
             $price_group_id = request()->input('price_group', '');
             $product_types = request()->get('product_types', []);
 
-            $search_fields = request()->get('search_fields', ['name', 'sku']);
+            $search_fields = request()->get('search_fields', ['name', 'sku','serial']);
             if (in_array('sku', $search_fields)) {
                 $search_fields[] = 'sub_sku';
             }

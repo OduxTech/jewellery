@@ -25,6 +25,17 @@ use App\SerialNumber;
 
 class ProductUtil extends Util
 {
+
+    function interpolateQuery($query)
+    {
+        $sql = $query->toSql();
+        foreach ($query->getBindings() as $binding) {
+            $binding = is_numeric($binding) ? $binding : "'$binding'";
+            $sql = preg_replace('/\?/', $binding, $sql, 1);
+        }
+        return $sql;
+    }
+
     /**
      * Create single type product variation
      *
@@ -126,7 +137,7 @@ class ProductUtil extends Util
                 $product_variation = ProductVariation::create($product_variation_data);
             }
 
-            
+
 
             //create variations
             if (!empty($value['variations'])) {
@@ -468,7 +479,7 @@ class ProductUtil extends Util
      * @param  bool  $check_qty (If false qty_available is not checked)
      * @return array
      */
-    public function getDetailsFromVariation($variation_id, $business_id, $location_id = null, $check_qty = true, $serial_no ='' )
+    public function getDetailsFromVariation($variation_id, $business_id, $location_id = null, $check_qty = true, $serial_no = '')
     {
         $variation = Variation::with('media')->findOrFail($variation_id);
 
@@ -566,12 +577,18 @@ class ProductUtil extends Util
         }
 
         if ($product->enable_serial) {
+            
             $serial_query = SerialNumber::where('variation_id', $variation_id)
                 ->where('status', 'available');
 
             if (!empty($business_id)) {
                 $serial_query->where('business_id', $business_id);
             }
+            if(!empty($serial_no)){
+                $serial_query->where('serial_number', '=', $serial_no);
+                $product->serial_id = $serial_query->value('id');
+            }
+            
 
             $product->available_serials = $serial_query->pluck('serial_number', 'id');
         }
@@ -1273,7 +1290,7 @@ class ProductUtil extends Util
                     $this->updateProductQuantity($transaction->location_id, $data['product_id'], $data['variation_id'], $new_quantity_f, 0, $currency_details);
                 }
 
-                
+
             }
 
             $purchase_line->quantity = $new_quantity;
@@ -1369,65 +1386,65 @@ class ProductUtil extends Util
         }
 
         // Generate serial numbers for saved lines
-foreach ($updated_purchase_lines as $purchase_line) {
-    if ($transaction->type == 'purchase' && $transaction->status == 'received') {
-        $product = Product::with('category')->find($purchase_line->product_id);
+        foreach ($updated_purchase_lines as $purchase_line) {
+            if ($transaction->type == 'purchase' && $transaction->status == 'received') {
+                $product = Product::with('category')->find($purchase_line->product_id);
 
-        if ($product->enable_serial) {
-            // Count existing serials for this purchase line
-            $existing_serials_count = DB::table('product_serials')
-                ->where('purchase_line_id', $purchase_line->id)
-                ->count();
+                if ($product->enable_serial) {
+                    // Count existing serials for this purchase line
+                    $existing_serials_count = DB::table('product_serials')
+                        ->where('purchase_line_id', $purchase_line->id)
+                        ->count();
 
-            $qty_difference = (int)$purchase_line->quantity - $existing_serials_count;
+                    $qty_difference = (int) $purchase_line->quantity - $existing_serials_count;
 
-            // Handle quantity increase (generate new serials)
-            if ($qty_difference > 0) {
-                $prefix = optional($product->category)->short_code ?? 'XX';
+                    // Handle quantity increase (generate new serials)
+                    if ($qty_difference > 0) {
+                        $prefix = optional($product->category)->short_code ?? 'XX';
 
-                // Get latest serial number for this prefix
-                $latest_serial = DB::table('product_serials')
-                    ->where('serial_number', 'like', $prefix.'-%')
-                    ->orderByDesc('id')
-                    ->first();
+                        // Get latest serial number for this prefix
+                        $latest_serial = DB::table('product_serials')
+                            ->where('serial_number', 'like', $prefix . '-%')
+                            ->orderByDesc('id')
+                            ->first();
 
-                $last_no = $latest_serial ? intval(explode('-', $latest_serial->serial_number)[1]) : 0;
+                        $last_no = $latest_serial ? intval(explode('-', $latest_serial->serial_number)[1]) : 0;
 
-                // Generate new serials
-                $new_serials = [];
-                for ($i = 1; $i <= $qty_difference; $i++) {
-                    $new_serials[] = [
-                        'product_id' => $purchase_line->product_id,
-                        'variation_id' => $purchase_line->variation_id,
-                        'purchase_line_id' => $purchase_line->id,
-                        'purchase_transaction_id' => $transaction->id,
-                        'serial_number' => $prefix.'-'.str_pad($last_no + $i, 5, '0', STR_PAD_LEFT),
-                        'status' => 'available',
-                        'business_id' => $transaction->business_id,
-                        'created_at' => now(),
-                        'updated_at' => now()
-                    ];
+                        // Generate new serials
+                        $new_serials = [];
+                        for ($i = 1; $i <= $qty_difference; $i++) {
+                            $new_serials[] = [
+                                'product_id' => $purchase_line->product_id,
+                                'variation_id' => $purchase_line->variation_id,
+                                'purchase_line_id' => $purchase_line->id,
+                                'purchase_transaction_id' => $transaction->id,
+                                'serial_number' => $prefix . '-' . str_pad($last_no + $i, 5, '0', STR_PAD_LEFT),
+                                'status' => 'available',
+                                'business_id' => $transaction->business_id,
+                                'created_at' => now(),
+                                'updated_at' => now()
+                            ];
+                        }
+
+                        DB::table('product_serials')->insert($new_serials);
+                    }
+                    // Handle quantity decrease (delete last serials)
+                    elseif ($qty_difference < 0) {
+                        // Get the last created serials for this purchase line
+                        $last_serials = DB::table('product_serials')
+                            ->where('purchase_line_id', $purchase_line->id)
+                            ->orderByDesc('id')
+                            ->take(abs($qty_difference))
+                            ->pluck('id');
+
+                        // Delete them
+                        DB::table('product_serials')
+                            ->whereIn('id', $last_serials)
+                            ->delete();
+                    }
                 }
-
-                DB::table('product_serials')->insert($new_serials);
-            }
-            // Handle quantity decrease (delete last serials)
-            elseif ($qty_difference < 0) {
-                // Get the last created serials for this purchase line
-                $last_serials = DB::table('product_serials')
-                    ->where('purchase_line_id', $purchase_line->id)
-                    ->orderByDesc('id')
-                    ->take(abs($qty_difference))
-                    ->pluck('id');
-
-                // Delete them
-                DB::table('product_serials')
-                    ->whereIn('id', $last_serials)
-                    ->delete();
             }
         }
-    }
-}
         return $delete_purchase_lines;
     }
 
@@ -1716,7 +1733,12 @@ foreach ($updated_purchase_lines as $purchase_line) {
                         });
                     }
                 }
-            );
+            )
+            ->leftJoin('product_serials AS ps', function ($join) {
+                $join->on('variations.id', '=', 'ps.variation_id')
+                    ->where('products.enable_serial', '=', 1)
+                    ->where('ps.status', '=', 'available');
+            });
 
         if (!is_null($not_for_selling)) {
             $query->where('products.not_for_selling', $not_for_selling);
@@ -1765,6 +1787,11 @@ foreach ($updated_purchase_lines as $purchase_line) {
                         $query->orWhere('pl.lot_number', 'like', '%' . $search_term . '%');
                     }
 
+                    //if (in_array('serial', $search_fields)) {
+                        $query->orWhere('ps.serial_number', 'like', '%' . $search_term . '%');
+                        
+                    //}
+
                     if (in_array('product_custom_field1', $search_fields)) {
                         $query->orWhere('product_custom_field1', 'like', '%' . $search_term . '%');
                     }
@@ -1798,6 +1825,10 @@ foreach ($updated_purchase_lines as $purchase_line) {
                     if (in_array('lot', $search_fields)) {
                         $query->orWhere('pl.lot_number', $search_term);
                     }
+
+                    if (in_array('serial', $search_fields)) {
+                        $query->orWhere('ps.serial_number', $search_term);
+                    }
                 });
             }
         }
@@ -1821,7 +1852,8 @@ foreach ($updated_purchase_lines as $purchase_line) {
             'VLD.qty_available',
             'variations.sell_price_inc_tax as selling_price',
             'variations.sub_sku',
-            'U.short_name as unit'
+            'U.short_name as unit',
+            'ps.serial_number as serial_number'
         );
 
         if (!empty($price_group_id)) {
@@ -1832,11 +1864,21 @@ foreach ($updated_purchase_lines as $purchase_line) {
             $query->addSelect('pl.id as purchase_line_id', 'pl.lot_number');
         }
 
-        $query->groupBy('variations.id');
+        //$query->groupBy('variations.id');
+
+        \Log::info($query->toSql());
+        
+        \Log::info($query->getBindings());
+
+        \Log::info('Interpolated SQL: ' . $this->interpolateQuery($query));
+
+
 
         return $query->orderBy('VLD.qty_available', 'desc')
             ->get();
     }
+
+
 
     public function getProductStockDetails($business_id, $filters, $for)
     {
