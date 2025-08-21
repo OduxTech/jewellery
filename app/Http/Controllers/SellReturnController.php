@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Spatie\Activitylog\Models\Activity;
 use Yajra\DataTables\Facades\DataTables;
+use App\SerialNumber;
 
 class SellReturnController extends Controller
 {
@@ -327,6 +328,7 @@ class SellReturnController extends Controller
         if (!$this->moduleUtil->isSubscribed($business_id)) {
             return $this->moduleUtil->expiredResponse();
         }
+                            
 
         $sell = Transaction::where('business_id', $business_id)
             ->with(['sell_lines', 'location', 'return_parent', 'contact', 'tax', 'sell_lines.sub_unit', 'sell_lines.product', 'sell_lines.product.unit'])
@@ -337,6 +339,13 @@ class SellReturnController extends Controller
                 $formated_sell_line = $this->transactionUtil->recalculateSellLineTotals($business_id, $value);
                 $sell->sell_lines[$key] = $formated_sell_line;
             }
+
+            $sell->sell_lines[$key]->serial_number = SerialNumber::where('variation_id', $value->variation_id)
+            ->where('sell_transaction_id', $sell->id) // make sure it's THIS sale
+            ->where('status', 'sold')
+            ->pluck('serial_number')
+            ->toArray();
+
 
             $sell->sell_lines[$key]->formatted_qty = $this->transactionUtil->num_f($value->quantity, false, null, true);
         }
@@ -373,6 +382,18 @@ class SellReturnController extends Controller
                 DB::beginTransaction();
 
                 $sell_return = $this->transactionUtil->addSellReturn($input, $business_id, $user_id);
+                
+                // ✅ Update serial numbers to "returned"
+            if (!empty($input['products'])) {
+                foreach ($input['products'] as $product) {
+                    if (!empty($product['serial_numbers'])) {
+                        foreach ($product['serial_numbers'] as $serial) {
+                            SerialNumber::where('serial_no', $serial)
+                                ->update(['status' => 'returned']);
+                        }
+                    }
+                }
+            }
 
                 $receipt = $this->receiptContent($business_id, $sell_return->location_id, $sell_return->id);
 

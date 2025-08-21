@@ -61,6 +61,7 @@
 							<tr class="bg-green">
 								<th>#</th>
 								<th>@lang('product.product_name')</th>
+								<th>@lang('product.serial_number')</th>
 								<th>@lang('sale.unit_price')</th>
 								<th>@lang('lang_v1.sell_quantity')</th>
 								<th>@lang('lang_v1.return_quantity')</th>
@@ -99,6 +100,8 @@
 									<br>
 									{{ $sell_line->variations->sub_sku }}
 								</td>
+								<td>{{ implode(', ', $sell_line->serial_number) }}</td>
+
 								<td><span class="display_currency" data-currency_symbol="true">{{ $sell_line->unit_price_inc_tax }}</span></td>
 								<td>{{ $sell_line->formatted_qty }} {{$unit_name}}</td>
 
