@@ -6201,14 +6201,23 @@ class TransactionUtil extends Util
                 // Update quantity in variation location details
                 $productUtil->updateProductQuantity($sell_return->location_id, $sell_line->product_id, $sell_line->variation_id, $quantity, $quantity_before, null, false);
 
-                // 🔹 Update serial numbers status to returned
+                // // 🔹 Update serial numbers status to returned
+                // if (!empty($product_line['serial_numbers'])) {
+                //     foreach ($product_line['serial_numbers'] as $serial) {
+                //         \App\SerialNumber::where('sell_transaction_id', $sell_line->id)
+                //             ->where('serial_number', $serial)
+                //             ->update(['status' => 'returned']);
+                //     }
+                // }
+
                 if (!empty($product_line['serial_numbers'])) {
                     foreach ($product_line['serial_numbers'] as $serial) {
-                        \App\SerialNumber::where('sell_transaction_id', $sell_line->id)
-                            ->where('serial_number', $serial)
+                        \App\SerialNumber::where('serial_number', $serial)
+                            ->where('sell_transaction_id', $sell->id)
                             ->update(['status' => 'returned']);
                     }
                 }
+
             }
         }
 
