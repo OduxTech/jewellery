@@ -383,17 +383,17 @@ class SellReturnController extends Controller
 
                 $sell_return = $this->transactionUtil->addSellReturn($input, $business_id, $user_id);
                 
-                // ✅ Update serial numbers to "returned"
-            if (!empty($input['products'])) {
-                foreach ($input['products'] as $product) {
-                    if (!empty($product['serial_numbers'])) {
-                        foreach ($product['serial_numbers'] as $serial) {
-                            SerialNumber::where('serial_no', $serial)
-                                ->update(['status' => 'returned']);
-                        }
-                    }
-                }
-            }
+                // // ✅ Update serial numbers to "returned"
+                // if (!empty($input['products'])) {
+                //     foreach ($input['products'] as $product) {
+                //         if (!empty($product['serial_numbers'])) {
+                //             foreach ($product['serial_numbers'] as $serial) {
+                //                 SerialNumber::where('serial_no', $serial)
+                //                     ->update(['status' => 'returned']);
+                //             }
+                //         }
+                //     }
+                // }
 
                 $receipt = $this->receiptContent($business_id, $sell_return->location_id, $sell_return->id);
 
