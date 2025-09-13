@@ -292,6 +292,7 @@
 				<tr>
 					<th width="{{$p_width}}%">{{$receipt_details->table_product_label}}</th>
 					{{-- <th class="text-right" width="15%">{{$receipt_details->table_qty_label}}</th> --}}
+					<th class="text-right" width="15%">Weight</th>
 					<th class="text-right" width="15%">{{$receipt_details->table_unit_price_label}}</th>
 					@if(!empty($receipt_details->discounted_unit_price_label))
 						<th class="text-right" width="10%">{{$receipt_details->discounted_unit_price_label}}</th>
@@ -309,7 +310,7 @@
 							@if(!empty($line['image']))
 								<img src="{{$line['image']}}" alt="Image" width="50" style="float: left; margin-right: 8px;">
 							@endif
-                            {{$line['name']}} {{$line['variation']}}g | {{$line['serial_number']}}
+                            {{$line['name']}} | {{$line['serial_number']}}
                             @if(!empty($line['sub_sku'])), {{$line['sub_sku']}} @endif @if(!empty($line['brand'])), {{$line['brand']}} @endif @if(!empty($line['cat_code'])), {{$line['cat_code']}}@endif
                             @if(!empty($line['product_custom_fields'])), {{$line['product_custom_fields']}} @endif
                             @if(!empty($line['product_description']))
@@ -345,6 +346,11 @@
                             </small>
                             @endif
 						</td> --}}
+
+						{{-- Add Weight --}}
+						<td class="text-right">
+							{{$line['variation']}}g 
+						</td>
 						<td class="text-right">{{$line['unit_price_before_discount']}}</td>
 						@if(!empty($receipt_details->discounted_unit_price_label))
 							<td class="text-right">
