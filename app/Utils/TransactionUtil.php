@@ -2023,6 +2023,7 @@ class TransactionUtil extends Util
             $brand = $line->product->brand;
             $cat = $line->product->category;
             $tax_details = TaxRate::find($line->tax_id);
+            $serial_no = $line->serialNumbers;
 
             $unit_name = ! empty($unit->short_name) ? $unit->short_name : '';
             $base_unit_name = $unit_name;
@@ -2038,6 +2039,7 @@ class TransactionUtil extends Util
                 'name' => $product->name,
                 'product_description' => ! empty($show_product_description) ? $product->product_description : null,
                 'variation' => (empty($variation->name) || $variation->name == 'DUMMY') ? '' : $variation->name,
+                'serial_number' => $serial_no->serial_number ?? '',
                 'product_variation' => (empty($product_variation->name) || $product_variation->name == 'DUMMY') ? '' : $product_variation->name,
                 //Field for 2nd column
                 'quantity' => $this->num_f($line->quantity, false, $business_details, true),
