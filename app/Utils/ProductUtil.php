@@ -579,7 +579,8 @@ class ProductUtil extends Util
         if ($product->enable_serial) {
             
             $serial_query = SerialNumber::where('variation_id', $variation_id)
-                ->where('status', 'available');
+                ->whereIn('status', ['available', 'returned']);
+
 
             if (!empty($business_id)) {
                 $serial_query->where('business_id', $business_id);
@@ -1737,7 +1738,7 @@ class ProductUtil extends Util
             ->leftJoin('product_serials AS ps', function ($join) {
                 $join->on('variations.id', '=', 'ps.variation_id')
                     ->where('products.enable_serial', '=', 1)
-                    ->where('ps.status', '=', 'available');
+                    ->whereIn('status', ['available', 'returned']);  // FILTER FROM HERE
             });
 
         if (!is_null($not_for_selling)) {

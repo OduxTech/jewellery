@@ -61,6 +61,7 @@
 							<tr class="bg-green">
 								<th>#</th>
 								<th>@lang('product.product_name')</th>
+								<th>@lang('product.serial_number')</th>
 								<th>@lang('sale.unit_price')</th>
 								<th>@lang('lang_v1.sell_quantity')</th>
 								<th>@lang('lang_v1.return_quantity')</th>
@@ -99,6 +100,10 @@
 									<br>
 									{{ $sell_line->variations->sub_sku }}
 								</td>
+								<td>
+									{{ !empty($sell_line->serial_number) ? implode(', ', $sell_line->serial_number) : '' }}
+								</td>
+
 								<td><span class="display_currency" data-currency_symbol="true">{{ $sell_line->unit_price_inc_tax }}</span></td>
 								<td>{{ $sell_line->formatted_qty }} {{$unit_name}}</td>
 
@@ -106,6 +111,12 @@
 									<input type="text" name="products[{{$loop->index}}][quantity]" value="{{@format_quantity($sell_line->quantity_returned)}}" class="form-control input-sm input_number return_qty input_quantity" data-rule-abs_digit="{{$check_decimal}}" data-msg-abs_digit="@lang('lang_v1.decimal_value_not_allowed')" data-rule-max-value="{{$sell_line->quantity}}" data-msg-max-value="@lang('validation.custom-messages.quantity_not_available', ['qty' => $sell_line->formatted_qty, 'unit' => $unit_name ])">
 									<input name="products[{{$loop->index}}][unit_price_inc_tax]" type="hidden" class="unit_price" value="{{@num_format($sell_line->unit_price_inc_tax)}}">
 									<input name="products[{{$loop->index}}][sell_line_id]" type="hidden" value="{{$sell_line->id}}">
+									@if(!empty($sell_line->serial_number))
+										@foreach($sell_line->serial_number as $serial)
+											<input type="hidden" name="products[{{$loop->index}}][serial_numbers][]" value="{{ $serial }}">
+										@endforeach
+									@endif
+
 								</td>
 								<td>
 									<div class="return_subtotal"></div>

@@ -2023,6 +2023,7 @@ class TransactionUtil extends Util
             $brand = $line->product->brand;
             $cat = $line->product->category;
             $tax_details = TaxRate::find($line->tax_id);
+            $serial_no = $line->serialNumbers;
 
             $unit_name = ! empty($unit->short_name) ? $unit->short_name : '';
             $base_unit_name = $unit_name;
@@ -2038,6 +2039,7 @@ class TransactionUtil extends Util
                 'name' => $product->name,
                 'product_description' => ! empty($show_product_description) ? $product->product_description : null,
                 'variation' => (empty($variation->name) || $variation->name == 'DUMMY') ? '' : $variation->name,
+                'serial_number' => $serial_no->serial_number ?? '',
                 'product_variation' => (empty($product_variation->name) || $product_variation->name == 'DUMMY') ? '' : $product_variation->name,
                 //Field for 2nd column
                 'quantity' => $this->num_f($line->quantity, false, $business_details, true),
@@ -6200,6 +6202,24 @@ class TransactionUtil extends Util
 
                 // Update quantity in variation location details
                 $productUtil->updateProductQuantity($sell_return->location_id, $sell_line->product_id, $sell_line->variation_id, $quantity, $quantity_before, null, false);
+
+                // // 🔹 Update serial numbers status to returned
+                // if (!empty($product_line['serial_numbers'])) {
+                //     foreach ($product_line['serial_numbers'] as $serial) {
+                //         \App\SerialNumber::where('sell_transaction_id', $sell_line->id)
+                //             ->where('serial_number', $serial)
+                //             ->update(['status' => 'returned']);
+                //     }
+                // }
+
+                if (!empty($product_line['serial_numbers'])) {
+                    foreach ($product_line['serial_numbers'] as $serial) {
+                        \App\SerialNumber::where('serial_number', $serial)
+                            ->where('sell_transaction_id', $sell->id)
+                            ->update(['status' => 'returned']);
+                    }
+                }
+
             }
         }
 
