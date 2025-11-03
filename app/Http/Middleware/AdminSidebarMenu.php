@@ -639,7 +639,36 @@ class AdminSidebarMenu
                                 );
                             }
                         }
+                         if (auth()->user()->can('serial_stock_report.view')) {
+                            $sub->url(
+                                action([\App\Http\Controllers\ReportController::class, 'getSerialStockReport']),
+                                __('report.serial_stock_report'),
+                                ['icon' => '', 'active' => request()->segment(2) == 'serial-stock-report']
+                            );
+                            // if (session('business.enable_product_expiry') == 1) {
+                            //     $sub->url(
+                            //         action([\App\Http\Controllers\ReportController::class, 'getStockExpiryReport']),
+                            //         __('report.stock_expiry_report'),
+                            //         ['icon' => '', 'active' => request()->segment(2) == 'stock-expiry']
+                            //     );
+                            // }
+                            // if (session('business.enable_lot_number') == 1) {
+                            //     $sub->url(
+                            //         action([\App\Http\Controllers\ReportController::class, 'getLotReport']),
+                            //         __('lang_v1.lot_report'),
+                            //         ['icon' => '', 'active' => request()->segment(2) == 'lot-report']
+                            //     );
+                            // }
 
+                            // if (in_array('stock_adjustment', $enabled_modules)) {
+                            //     $sub->url(
+                            //         action([\App\Http\Controllers\ReportController::class, 'getStockAdjustmentReport']),
+                            //         __('report.stock_adjustment_report'),
+                            //         ['icon' => '', 'active' => request()->segment(2) == 'stock-adjustment-report']
+                            //     );
+                            // }
+                        }
+                        
                         if (auth()->user()->can('trending_product_report.view')) {
                             $sub->url(
                                 action([\App\Http\Controllers\ReportController::class, 'getTrendingProducts']),
@@ -647,6 +676,8 @@ class AdminSidebarMenu
                                 ['icon' => '', 'active' => request()->segment(2) == 'trending-products']
                             );
                         }
+
+
 
                         if (auth()->user()->can('purchase_n_sell_report.view')) {
                             $sub->url(

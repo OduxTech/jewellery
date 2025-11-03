@@ -198,7 +198,75 @@ $(document).ready(function() {
             }
         },
     });
+////////////////////////////////////////// serial stock report///////////////////////////////////////////////////
+$(document).ready(function() {
+    var serial_stock_report_cols = [
+        { data: 'sku', name: 'sku' },
+        { data: 'product', name: 'product' },
+        { data: 'variation', name: 'variation' },
+        { data: 'category_name', name: 'category_name' },
+        { data: 'location_name', name: 'location_name' },
+        { data: 'unit_price', name: 'unit_price' },
+        { data: 'stock', name: 'stock' },
+        { data: 'stock_price', name: 'stock_price' },
+        { data: 'stock_value_by_sale_price', name: 'stock_value_by_sale_price' },
+        { data: 'potential_profit', name: 'potential_profit' },
+        { data: 'total_sold', name: 'total_sold' },
+        { data: 'total_transfered', name: 'total_transfered' },
+        { data: 'total_adjusted', name: 'total_adjusted' },
+        { data: 'product_custom_field1', name: 'product_custom_field1' },
+        { data: 'product_custom_field2', name: 'product_custom_field2' },
+        { data: 'product_custom_field3', name: 'product_custom_field3' },
+        { data: 'product_custom_field4', name: 'product_custom_field4' },
+        { data: 'total_mfg_stock', name: 'total_mfg_stock' }
+    ];
 
+    // Initialize DataTable
+    var serialStockReportTable = $('#serial_stock_report_table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '/reports/serial-stock-report',
+            data: function(d) {
+                return {
+                    location_id: $('#location_id').val(),
+                    category_id: $('#category_id').val(),
+                    brand_id: $('#brand').val(),
+                    unit_id: $('#unit').val(),
+                    only_mfg_products: $('#only_mfg_products').length && $('#only_mfg_products').is(':checked') ? 1 : 0
+                };
+            }
+        },
+        columns: serial_stock_report_cols,
+        order: [[0, 'asc']],
+        scrollY: "75vh",
+        scrollX: true,
+        scrollCollapse: true,
+        fnDrawCallback: function(oSettings) {
+            if (typeof __currency_convert_recursively === 'function') {
+                __currency_convert_recursively($('#serial_stock_report_table'));
+            }
+        }
+    });
+
+    // Add event listeners for filters
+    $('#location_id, #category_id, #brand, #unit').on('change', function() {
+        serialStockReportTable.ajax.reload();
+    });
+
+    // For checkbox (if you uncomment the manufacturing checkbox later)
+    $('#only_mfg_products').on('change', function() {
+        serialStockReportTable.ajax.reload();
+    });
+
+    // If you have sub-category dependency (if you uncomment it later)
+    $('#category_id').on('change', function() {
+        var category_id = $(this).val();
+        // If you have sub-category functionality, add it here
+        serialStockReportTable.ajax.reload();
+    });
+});
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     if ($('#trending_product_date_range').length == 1) {
         get_sub_categories();
         $('#trending_product_date_range').daterangepicker({
