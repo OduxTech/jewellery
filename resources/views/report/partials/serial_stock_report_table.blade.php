@@ -8,28 +8,17 @@
 <table class="table table-bordered table-striped" id="serial_stock_report_table">
     <thead>
         <tr>
+            <th>Serial Number</th>
+            <th>Status</th>
             <th>SKU</th>
             <th>@lang('business.product')</th>
-            <th>@lang('lang_v1.variation')</th>
+            <th>Weight</th>
             <th>@lang('product.category')</th>
             <th>@lang('sale.location')</th>
+            <th>Supplier</th>
             <th>@lang('purchase.unit_selling_price')</th>
             <th>@lang('report.current_stock')</th>
-            @can('view_product_stock_value')
-            <th class="stock_price">@lang('lang_v1.total_stock_price') <br><small>(@lang('lang_v1.by_purchase_price'))</small></th>
-            <th>@lang('lang_v1.total_stock_price') <br><small>(@lang('lang_v1.by_sale_price'))</small></th>
-            <th>@lang('lang_v1.potential_profit')</th>
-            @endcan
-            <th>@lang('report.total_unit_sold')</th>
-            <th>@lang('lang_v1.total_unit_transfered')</th>
-            <th>@lang('lang_v1.total_unit_adjusted')</th>
-            <th>{{$product_custom_field1}}</th>
-            <th>{{$product_custom_field2}}</th>
-            <th>{{$product_custom_field3}}</th>
-            <th>{{$product_custom_field4}}</th>
-            @if($show_manufacturing_data)
-                <th class="current_stock_mfg">@lang('manufacturing::lang.current_stock_mfg') @show_tooltip(__('manufacturing::lang.mfg_stock_tooltip'))</th>
-            @endif
+
         </tr>
     </thead>
     {{-- REMOVE THE TFOOT TEMPORARILY --}}
