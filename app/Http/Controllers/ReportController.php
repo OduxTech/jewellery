@@ -497,7 +497,7 @@ class ReportController extends Controller
 
 public function getSerialStockReport(Request $request)
 {
-    if (! auth()->user()->can('serial_stock_report.view')) {
+    if (! auth()->user()->can('stock_report.view')) {
         abort(403, 'Unauthorized action.');
     }
 
