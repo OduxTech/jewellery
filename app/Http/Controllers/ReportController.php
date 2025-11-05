@@ -531,6 +531,10 @@ public function getSerialStockReport(Request $request)
         $expandedProducts = [];
         
         foreach ($products as $product) {
+            // Skip any product that has no stock
+            if (empty($product->stock) || $product->stock <= 0) {
+                continue;
+            }
             if ($product->enable_serial && $product->stock > 0) {
                 // Get serial numbers from product_serials table with supplier info
                 $serialNumbers = $this->getAvailableSerialNumbersWithSupplier(
@@ -543,14 +547,14 @@ public function getSerialStockReport(Request $request)
                 // Create one row for each serial number
                 foreach ($serialNumbers as $serial) {
                     // Get brand name
-                    $brand = $this->getBrandName($business_id, $product->product_id);
+                    //$brand = $this->getBrandName($business_id, $product->product_id);
 
                     $expandedRow = clone $product;
                     $expandedRow->serial_number = $serial->serial_number;
                     $expandedRow->serial_status = $serial->status;
                     $expandedRow->stock = 1;
                     $expandedRow->supplier_name = $serial->supplier_name ?? 'N/A'; // Add supplier name
-                    $expandedRow->brand_name = $brand->brand_name ?? 'N/A';// to show caret value
+                    $expandedRow->brand_name = $serial->brand_name ?? 'N/A';// to show caret value
                     $expandedProducts[] = $expandedRow;
                 }
             } else {
@@ -575,7 +579,7 @@ public function getSerialStockReport(Request $request)
 
         $datatable = Datatables::of($expandedProducts)
             ->editColumn('stock', function ($row) {
-                if ($row->enable_stock) {
+                if ($row->enable_stock ) {
                     $stock = $row->stock ? $row->stock : 0;
                     return '<span class="current_stock" data-orig-value="'.(float) $stock.'" data-unit="'.$row->unit.'"> '.$this->transactionUtil->num_f($stock, false, null, true).'</span>'.' '.$row->unit;
                 } else {
@@ -653,19 +657,19 @@ private function getAvailableSerialNumbersWithSupplier($business_id, $product_id
             'ps.serial_number', 
             'ps.status',
             'c.name as supplier_name', // Get supplier name from contacts table
-            //'br.name as brand_name' // Get brand name from brands table
+            'br.name as brand_name' // Get brand name from brands table
         )
         ->get();
 }
-private function getBrandName($business_id, $product_id)
-{
-    return DB::table('products as pr')
-        ->leftJoin('brands as br', 'pr.brand_id', '=', 'br.id')
-        ->where('pr.business_id', $business_id)
-        ->where('pr.id', $product_id)
-        ->select('br.name as brand_name')
-        ->first(); // ✅ returns one record, not a collection
-}
+// private function getBrandName($business_id, $product_id)
+// {
+//     return DB::table('products as pr')
+//         ->leftJoin('brands as br', 'pr.brand_id', '=', 'br.id')
+//         ->where('pr.business_id', $business_id)
+//         ->where('pr.id', $product_id)
+//         ->select('br.name as brand_name')
+//         ->first(); // ✅ returns one record, not a collection
+// }
 
 
 
