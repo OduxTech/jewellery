@@ -542,11 +542,15 @@ public function getSerialStockReport(Request $request)
                 
                 // Create one row for each serial number
                 foreach ($serialNumbers as $serial) {
+                    // Get brand name
+                    $brand = $this->getBrandName($business_id, $product->product_id);
+
                     $expandedRow = clone $product;
                     $expandedRow->serial_number = $serial->serial_number;
                     $expandedRow->serial_status = $serial->status;
                     $expandedRow->stock = 1;
                     $expandedRow->supplier_name = $serial->supplier_name ?? 'N/A'; // Add supplier name
+                    $expandedRow->brand_name = $brand->brand_name ?? 'N/A';// to show caret value
                     $expandedProducts[] = $expandedRow;
                 }
             } else {
@@ -554,6 +558,7 @@ public function getSerialStockReport(Request $request)
                 $product->serial_number = 'N/A';
                 $product->serial_status = 'non-serialized';
                 $product->supplier_name = 'N/A'; // Default for non-serialized
+                $product->brand_name = 'N/A'; // Using brand_id column to show caret value
                 $expandedProducts[] = $product;
             }
         }
@@ -579,6 +584,9 @@ public function getSerialStockReport(Request $request)
             })
             ->editColumn('product', function ($row) {
                 return $row->product;
+            })
+            ->editColumn('caret_value', function ($row) {
+                return $row->brand_id;
             })
             ->addColumn('variation', function ($row) {
                 $variation = '';
@@ -632,6 +640,8 @@ private function getAvailableSerialNumbersWithSupplier($business_id, $product_id
         ->leftJoin('purchase_lines as pl', 'ps.purchase_line_id', '=', 'pl.id')
         ->leftJoin('transactions as t', 'pl.transaction_id', '=', 't.id')
         ->leftJoin('contacts as c', 't.contact_id', '=', 'c.id')
+        ->leftJoin('products as pr', 'ps.product_id', '=', 'pr.id')
+        ->leftJoin('brands as br', 'pr.brand_id', '=', 'br.id')
         ->where('ps.business_id', $business_id)
         ->where('ps.product_id', $product_id)
         ->where('ps.variation_id', $variation_id)
@@ -642,10 +652,21 @@ private function getAvailableSerialNumbersWithSupplier($business_id, $product_id
         ->select(
             'ps.serial_number', 
             'ps.status',
-            'c.name as supplier_name' // Get supplier name from contacts table
+            'c.name as supplier_name', // Get supplier name from contacts table
+            //'br.name as brand_name' // Get brand name from brands table
         )
         ->get();
 }
+private function getBrandName($business_id, $product_id)
+{
+    return DB::table('products as pr')
+        ->leftJoin('brands as br', 'pr.brand_id', '=', 'br.id')
+        ->where('pr.business_id', $business_id)
+        ->where('pr.id', $product_id)
+        ->select('br.name as brand_name')
+        ->first(); // ✅ returns one record, not a collection
+}
+
 
 
     // // this function copy of above get route becouse of large size parameter 

@@ -205,6 +205,7 @@ $(document).ready(function() {
         { data: 'serial_status', name: 'serial_status' },
         { data: 'sku', name: 'sku' },
         { data: 'product', name: 'product' },
+        { data: 'brand_name', name: 'brand_name' },
         { data: 'variation', name: 'variation' },
         { data: 'category_name', name: 'category_name' },
         { data: 'location_name', name: 'location_name' },
