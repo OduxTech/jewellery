@@ -1,6 +1,5 @@
 # Laravel & PHP
 /vendor/
-/public/
 /storage/
 /bootstrap/
 
@@ -12,7 +11,5 @@
 # OS files
 .DS_Store
 Thumbs.db
-
-
 
 

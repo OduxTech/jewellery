@@ -153,7 +153,20 @@
 									value="12">
 							</div>
 						</td>
+						<td>
+							<div class="checkbox">
+							    <label>
+							    	<input type="checkbox" checked name="brand" value="1"> <b>@lang( 'lang_v1.brand' )</b>
+							    </label>
+							</div>
 
+							<div class="input-group">
+      							<div class="input-group-addon"><b>@lang( 'lang_v1.size' )</b></div>
+								<input type="text" class="form-control" 
+									name="print[packing_date_size]" 
+									value="12">
+							</div>
+						</td>
 						<td>
 							@if(request()->session()->get('business.enable_lot_number') == 1)
 							
@@ -228,10 +241,7 @@
 				</table>
 			</div>
 
-			
-
-			
-
+		
 			<div class="col-sm-12">
 				<hr/>
 			</div>

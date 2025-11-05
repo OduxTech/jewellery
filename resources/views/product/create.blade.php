@@ -75,7 +75,7 @@
 
         <div class="col-sm-4 @if(!session('business.enable_brand')) hide @endif">
             <div class="form-group">
-                {!! Form::label('brand_id', __('product.brand') . ':') !!}
+                {!! Form::label('brand_id', __('product.carat_value') . ':') !!}
                 <div class="input-group">
                     {!! Form::select('brand_id', $brands, !empty($duplicate_product->brand_id) ? $duplicate_product->brand_id : null, ['placeholder' => __('messages.please_select'), 'class' => 'form-control select2']); !!}
                     <span class="input-group-btn">
@@ -98,6 +98,8 @@
             </div>
         </div>
 
+
+
         @php
         $default_location = null;
         if(count($business_locations) == 1){
@@ -110,7 +112,18 @@
                 {!! Form::select('product_locations[]', $business_locations, $default_location, ['class' => 'form-control select2', 'multiple', 'id' => 'product_locations']); !!}
             </div>
         </div>
+<div class="col-sm-4" id="cost_percent_wrapper">
+            <div class="form-group">
+                {!! Form::label('cost_percent', __('product.cost_percent') . ':') !!}
+                {!! Form::number('cost_percent', !empty($duplicate_product->name) ? $duplicate_product->name : old('cost_percent', 1), [
+                    'class' => 'form-control',
+                    'required',
+                    'placeholder' => __('product.cost_percent'),
+                    'id' => 'cost_percent'
+                ]) !!}
+            </div>
 
+        </div>
 
         <div class="clearfix"></div>
 
@@ -121,13 +134,37 @@
                     {!! Form::checkbox('enable_stock', 1, !empty($duplicate_product) ? $duplicate_product->enable_stock : true, ['class' => 'input-icheck', 'id' => 'enable_stock']); !!} <strong>@lang('product.manage_stock')</strong>
                 </label>@show_tooltip(__('tooltip.enable_stock')) <p class="help-block"><i>@lang('product.enable_stock_help')</i></p>
             </div>
+
+            <div class="form-group">
+ 
+                <label>
+                    {!! Form::checkbox('enable_serial', 1, !empty($duplicate_product) ? $duplicate_product->enable_serial : true, ['class' => 'input-icheck', 'id' => 'enable_serial']); !!} <strong>@lang('product.manage_serial')</strong>
+                </label>@show_tooltip(__('tooltip.enable_serial')) <p class="help-block"><i>@lang('product.enable_serial_help')</i></p>
+            </div>
+
         </div>
+
         <div class="col-sm-4 @if(!empty($duplicate_product) && $duplicate_product->enable_stock == 0) hide @endif" id="alert_quantity_div">
             <div class="form-group">
                 {!! Form::label('alert_quantity', __('product.alert_quantity') . ':') !!} @show_tooltip(__('tooltip.alert_quantity'))
                 {!! Form::text('alert_quantity', !empty($duplicate_product->alert_quantity) ? @format_quantity($duplicate_product->alert_quantity) : null , ['class' => 'form-control input_number',
                 'placeholder' => __('product.alert_quantity'), 'min' => '0']); !!}
             </div>
+            
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                {!! Form::label('sale_margin', __('product.sale_margin') . ':') !!}
+                {!! Form::number('sale_margin', 5, [
+                    'class' => 'form-control',
+                    'required',
+                    'placeholder' => __('product.sale_margin'),
+                    'id' => 'sale_margin',
+                    'min' => 5,
+                    'max' => 100
+                ]) !!}
+            </div>
+                        
         </div>
         @if(!empty($common_settings['enable_product_warranty']))
         <div class="col-sm-4">
@@ -204,7 +241,7 @@
         </div>
         @endif
 
-        <div class="col-sm-4">
+       {{-- <div class="col-sm-4">
             <div class="form-group">
                 <br>
                 <label>
@@ -220,7 +257,7 @@
                     {!! Form::checkbox('not_for_selling', 1, !(empty($duplicate_product)) ? $duplicate_product->not_for_selling : false, ['class' => 'input-icheck']); !!} <strong>@lang('lang_v1.not_for_selling')</strong>
                 </label> @show_tooltip(__('lang_v1.tooltip_not_for_selling'))
             </div>
-        </div>
+        </div> --}}
 
         <div class="clearfix"></div>
 
@@ -252,7 +289,7 @@
         </div>
         @endforeach
         @endif
-
+{{--
         <div class="col-sm-4">
             <div class="form-group">
                 {!! Form::label('weight', __('lang_v1.weight') . ':') !!}
@@ -266,7 +303,7 @@
 
         @endphp
         <!--custom fields-->
-        <div class="clearfix"></div>
+        <div class="clearfix"></div> 
 
         @foreach($product_custom_fields as $index => $cf)
             @if(!empty($cf))
@@ -297,7 +334,8 @@
                 {!! Form::label('preparation_time_in_minutes', __('lang_v1.preparation_time_in_minutes') . ':') !!}
                 {!! Form::number('preparation_time_in_minutes', !empty($duplicate_product->preparation_time_in_minutes) ? $duplicate_product->preparation_time_in_minutes : null, ['class' => 'form-control', 'placeholder' => __('lang_v1.preparation_time_in_minutes')]); !!}
             </div>
-        </div>
+        </div>--
+
         <!--custom fields-->
         <div class="clearfix"></div>
         @include('layouts.partials.module_form_part')
@@ -305,7 +343,7 @@
     @endcomponent
 
     @component('components.widget', ['class' => 'box-primary'])
-    <div class="row">
+     <div class="row">
 
         <div class="col-sm-4 @if(!session('business.enable_price_tax')) hide @endif">
             <div class="form-group">
@@ -313,7 +351,7 @@
                 {!! Form::select('tax', $taxes, !empty($duplicate_product->tax) ? $duplicate_product->tax : null, ['placeholder' => __('messages.please_select'), 'class' => 'form-control select2'], $tax_attributes); !!}
             </div>
         </div>
-
+ 
         <div class="col-sm-4 @if(!session('business.enable_price_tax')) hide @endif">
             <div class="form-group">
                 {!! Form::label('tax_type', __('product.selling_price_tax_type') . ':*') !!}
@@ -323,8 +361,9 @@
         </div>
 
         <div class="clearfix"></div>
+    --}}
 
-        <div class="col-sm-4">
+        <div class="col-sm-4">       
             <div class="form-group">
                 {!! Form::label('type', __('product.product_type') . ':*') !!} @show_tooltip(__('tooltip.product_type'))
                 {!! Form::select('type', $product_types, !empty($duplicate_product->type) ? $duplicate_product->type : null, ['class' => 'form-control select2',
@@ -332,10 +371,12 @@
             </div>
         </div>
 
-        <div class="form-group col-sm-12" id="product_form_part">
+       <div class="form-group col-sm-12" id="product_form_part">
             @include('product.partials.single_product_form_part', ['profit_percent' => $default_profit_percent])
+            
         </div>
 
+        
         <input type="hidden" id="variation_counter" value="1">
         <input type="hidden" id="default_profit_percent" value="{{ $default_profit_percent }}">
 

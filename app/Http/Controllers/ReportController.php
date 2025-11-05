@@ -495,6 +495,184 @@ class ReportController extends Controller
             ->with(compact('categories', 'brands', 'units', 'business_locations', 'show_manufacturing_data'));
     }
 
+public function getSerialStockReport(Request $request)
+{
+    if (! auth()->user()->can('stock_report.view')) {
+        abort(403, 'Unauthorized action.');
+    }
+
+    $business_id = $request->session()->get('user.business_id');
+
+    $selling_price_groups = SellingPriceGroup::where('business_id', $business_id)
+                                            ->get();
+    $allowed_selling_price_group = false;
+    foreach ($selling_price_groups as $selling_price_group) {
+        if (auth()->user()->can('selling_price_group.'.$selling_price_group->id)) {
+            $allowed_selling_price_group = true;
+            break;
+        }
+    }
+
+    // Set manufacturing data to 0 since we're not using it
+    $show_manufacturing_data = 0;
+
+    if ($request->ajax()) {
+        $filters = request()->only(['location_id', 'category_id', 'sub_category_id', 'brand_id', 'unit_id', 'tax_id', 'type',
+            'only_mfg_products', 'active_state',  'not_for_selling', 'repair_model_id', 'product_id', 'active_state', ]);
+
+        $filters['not_for_selling'] = isset($filters['not_for_selling']) && $filters['not_for_selling'] == 'true' ? 1 : 0;
+        $filters['show_manufacturing_data'] = $show_manufacturing_data;
+
+        // Get products with stock details
+        $productsQuery = $this->productUtil->getProductStockDetails($business_id, $filters, 'datatables');
+        $products = $productsQuery->get();
+
+        // NEW LOGIC: Expand each product into multiple rows for serial numbers
+        $expandedProducts = [];
+        
+        foreach ($products as $product) {
+            // Skip any product that has no stock
+            if (empty($product->stock) || $product->stock <= 0) {
+                continue;
+            }
+            if ($product->enable_serial && $product->stock > 0) {
+                // Get serial numbers from product_serials table with supplier info
+                $serialNumbers = $this->getAvailableSerialNumbersWithSupplier(
+                    $business_id, 
+                    $product->product_id, 
+                    $product->variation_id, 
+                    $product->location_id
+                );
+                
+                // Create one row for each serial number
+                foreach ($serialNumbers as $serial) {
+                    // Get brand name
+                    //$brand = $this->getBrandName($business_id, $product->product_id);
+
+                    $expandedRow = clone $product;
+                    $expandedRow->serial_number = $serial->serial_number;
+                    $expandedRow->serial_status = $serial->status;
+                    $expandedRow->stock = 1;
+                    $expandedRow->supplier_name = $serial->supplier_name ?? 'N/A'; // Add supplier name
+                    $expandedRow->brand_name = $serial->brand_name ?? 'N/A';// to show caret value
+                    $expandedProducts[] = $expandedRow;
+                }
+            } else {
+                // For non-serialized products, keep as single row with default status
+                $product->serial_number = 'N/A';
+                $product->serial_status = 'non-serialized';
+                $product->supplier_name = 'N/A'; // Default for non-serialized
+                $product->brand_name = 'N/A'; // Using brand_id column to show caret value
+                $expandedProducts[] = $product;
+            }
+        }
+
+        // If no expanded products, return empty result
+        if (empty($expandedProducts)) {
+            return response()->json([
+                'draw' => (int) $request->get('draw'),
+                'recordsTotal' => 0,
+                'recordsFiltered' => 0,
+                'data' => []
+            ]);
+        }
+
+        $datatable = Datatables::of($expandedProducts)
+            ->editColumn('stock', function ($row) {
+                if ($row->enable_stock ) {
+                    $stock = $row->stock ? $row->stock : 0;
+                    return '<span class="current_stock" data-orig-value="'.(float) $stock.'" data-unit="'.$row->unit.'"> '.$this->transactionUtil->num_f($stock, false, null, true).'</span>'.' '.$row->unit;
+                } else {
+                    return '--';
+                }
+            })
+            ->editColumn('product', function ($row) {
+                return $row->product;
+            })
+            ->editColumn('caret_value', function ($row) {
+                return $row->brand_id;
+            })
+            ->addColumn('variation', function ($row) {
+                $variation = '';
+                if ($row->type == 'variable') {
+                    // Show as "13.38g" format (just the value with 'g')
+                    $variation .= $row->variation_name . 'g';
+                }
+                return $variation;
+            })
+            ->addColumn('supplier_name', function ($row) {
+                return $row->supplier_name ?? 'N/A';
+            })
+            ->editColumn('unit_price', function ($row) use ($allowed_selling_price_group) {
+                $html = '';
+                if (auth()->user()->can('access_default_selling_price')) {
+                    $html .= $this->transactionUtil->num_f($row->unit_price, true);
+                }
+
+                if ($allowed_selling_price_group) {
+                    $html .= ' <button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-primary tw-w-max btn-modal no-print" data-container=".view_modal" data-href="'.action([\App\Http\Controllers\ProductController::class, 'viewGroupPrice'], [$row->product_id]).'">'.__('lang_v1.view_group_prices').'</button>';
+                }
+
+                return $html;
+            })
+            ->setRowClass(function ($row) {
+                return $row->enable_stock && $row->stock <= $row->alert_quantity ? 'bg-danger' : '';
+            })
+            ->removeColumn('enable_stock')
+            ->removeColumn('unit')
+            ->removeColumn('id');
+
+        // Only include columns that are actually displayed
+        $raw_columns = ['unit_price', 'stock'];
+
+        return $datatable->rawColumns($raw_columns)->make(true);
+    }
+
+    $categories = Category::forDropdown($business_id, 'product');
+    $brands = Brands::forDropdown($business_id);
+    $units = Unit::where('business_id', $business_id)
+                        ->pluck('short_name', 'id');
+    $business_locations = BusinessLocation::forDropdown($business_id, true);
+
+    return view('report.serial_stock_report')
+        ->with(compact('categories', 'brands', 'units', 'business_locations', 'show_manufacturing_data'));
+}
+
+private function getAvailableSerialNumbersWithSupplier($business_id, $product_id, $variation_id, $location_id)
+{
+    return DB::table('product_serials as ps')
+        ->leftJoin('purchase_lines as pl', 'ps.purchase_line_id', '=', 'pl.id')
+        ->leftJoin('transactions as t', 'pl.transaction_id', '=', 't.id')
+        ->leftJoin('contacts as c', 't.contact_id', '=', 'c.id')
+        ->leftJoin('products as pr', 'ps.product_id', '=', 'pr.id')
+        ->leftJoin('brands as br', 'pr.brand_id', '=', 'br.id')
+        ->where('ps.business_id', $business_id)
+        ->where('ps.product_id', $product_id)
+        ->where('ps.variation_id', $variation_id)
+        ->where(function($query) use ($location_id) {
+            $query->where('ps.location_id', $location_id)
+                  ->orWhereNull('ps.location_id');
+        })
+        ->select(
+            'ps.serial_number', 
+            'ps.status',
+            'c.name as supplier_name', // Get supplier name from contacts table
+            'br.name as brand_name' // Get brand name from brands table
+        )
+        ->get();
+}
+// private function getBrandName($business_id, $product_id)
+// {
+//     return DB::table('products as pr')
+//         ->leftJoin('brands as br', 'pr.brand_id', '=', 'br.id')
+//         ->where('pr.business_id', $business_id)
+//         ->where('pr.id', $product_id)
+//         ->select('br.name as brand_name')
+//         ->first(); // ✅ returns one record, not a collection
+// }
+
+
+
     // // this function copy of above get route becouse of large size parameter 
     // public function postStockReport(Request $request){
     //     if ($request->ajax()) {

@@ -405,6 +405,33 @@
 			{!! Form::select("products[$row_count][warranty_id]", $warranties, $warranty_id, ['placeholder' => __('messages.please_select'), 'class' => 'form-control']); !!}
 		</td>
 	@endif
+
+	@if(!empty($product) && $product->enable_serial)
+    <td class="text-center">
+        <div class="form-group col-xs-12">
+            {!! Form::select(
+                "products[$row_count][serial_id]",
+                $product->available_serials,
+                $product->serial_id ?? null,
+                [
+                    'class' => 'form-control select2 serial-number-select', 
+                    'required' => true,
+                    'placeholder' => __('messages.please_select'),
+                    'data-row' => $row_count,
+                ]
+            ) !!}
+            <p class="help-block text-danger serial-error-msg" style="display:none;">
+                @lang('messages.please_select')
+            </p>
+        </div>
+    </td>
+    @else
+        <td class="text-center">
+            <!-- Empty cell when product doesn't require serial or product is empty -->
+        </td>
+    @endif
+
+
 	<td class="text-center">
 		@php
 			$subtotal_type = !empty($pos_settings['is_pos_subtotal_editable']) ? 'text' : 'hidden';

@@ -68,33 +68,56 @@ class VariationTemplateController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+   public function store(Request $request)
     {
         try {
+            // Validate base input
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'variation_values' => 'required|array|min:1',
+                'variation_values.*' => 'required|string|max:255'
+            ]);
+
+            $values = $request->input('variation_values');
+
+            // Check for duplicate values
+            if (count($values) !== count(array_unique(array_map('strtolower', $values)))) {
+                return [
+                    'success' => false,
+                    'msg' => 'Duplicate variation values are not allowed.',
+                ];
+            }
+
+            // Create variation template
             $input = $request->only(['name']);
             $input['business_id'] = $request->session()->get('user.business_id');
             $variation = VariationTemplate::create($input);
 
-            //craete variation values
-            if (! empty($request->input('variation_values'))) {
-                $values = $request->input('variation_values');
-                $data = [];
-                foreach ($values as $value) {
-                    if (! empty($value)) {
-                        $data[] = ['name' => $value];
-                    }
+            // Create variation values
+            $data = [];
+            foreach ($values as $value) {
+                if (!empty($value)) {
+                    $data[] = ['name' => $value];
                 }
-                $variation->values()->createMany($data);
             }
+            $variation->values()->createMany($data);
 
-            $output = ['success' => true,
+            $output = [
+                'success' => true,
                 'data' => $variation,
-                'msg' => 'Variation added succesfully',
+                'msg' => 'Variation added successfully',
+            ];
+        } catch (\Illuminate\Validation\ValidationException $ve) {
+            return [
+                'success' => false,
+                'msg' => $ve->getMessage(),
+                'errors' => $ve->errors()
             ];
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . ' Line:' . $e->getLine() . ' Message:' . $e->getMessage());
 
-            $output = ['success' => false,
+            $output = [
+                'success' => false,
                 'msg' => 'Something went wrong, please try again',
             ];
         }
@@ -139,64 +162,97 @@ class VariationTemplateController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
-    {
-        if (request()->ajax()) {
-            try {
-                $input = $request->only(['name']);
-                $business_id = $request->session()->get('user.business_id');
+{
+    if ($request->ajax()) {
+        try {
+            $input = $request->only(['name']);
+            $business_id = $request->session()->get('user.business_id');
+            $variation = VariationTemplate::where('business_id', $business_id)->findOrFail($id);
 
-                $variation = VariationTemplate::where('business_id', $business_id)->findOrFail($id);
+            // Validate input
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'edit_variation_values' => 'nullable|array',
+                'edit_variation_values.*' => 'required|string|max:255',
+                'variation_values' => 'nullable|array',
+                'variation_values.*' => 'required|string|max:255',
+            ]);
 
-                if ($variation->name != $input['name']) {
-                    $variation->name = $input['name'];
-                    $variation->save();
+            // Merge all values to check for duplicates (case-insensitive)
+            $all_values = [];
 
-                    ProductVariation::where('variation_template_id', $variation->id)
-                                ->update(['name' => $variation->name]);
-                }
+            if ($request->filled('edit_variation_values')) {
+                $all_values = array_merge($all_values, array_map('strtolower', $request->input('edit_variation_values')));
+            }
 
-                //update variation
-                $data = [];
-                if (! empty($request->input('edit_variation_values'))) {
-                    $values = $request->input('edit_variation_values');
-                    foreach ($values as $key => $value) {
-                        if (! empty($value)) {
-                            $variation_val = VariationValueTemplate::find($key);
+            if ($request->filled('variation_values')) {
+                $all_values = array_merge($all_values, array_map('strtolower', $request->input('variation_values')));
+            }
 
-                            if ($variation_val->name != $value) {
-                                $variation_val->name = $value;
-                                $data[] = $variation_val;
-                                Variation::where('variation_value_id', $key)
-                                    ->update(['name' => $value]);
-                            }
-                        }
-                    }
-                    $variation->values()->saveMany($data);
-                }
-                if (! empty($request->input('variation_values'))) {
-                    $values = $request->input('variation_values');
-                    foreach ($values as $value) {
-                        if (! empty($value)) {
-                            $data[] = new VariationValueTemplate(['name' => $value]);
-                        }
-                    }
-                }
-                $variation->values()->saveMany($data);
-
-                $output = ['success' => true,
-                    'msg' => 'Variation updated succesfully',
-                ];
-            } catch (\Exception $e) {
-                \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
-
-                $output = ['success' => false,
-                    'msg' => 'Something went wrong, please try again',
+            if (count($all_values) !== count(array_unique($all_values))) {
+                return [
+                    'success' => false,
+                    'msg' => 'Duplicate variation values are not allowed.',
                 ];
             }
 
-            return $output;
+            // Update name if changed
+            if ($variation->name != $input['name']) {
+                $variation->name = $input['name'];
+                $variation->save();
+
+                // Update related product variations
+                ProductVariation::where('variation_template_id', $variation->id)
+                    ->update(['name' => $variation->name]);
+            }
+
+            $dataToUpdate = [];
+            if ($request->filled('edit_variation_values')) {
+                foreach ($request->input('edit_variation_values') as $key => $value) {
+                    if (!empty($value)) {
+                        $variation_val = VariationValueTemplate::find($key);
+                        if ($variation_val && $variation_val->name !== $value) {
+                            $variation_val->name = $value;
+                            $dataToUpdate[] = $variation_val;
+
+                            Variation::where('variation_value_id', $key)
+                                ->update(['name' => $value]);
+                        }
+                    }
+                }
+                $variation->values()->saveMany($dataToUpdate);
+            }
+
+            $dataToCreate = [];
+            if ($request->filled('variation_values')) {
+                foreach ($request->input('variation_values') as $value) {
+                    if (!empty($value)) {
+                        $dataToCreate[] = new VariationValueTemplate(['name' => $value]);
+                    }
+                }
+                $variation->values()->saveMany($dataToCreate);
+            }
+
+            return [
+                'success' => true,
+                'msg' => 'Variation updated successfully',
+            ];
+        } catch (\Illuminate\Validation\ValidationException $ve) {
+            return [
+                'success' => false,
+                'msg' => 'Validation error occurred.',
+                'errors' => $ve->errors()
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . ' Line:' . $e->getLine() . ' Message:' . $e->getMessage());
+
+            return [
+                'success' => false,
+                'msg' => 'Something went wrong, please try again',
+            ];
         }
     }
+}
 
     /**
      * Remove the specified resource from storage.

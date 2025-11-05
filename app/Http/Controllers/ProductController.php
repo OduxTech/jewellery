@@ -121,6 +121,7 @@ class ProductController extends Controller
                 'products.sku',
                 'products.image',
                 'products.enable_stock',
+                'products.enable_serial',
                 'products.is_inactive',
                 'products.not_for_selling',
                 'products.product_custom_field1', 'products.product_custom_field2', 'products.product_custom_field3', 'products.product_custom_field4', 'products.product_custom_field5', 'products.product_custom_field6',
@@ -130,6 +131,8 @@ class ProductController extends Controller
                 'products.product_custom_field16', 'products.product_custom_field17', 'products.product_custom_field18', 
                 'products.product_custom_field19', 'products.product_custom_field20',
                 'products.alert_quantity',
+                'products.cost_percent',
+                'products.sale_margin',
                 DB::raw('SUM(vld.qty_available) as current_stock'),
                 DB::raw('MAX(v.sell_price_inc_tax) as max_price'),
                 DB::raw('MIN(v.sell_price_inc_tax) as min_price'),
@@ -419,7 +422,7 @@ class ProductController extends Controller
 
         //product screen view from module
         $pos_module_data = $this->moduleUtil->getModuleData('get_product_screen_top_view');
-
+      
         return view('product.create')
             ->with(compact('categories', 'brands', 'units', 'taxes', 'barcode_types', 'default_profit_percent', 'tax_attributes', 'barcode_default', 'business_locations', 'duplicate_product', 'sub_categories', 'rack_details', 'selling_price_group_count', 'module_form_parts', 'product_types', 'common_settings', 'warranties', 'pos_module_data'));
     }
@@ -427,8 +430,8 @@ class ProductController extends Controller
     private function product_types()
     {
         //Product types also includes modifier.
-        return ['single' => __('lang_v1.single'),
-            'variable' => __('lang_v1.variable'),
+        return ['variable' => __('lang_v1.variable'),
+            'single' => __('lang_v1.single'),
             'combo' => __('lang_v1.combo'),
         ];
     }
@@ -446,7 +449,7 @@ class ProductController extends Controller
         }
         try {
             $business_id = $request->session()->get('user.business_id');
-            $form_fields = ['name', 'brand_id', 'unit_id', 'category_id', 'tax', 'type', 'barcode_type', 'sku', 'alert_quantity', 'tax_type', 'weight', 'product_description', 'sub_unit_ids', 'preparation_time_in_minutes', 'product_custom_field1', 'product_custom_field2', 'product_custom_field3', 'product_custom_field4', 'product_custom_field5', 'product_custom_field6', 'product_custom_field7', 'product_custom_field8', 'product_custom_field9', 'product_custom_field10', 'product_custom_field11', 'product_custom_field12', 'product_custom_field13', 'product_custom_field14', 'product_custom_field15', 'product_custom_field16', 'product_custom_field17', 'product_custom_field18', 'product_custom_field19', 'product_custom_field20',];
+            $form_fields = ['name', 'brand_id', 'unit_id', 'category_id', 'tax', 'type', 'barcode_type', 'sku', 'alert_quantity', 'tax_type', 'weight', 'product_description', 'sub_unit_ids', 'preparation_time_in_minutes', 'product_custom_field1', 'product_custom_field2', 'product_custom_field3', 'product_custom_field4', 'product_custom_field5', 'product_custom_field6', 'product_custom_field7', 'product_custom_field8', 'product_custom_field9', 'product_custom_field10', 'product_custom_field11', 'product_custom_field12', 'product_custom_field13', 'product_custom_field14', 'product_custom_field15', 'product_custom_field16', 'product_custom_field17', 'product_custom_field18', 'product_custom_field19', 'product_custom_field20','cost_percent', 'sale_margin'];
 
             $module_form_fields = $this->moduleUtil->getModuleFormField('product_form_fields');
             if (! empty($module_form_fields)) {
@@ -459,6 +462,7 @@ class ProductController extends Controller
 
             $product_details['enable_stock'] = (! empty($request->input('enable_stock')) && $request->input('enable_stock') == 1) ? 1 : 0;
             $product_details['not_for_selling'] = (! empty($request->input('not_for_selling')) && $request->input('not_for_selling') == 1) ? 1 : 0;
+            $product_details['enable_serial'] = (! empty($request->input('enable_serial')) && $request->input('enable_serial') == 1) ? 1 : 0;
 
             if (! empty($request->input('sub_category_id'))) {
                 $product_details['sub_category_id'] = $request->input('sub_category_id');
@@ -678,7 +682,7 @@ class ProductController extends Controller
 
         try {
             $business_id = $request->session()->get('user.business_id');
-            $product_details = $request->only(['name', 'brand_id', 'unit_id', 'category_id', 'tax', 'barcode_type', 'sku', 'alert_quantity', 'tax_type', 'weight', 'product_description', 'sub_unit_ids', 'preparation_time_in_minutes', 'product_custom_field1', 'product_custom_field2', 'product_custom_field3', 'product_custom_field4', 'product_custom_field5', 'product_custom_field6', 'product_custom_field7', 'product_custom_field8', 'product_custom_field9', 'product_custom_field10', 'product_custom_field11', 'product_custom_field12', 'product_custom_field13', 'product_custom_field14', 'product_custom_field15', 'product_custom_field16', 'product_custom_field17', 'product_custom_field18', 'product_custom_field19', 'product_custom_field20',]);
+            $product_details = $request->only(['name', 'brand_id', 'unit_id', 'category_id', 'tax', 'barcode_type', 'sku', 'alert_quantity', 'tax_type', 'weight', 'product_description', 'sub_unit_ids', 'preparation_time_in_minutes', 'product_custom_field1', 'product_custom_field2', 'product_custom_field3', 'product_custom_field4', 'product_custom_field5', 'product_custom_field6', 'product_custom_field7', 'product_custom_field8', 'product_custom_field9', 'product_custom_field10', 'product_custom_field11', 'product_custom_field12', 'product_custom_field13', 'product_custom_field14', 'product_custom_field15', 'product_custom_field16', 'product_custom_field17', 'product_custom_field18', 'product_custom_field19', 'product_custom_field20', 'cost_percent','sale_margin']);
 
             DB::beginTransaction();
 
@@ -695,15 +699,17 @@ class ProductController extends Controller
             }
 
             $product->name = $product_details['name'];
+            $product->cost_percent = $product_details['cost_percent']; 
+            $product->sale_margin = $product_details['sale_margin'];
             $product->brand_id = $product_details['brand_id'];
             $product->unit_id = $product_details['unit_id'];
             $product->category_id = $product_details['category_id'];
-            $product->tax = $product_details['tax'];
+            //$product->tax = $product_details['tax'];
             $product->barcode_type = $product_details['barcode_type'];
             $product->sku = $product_details['sku'];
             $product->alert_quantity = ! empty($product_details['alert_quantity']) ? $this->productUtil->num_uf($product_details['alert_quantity']) : $product_details['alert_quantity'];
-            $product->tax_type = $product_details['tax_type'];
-            $product->weight = $product_details['weight'];
+            //$product->tax_type = $product_details['tax_type'];
+            //$product->weight = $product_details['weight'];
             $product->product_custom_field1 = $product_details['product_custom_field1'] ?? '';
             $product->product_custom_field2 = $product_details['product_custom_field2'] ?? '';
             $product->product_custom_field3 = $product_details['product_custom_field3'] ?? '';
@@ -727,7 +733,7 @@ class ProductController extends Controller
 
             $product->product_description = $product_details['product_description'];
             $product->sub_unit_ids = ! empty($product_details['sub_unit_ids']) ? $product_details['sub_unit_ids'] : null;
-            $product->preparation_time_in_minutes = $product_details['preparation_time_in_minutes'];
+            //$product->preparation_time_in_minutes = $product_details['preparation_time_in_minutes'];
             $product->warranty_id = ! empty($request->input('warranty_id')) ? $request->input('warranty_id') : null;
             $product->secondary_unit_id = ! empty($request->input('secondary_unit_id')) ? $request->input('secondary_unit_id') : null;
 
@@ -735,6 +741,12 @@ class ProductController extends Controller
                 $product->enable_stock = 1;
             } else {
                 $product->enable_stock = 0;
+            }
+
+            if (! empty($request->input('enable_serial')) && $request->input('enable_serial') == 1) {
+                $product->enable_serial = 1;
+            } else {
+                $product->enable_serial = 0;
             }
 
             $product->not_for_selling = (! empty($request->input('not_for_selling')) && $request->input('not_for_selling') == 1) ? 1 : 0;
@@ -1251,7 +1263,7 @@ class ProductController extends Controller
             $price_group_id = request()->input('price_group', '');
             $product_types = request()->get('product_types', []);
 
-            $search_fields = request()->get('search_fields', ['name', 'sku']);
+            $search_fields = request()->get('search_fields', ['name', 'sku','serial']);
             if (in_array('sku', $search_fields)) {
                 $search_fields[] = 'sub_sku';
             }
@@ -1263,8 +1275,9 @@ class ProductController extends Controller
     }
 
     public function getVarationDetail($variation_id, $location_id){
+  
         $business_id = request()->session()->get('user.business_id');
-        $product = $this->productUtil->getDetailsFromVariation($variation_id, $business_id, $location_id, null);
+        $product = $this->productUtil->getDetailsFromVariation($variation_id, $business_id, $location_id, true);
         return $product;
     }
 
@@ -1309,6 +1322,7 @@ class ProductController extends Controller
                     'products.name',
                     'products.type',
                     'products.enable_stock',
+                    'products.enable_serial',
                     'products.sku',
                     'products.id as id',
                     DB::raw('CONCAT(products.name, " - ", products.sku) as text')
@@ -1464,7 +1478,7 @@ class ProductController extends Controller
         try {
             $business_id = $request->session()->get('user.business_id');
             $form_fields = ['name', 'brand_id', 'unit_id', 'category_id', 'tax', 'barcode_type', 'tax_type', 'sku',
-                'alert_quantity', 'type', 'sub_unit_ids', 'sub_category_id', 'weight', 'product_description', 'product_custom_field1', 'product_custom_field2', 'product_custom_field3', 'product_custom_field4', 'product_custom_field5', 'product_custom_field6', 'product_custom_field7', 'product_custom_field8', 'product_custom_field9', 'product_custom_field10', 'product_custom_field11', 'product_custom_field12', 'product_custom_field13', 'product_custom_field14', 'product_custom_field15', 'product_custom_field16', 'product_custom_field17', 'product_custom_field18', 'product_custom_field19', 'product_custom_field20'];
+                'alert_quantity', 'type', 'sub_unit_ids', 'sub_category_id', 'weight', 'product_description', 'product_custom_field1', 'product_custom_field2', 'product_custom_field3', 'product_custom_field4', 'product_custom_field5', 'product_custom_field6', 'product_custom_field7', 'product_custom_field8', 'product_custom_field9', 'product_custom_field10', 'product_custom_field11', 'product_custom_field12', 'product_custom_field13', 'product_custom_field14', 'product_custom_field15', 'product_custom_field16', 'product_custom_field17', 'product_custom_field18', 'product_custom_field19', 'product_custom_field20','cost_percent','sale_margin'];
 
             $module_form_fields = $this->moduleUtil->getModuleData('product_form_fields');
             if (! empty($module_form_fields)) {
@@ -1490,7 +1504,13 @@ class ProductController extends Controller
             if (empty($product_details['sku'])) {
                 $product_details['sku'] = ' ';
             }
-
+            if (!empty($product_details['cost_percent'])) {
+                $product_details['cost_percent'] = $this->productUtil->num_uf($product_details['cost_percent']);
+            }
+            
+            if (!empty($product_details['sale_margin'])) {
+                $product_details['sale_margin'] = $this->productUtil->num_uf($product_details['sale_margin']);
+            }
             if (! empty($product_details['alert_quantity'])) {
                 $product_details['alert_quantity'] = $this->productUtil->num_uf($product_details['alert_quantity']);
             }

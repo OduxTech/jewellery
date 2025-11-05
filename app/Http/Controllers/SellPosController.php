@@ -315,6 +315,21 @@ class SellPosController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+
+
+     public function getProduct($id)
+{
+    $product = Product::with('variations')->findOrFail($id);
+
+    foreach ($product->variations as $variation) {
+        $variation->minimum_selling_price = $variation->minimum_selling_price;
+    }
+
+    return response()->json([
+        'product' => $product,
+    ]);
+}
+
     public function store(Request $request)
     {
         if (!auth()->user()->can('sell.create') && !auth()->user()->can('direct_sell.access') && !auth()->user()->can('so.create')) {
@@ -499,6 +514,21 @@ class SellPosController extends Controller
 
                 $this->transactionUtil->createOrUpdateSellLines($transaction, $input['products'], $input['location_id']);
 
+                // // 🔁 Update status of sold serial numbers
+                // foreach ($input['products'] as $product_line) {
+
+                //     if (!empty($product_line['enable_serial']) && $product_line['enable_serial'] && !empty($product_line['serial_id'])) {
+                //         DB::table('product_serials')
+                //             ->where('id', $product_line['serial_id'])
+                //             ->update([
+                //                 'status' => 'sold',
+                //                 'sell_transaction_id' => $transaction->id ?? null,
+                //                 'updated_at' => now(),
+                //             ]);
+                //     }
+                // }
+
+
                 $change_return['amount'] = $input['change_return'] ?? 0;
                 $change_return['is_return'] = 1;
 
@@ -544,14 +574,23 @@ class SellPosController extends Controller
                             $decrease_qty = $decrease_qty * $product['base_unit_multiplier'];
                         }
 
-                        if ($product['enable_stock']) {
+                        if ($product['enable_stock']==1) {
                             $this->productUtil->decreaseProductQuantity(
                                 $product['product_id'],
                                 $product['variation_id'],
                                 $input['location_id'],
                                 $decrease_qty
                             );
+                            DB::table('product_serials')
+                            ->where('id', $product['serial_id'])
+                            ->update([
+                                'status' => 'sold',
+                                'sell_transaction_id' => $transaction->id ?? null,
+         
+                            ]);
                         }
+
+
 
                         if ($product['product_type'] == 'combo') {
                             //Decrease quantity of combo as well.
@@ -1609,7 +1648,7 @@ class SellPosController extends Controller
         ];
     }
     // is_serial_no to display serial number in sale screen
-    private function getSellLineRow($variation_id, $location_id, $quantity, $row_count, $is_direct_sell, $is_serial_no, $so_line = null)
+    private function getSellLineRow($variation_id, $location_id, $quantity, $row_count, $is_direct_sell, $is_serial_no, $so_line = null, $serial_number ='')
     {
         $business_id = request()->session()->get('user.business_id');
         $business_details = $this->businessUtil->getDetails($business_id);
@@ -1631,7 +1670,7 @@ class SellPosController extends Controller
             $pos_settings['allow_overselling'] = true;
         }
 
-        $product = $this->productUtil->getDetailsFromVariation($variation_id, $business_id, $location_id, $check_qty);
+        $product = $this->productUtil->getDetailsFromVariation($variation_id, $business_id, $location_id, $check_qty, $serial_number);
 
         if (!isset($product->quantity_ordered)) {
             $product->quantity_ordered = $quantity;
@@ -1743,7 +1782,7 @@ class SellPosController extends Controller
      * @param  int  $location_id
      * @return \Illuminate\Http\Response
      */
-    public function getProductRow($variation_id, $location_id)
+    public function getProductRow($variation_id, $location_id, $serial_number = '')
     {
         $output = [];
 
@@ -1752,6 +1791,7 @@ class SellPosController extends Controller
             $row_count = $row_count + 1;
             $quantity = request()->get('quantity', 1);
             $weighing_barcode = request()->get('weighing_scale_barcode', null);
+            $serial_number= request()->get('serial_number', '');
 
             $is_direct_sell = false;
             if (request()->get('is_direct_sell') == 'true') {
@@ -1776,8 +1816,10 @@ class SellPosController extends Controller
                 }
             }
 
-            $output = $this->getSellLineRow($variation_id, $location_id, $quantity, $row_count, $is_direct_sell, $is_serial_no);
+            $output = $this->getSellLineRow($variation_id, $location_id, $quantity, $row_count, $is_direct_sell, $is_serial_no, null, $serial_number);
 
+   
+        
             if ($this->transactionUtil->isModuleEnabled('modifiers') && !$is_direct_sell) {
                 $variation = Variation::find($variation_id);
                 $business_id = request()->session()->get('user.business_id');
@@ -1796,6 +1838,9 @@ class SellPosController extends Controller
             $output['success'] = false;
             $output['msg'] = __('lang_v1.item_out_of_stock');
         }
+        
+  
+        $output['success'] = true;
 
         return $output;
     }

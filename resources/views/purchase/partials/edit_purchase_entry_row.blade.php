@@ -24,13 +24,13 @@
                 <th class="@if(!session('business.enable_editing_product_from_purchase') || !empty($is_purchase_order)) hide @endif">
                     @lang( 'lang_v1.profit_margin' )
                 </th>
-                @if(empty($is_purchase_order))
+                 @if(empty($is_purchase_order))
                     <th>@lang( 'purchase.unit_selling_price') <small>(@lang('product.inc_of_tax'))</small></th>
                     @if(session('business.enable_lot_number'))
                         <th>
                             @lang('lang_v1.lot_number')
                         </th>
-                    @endif
+                    @endif 
                     @if(session('business.enable_product_expiry'))
                         <th>@lang('product.mfg_date') / @lang('product.exp_date')</th>
                     @endif

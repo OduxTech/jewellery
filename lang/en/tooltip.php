@@ -35,6 +35,8 @@ return [
 
     'enable_stock' => "Enable or disable stock management for a product. <br><br><small class='text-muted'>Stock Management should be disable mostly for services. Example: Hair-Cutting, Repairing, etc.</small>",
 
+    'enable_serial' => "Enable or disable serial number management for a product. <br><br><small class='text-muted'>Serial number management should be enabled mostly for products with high value. Example: Chain, Rings, etc.</small>",
+
     'alert_quantity' => "Get alert when product stock reaches or goes below the specified quantity.<br><br><small class='text-muted'>Products with low stock will be displayed in dashboard - Product Stock Alert section.</small>",
 
     'product_type' => '<b>Single product</b>: Product with no variations.

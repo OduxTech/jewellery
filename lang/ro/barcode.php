@@ -42,7 +42,7 @@ return [
     'no_of_labels' => 'No. of labels',
     'info_in_labels' => 'Information to show in Labels',
     'print_name' => 'Product Name',
-    'print_variations' => 'Product Variation (recommended)',
+    'print_variations' => 'Product Weight (recommended)',
     'print_price' => 'Product Price',
     'show_price' => 'Show Price',
     'preview' => 'Preview',

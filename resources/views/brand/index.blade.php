@@ -1,12 +1,12 @@
 @extends('layouts.app')
-@section('title', 'Brands')
+@section('title', 'Carat Value')
 
 @section('content')
 
     <!-- Content Header (Page header) -->
     <section class="content-header">
-        <h1 class="tw-text-xl md:tw-text-3xl tw-font-bold tw-text-black">@lang('brand.brands')
-            <small class="tw-text-sm md:tw-text-base tw-text-gray-700 tw-font-semibold">@lang('brand.manage_your_brands')</small>
+        <h1 class="tw-text-xl md:tw-text-3xl tw-font-bold tw-text-black">@lang('brand.carat_value')
+            <small class="tw-text-sm md:tw-text-base tw-text-gray-700 tw-font-semibold">@lang('brand.manage_the_carat_values')</small>
         </h1>
         <!-- <ol class="breadcrumb">
             <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
@@ -16,7 +16,7 @@
 
     <!-- Main content -->
     <section class="content">
-        @component('components.widget', ['class' => 'box-primary', 'title' => __('brand.all_your_brands')])
+        @component('components.widget', ['class' => 'box-primary', 'title' => __('brand.all_carat_values')])
             @can('brand.create')
                 @slot('tool')
                     <div class="box-tools">
@@ -39,7 +39,7 @@
                     <table class="table table-bordered table-striped" id="brands_table">
                         <thead>
                             <tr>
-                                <th>@lang('brand.brands')</th>
+                                <th>@lang('brand.carat_value')</th>
                                 <th>@lang('brand.note')</th>
                                 <th>@lang('messages.action')</th>
                             </tr>

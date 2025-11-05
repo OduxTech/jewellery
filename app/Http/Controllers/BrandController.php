@@ -108,7 +108,7 @@ class BrandController extends Controller
             $brand = Brands::create($input);
             $output = ['success' => true,
                 'data' => $brand,
-                'msg' => __('brand.added_success'),
+                'msg' => __('brand.added_carat_success'),
             ];
         } catch (\Exception $e) {
             \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
@@ -184,7 +184,7 @@ class BrandController extends Controller
                 $brand->save();
 
                 $output = ['success' => true,
-                    'msg' => __('brand.updated_success'),
+                    'msg' => __('brand.updated_carat_success'),
                 ];
             } catch (\Exception $e) {
                 \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
@@ -218,7 +218,7 @@ class BrandController extends Controller
                 $brand->delete();
 
                 $output = ['success' => true,
-                    'msg' => __('brand.deleted_success'),
+                    'msg' => __('brand.deleted_carat_success'),
                 ];
             } catch (\Exception $e) {
                 \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
