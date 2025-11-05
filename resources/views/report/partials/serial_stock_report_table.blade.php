@@ -12,6 +12,7 @@
             <th>Status</th>
             <th>SKU</th>
             <th>@lang('business.product')</th>
+            <th>Caret Value</th>
             <th>Weight</th>
             <th>@lang('product.category')</th>
             <th>@lang('sale.location')</th>
