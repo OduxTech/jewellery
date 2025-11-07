@@ -200,6 +200,8 @@ $(document).ready(function() {
     });
 ////////////////////////////////////////// serial stock report///////////////////////////////////////////////////
 $(document).ready(function() {
+    console.log('Document ready - Initializing DataTable');
+    
     var serial_stock_report_cols = [
         { data: 'serial_number', name: 'serial_number' },
         { data: 'serial_status', name: 'serial_status' },
@@ -209,23 +211,26 @@ $(document).ready(function() {
             data: 'brand_name', 
             name: 'brand_name',
             render: function(data, type, row) {
+                console.log('Column 4 - brand_name data:', data, 'row:', row);
                 return data || 'N/A';
             }
-        }, // Column 4 - Use brand_name instead of caret_value
+        },
         { 
             data: 'variation_name', 
             name: 'variation_name',
             render: function(data, type, row) {
-                // Add 'g' suffix for weight display
+                console.log('Column 5 - variation_name data:', data, 'row:', row);
                 return data ? data + 'g' : '';
             }
-        }, // Column 5 - Use variation_name instead of weight
+        },
         { data: 'category_name', name: 'category_name' },
         { data: 'location_name', name: 'location_name' },
         { data: 'supplier_name', name: 'supplier_name' },
         { data: 'unit_price', name: 'unit_price' },
         { data: 'stock', name: 'stock' }
     ];
+
+    console.log('Columns configuration:', serial_stock_report_cols);
 
     // Initialize DataTable
     var serialStockReportTable = $('#serial_stock_report_table').DataTable({
@@ -234,6 +239,7 @@ $(document).ready(function() {
         ajax: {
             url: '/reports/serial-stock-report',
             data: function(d) {
+                console.log('Sending AJAX request with data:', d);
                 return {
                     location_id: $('#location_id').val(),
                     category_id: $('#category_id').val(),
@@ -242,6 +248,19 @@ $(document).ready(function() {
                     status: $('#status').val(),
                     only_mfg_products: $('#only_mfg_products').length && $('#only_mfg_products').is(':checked') ? 1 : 0
                 };
+            },
+            dataSrc: function(json) {
+                console.log('Received AJAX response:', json);
+                if (json.data && json.data.length > 0) {
+                    console.log('First row of data:', json.data[0]);
+                    console.log('Available keys in first row:', Object.keys(json.data[0]));
+                }
+                return json.data;
+            },
+            error: function(xhr, error, thrown) {
+                console.error('AJAX Error:', error);
+                console.error('Error details:', thrown);
+                console.error('Response text:', xhr.responseText);
             }
         },
         columns: serial_stock_report_cols,
@@ -251,6 +270,7 @@ $(document).ready(function() {
         scrollCollapse: true,
         autoWidth: false,
         fnDrawCallback: function(oSettings) {
+            console.log('DataTable draw complete');
             if (typeof __currency_convert_recursively === 'function') {
                 __currency_convert_recursively($('#serial_stock_report_table'));
             }
@@ -259,6 +279,7 @@ $(document).ready(function() {
 
     // Update event listeners to include status filter
     $('#location_id, #category_id, #brand, #unit, #status').on('change', function() {
+        console.log('Filter changed:', this.id, 'value:', $(this).val());
         serialStockReportTable.ajax.reload();
     });
 
