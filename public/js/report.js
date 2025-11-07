@@ -205,8 +205,21 @@ $(document).ready(function() {
         { data: 'serial_status', name: 'serial_status' },
         { data: 'sku', name: 'sku' },
         { data: 'product', name: 'product' },
-        { data: 'caret_value', name: 'caret_value' },
-        { data: 'weight', name: 'weight' },
+        { 
+            data: 'brand_name', 
+            name: 'brand_name',
+            render: function(data, type, row) {
+                return data || 'N/A';
+            }
+        }, // Column 4 - Use brand_name instead of caret_value
+        { 
+            data: 'variation_name', 
+            name: 'variation_name',
+            render: function(data, type, row) {
+                // Add 'g' suffix for weight display
+                return data ? data + 'g' : '';
+            }
+        }, // Column 5 - Use variation_name instead of weight
         { data: 'category_name', name: 'category_name' },
         { data: 'location_name', name: 'location_name' },
         { data: 'supplier_name', name: 'supplier_name' },
@@ -226,7 +239,7 @@ $(document).ready(function() {
                     category_id: $('#category_id').val(),
                     brand_id: $('#brand').val(),
                     unit_id: $('#unit').val(),
-                    status: $('#status').val(), // ADD STATUS FILTER
+                    status: $('#status').val(),
                     only_mfg_products: $('#only_mfg_products').length && $('#only_mfg_products').is(':checked') ? 1 : 0
                 };
             }
