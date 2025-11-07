@@ -23,11 +23,3 @@
     </thead>
 </table>
 
-@section('javascript')
-    <script>
-        console.log('Loading report.js with cache busting');
-        console.log('Current time:', new Date().toISOString());
-    </script>
-    <script src="{{ asset('js/report.js?v=' . time()) }}"></script>
-@endsection
-{{-- ADD THIS CLOSING TAG --}}
