@@ -496,7 +496,11 @@ class ReportController extends Controller
     }
 
 public function getSerialStockReport(Request $request)
-{
+{    
+    header("Cache-Control: no-cache, no-store, must-revalidate");
+    header("Pragma: no-cache");
+    header("Expires: 0");
+    
     if (! auth()->user()->can('stock_report.view')) {
         abort(403, 'Unauthorized action.');
     }
@@ -518,7 +522,7 @@ public function getSerialStockReport(Request $request)
 
     if ($request->ajax()) {
         $filters = request()->only(['location_id', 'category_id', 'sub_category_id', 'brand_id', 'unit_id', 'tax_id', 'type',
-            'only_mfg_products', 'active_state',  'not_for_selling', 'repair_model_id', 'product_id', 'active_state', ]);
+            'only_mfg_products', 'active_state',  'not_for_selling', 'repair_model_id', 'product_id', 'active_state', 'status']); // ADD STATUS TO FILTERS
 
         $filters['not_for_selling'] = isset($filters['not_for_selling']) && $filters['not_for_selling'] == 'true' ? 1 : 0;
         $filters['show_manufacturing_data'] = $show_manufacturing_data;
@@ -541,29 +545,31 @@ public function getSerialStockReport(Request $request)
                     $business_id, 
                     $product->product_id, 
                     $product->variation_id, 
-                    $product->location_id
+                    $product->location_id,
+                    $filters['status'] ?? null // PASS STATUS FILTER TO SERIAL QUERY
                 );
                 
                 // Create one row for each serial number
                 foreach ($serialNumbers as $serial) {
-                    // Get brand name
-                    //$brand = $this->getBrandName($business_id, $product->product_id);
-
                     $expandedRow = clone $product;
                     $expandedRow->serial_number = $serial->serial_number;
                     $expandedRow->serial_status = $serial->status;
                     $expandedRow->stock = 1;
-                    $expandedRow->supplier_name = $serial->supplier_name ?? 'N/A'; // Add supplier name
-                    $expandedRow->brand_name = $serial->brand_name ?? 'N/A';// to show caret value
+                    $expandedRow->supplier_name = $serial->supplier_name ?? 'N/A';
+                    $expandedRow->brand_name = $serial->brand_name ?? 'N/A';
                     $expandedProducts[] = $expandedRow;
                 }
             } else {
                 // For non-serialized products, keep as single row with default status
                 $product->serial_number = 'N/A';
                 $product->serial_status = 'non-serialized';
-                $product->supplier_name = 'N/A'; // Default for non-serialized
-                $product->brand_name = 'N/A'; // Using brand_id column to show caret value
-                $expandedProducts[] = $product;
+                $product->supplier_name = 'N/A';
+                $product->brand_name = 'N/A';
+                
+                // Apply status filter for non-serialized products
+                if (!isset($filters['status']) || $filters['status'] === '' || $filters['status'] === 'available') {
+                    $expandedProducts[] = $product;
+                }
             }
         }
 
@@ -589,13 +595,12 @@ public function getSerialStockReport(Request $request)
             ->editColumn('product', function ($row) {
                 return $row->product;
             })
-            ->editColumn('caret_value', function ($row) {
-                return $row->brand_id;
+            ->addColumn('caret_value', function ($row) {
+                return $row->brand_name ?? $row->brand_id;
             })
-            ->addColumn('variation', function ($row) {
+            ->addColumn('weight', function ($row) {
                 $variation = '';
                 if ($row->type == 'variable') {
-                    // Show as "13.38g" format (just the value with 'g')
                     $variation .= $row->variation_name . 'g';
                 }
                 return $variation;
@@ -622,7 +627,6 @@ public function getSerialStockReport(Request $request)
             ->removeColumn('unit')
             ->removeColumn('id');
 
-        // Only include columns that are actually displayed
         $raw_columns = ['unit_price', 'stock'];
 
         return $datatable->rawColumns($raw_columns)->make(true);
@@ -638,9 +642,9 @@ public function getSerialStockReport(Request $request)
         ->with(compact('categories', 'brands', 'units', 'business_locations', 'show_manufacturing_data'));
 }
 
-private function getAvailableSerialNumbersWithSupplier($business_id, $product_id, $variation_id, $location_id)
+private function getAvailableSerialNumbersWithSupplier($business_id, $product_id, $variation_id, $location_id, $status = null)
 {
-    return DB::table('product_serials as ps')
+    $query = DB::table('product_serials as ps')
         ->leftJoin('purchase_lines as pl', 'ps.purchase_line_id', '=', 'pl.id')
         ->leftJoin('transactions as t', 'pl.transaction_id', '=', 't.id')
         ->leftJoin('contacts as c', 't.contact_id', '=', 'c.id')
@@ -652,12 +656,18 @@ private function getAvailableSerialNumbersWithSupplier($business_id, $product_id
         ->where(function($query) use ($location_id) {
             $query->where('ps.location_id', $location_id)
                   ->orWhereNull('ps.location_id');
-        })
-        ->select(
+        });
+
+    // APPLY STATUS FILTER
+    if (!empty($status)) {
+        $query->where('ps.status', $status);
+    }
+
+    return $query->select(
             'ps.serial_number', 
             'ps.status',
-            'c.name as supplier_name', // Get supplier name from contacts table
-            'br.name as brand_name' // Get brand name from brands table
+            'c.name as supplier_name',
+            'br.name as brand_name'
         )
         ->get();
 }
