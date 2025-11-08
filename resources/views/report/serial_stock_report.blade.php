@@ -32,7 +32,6 @@
                         {!! Form::select('brand', $brands, null, ['placeholder' => __('messages.all'), 'class' => 'form-control select2', 'style' => 'width:100%']); !!}
                     </div>
                 </div>
-                <!-- ADD STATUS FILTER HERE -->
                 <div class="col-md-3">
                     <div class="form-group">
                         {!! Form::label('status', 'Status:') !!}
@@ -42,6 +41,19 @@
                             'sold' => 'Sold', 
                             'returned' => 'Returned'
                         ], null, ['class' => 'form-control select2', 'style' => 'width:100%', 'id' => 'status']); !!}
+                    </div>
+                </div>
+                <!-- ADD DATE FILTERS HERE -->
+                <div class="col-md-3">
+                    <div class="form-group">
+                        {!! Form::label('start_date', 'From Date:') !!}
+                        {!! Form::text('start_date', null, ['class' => 'form-control datepicker', 'readonly', 'placeholder' => 'YYYY-MM-DD']); !!}
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        {!! Form::label('end_date', 'To Date:') !!}
+                        {!! Form::text('end_date', null, ['class' => 'form-control datepicker', 'readonly', 'placeholder' => 'YYYY-MM-DD']); !!}
                     </div>
                 </div>
                 {!! Form::close() !!}
@@ -63,4 +75,13 @@
 
 @section('javascript')
     <script src="{{ asset('js/report.js?v=' . time()) }}"></script>
+    <script>
+        $(document).ready(function() {
+            // Initialize datepicker
+            $('.datepicker').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true
+            });
+        });
+    </script>
 @endsection

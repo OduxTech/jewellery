@@ -203,22 +203,21 @@ $(document).ready(function() {
     var serial_stock_report_cols = [
         { data: 'serial_number', name: 'serial_number' },
         { data: 'serial_status', name: 'serial_status' },
+        { 
+            data: 'sold_date', 
+            name: 'sold_date',
+            render: function(data, type, row) {
+                // Show sold date if available, otherwise blank
+                if (data && row.serial_status === 'sold') {
+                    return data;
+                }
+                return ''; // Blank for non-sold items
+            }
+        },
         { data: 'sku', name: 'sku' },
         { data: 'product', name: 'product' },
-        { 
-            data: 'brand_name', 
-            name: 'brand_name',
-            render: function(data, type, row) {
-                return data || 'N/A';
-            }
-        },
-        { 
-            data: 'variation_name', 
-            name: 'variation_name',
-            render: function(data, type, row) {
-                return data ? data + 'g' : '';
-            }
-        },
+        { data: 'caret_value', name: 'caret_value' },
+        { data: 'weight', name: 'weight' },
         { data: 'category_name', name: 'category_name' },
         { data: 'location_name', name: 'location_name' },
         { data: 'supplier_name', name: 'supplier_name' },
@@ -239,6 +238,8 @@ $(document).ready(function() {
                     brand_id: $('#brand').val(),
                     unit_id: $('#unit').val(),
                     status: $('#status').val(),
+                    start_date: $('#start_date').val(), // ADD DATE FILTER
+                    end_date: $('#end_date').val(),     // ADD DATE FILTER
                     only_mfg_products: $('#only_mfg_products').length && $('#only_mfg_products').is(':checked') ? 1 : 0
                 };
             }
@@ -256,8 +257,8 @@ $(document).ready(function() {
         }
     });
 
-    // Event listeners
-    $('#location_id, #category_id, #brand, #unit, #status').on('change', function() {
+    // Update event listeners to include date filters
+    $('#location_id, #category_id, #brand, #unit, #status, #start_date, #end_date').on('change', function() {
         serialStockReportTable.ajax.reload();
     });
 

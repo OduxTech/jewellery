@@ -522,7 +522,8 @@ public function getSerialStockReport(Request $request)
 
     if ($request->ajax()) {
         $filters = request()->only(['location_id', 'category_id', 'sub_category_id', 'brand_id', 'unit_id', 'tax_id', 'type',
-            'only_mfg_products', 'active_state',  'not_for_selling', 'repair_model_id', 'product_id', 'active_state', 'status']); // ADD STATUS TO FILTERS
+            'only_mfg_products', 'active_state',  'not_for_selling', 'repair_model_id', 'product_id', 'active_state', 'status', 
+            'start_date', 'end_date']); // ADD DATE FILTERS
 
         $filters['not_for_selling'] = isset($filters['not_for_selling']) && $filters['not_for_selling'] == 'true' ? 1 : 0;
         $filters['show_manufacturing_data'] = $show_manufacturing_data;
@@ -546,7 +547,9 @@ public function getSerialStockReport(Request $request)
                     $product->product_id, 
                     $product->variation_id, 
                     $product->location_id,
-                    $filters['status'] ?? null // PASS STATUS FILTER TO SERIAL QUERY
+                    $filters['status'] ?? null,
+                    $filters['start_date'] ?? null, // PASS DATE FILTERS
+                    $filters['end_date'] ?? null
                 );
                 
                 // Create one row for each serial number
@@ -557,6 +560,14 @@ public function getSerialStockReport(Request $request)
                     $expandedRow->stock = 1;
                     $expandedRow->supplier_name = $serial->supplier_name ?? 'N/A';
                     $expandedRow->brand_name = $serial->brand_name ?? 'N/A';
+                    
+                    // USE created_at AS SOLD DATE - Only show for sold items
+                    if ($serial->status === 'sold' && $serial->sold_date) {
+                        $expandedRow->sold_date = \Carbon::parse($serial->sold_date)->format('Y-m-d H:i:s');
+                    } else {
+                        $expandedRow->sold_date = null; // Blank for non-sold items
+                    }
+                    
                     $expandedProducts[] = $expandedRow;
                 }
             } else {
@@ -565,6 +576,7 @@ public function getSerialStockReport(Request $request)
                 $product->serial_status = 'non-serialized';
                 $product->supplier_name = 'N/A';
                 $product->brand_name = 'N/A';
+                $product->sold_date = null; // Blank for non-serialized
                 
                 // Apply status filter for non-serialized products
                 if (!isset($filters['status']) || $filters['status'] === '' || $filters['status'] === 'available') {
@@ -608,6 +620,13 @@ public function getSerialStockReport(Request $request)
             ->addColumn('supplier_name', function ($row) {
                 return $row->supplier_name ?? 'N/A';
             })
+            ->editColumn('sold_date', function ($row) {
+                // Format sold date for display - only show if status is sold
+                if ($row->sold_date && $row->serial_status === 'sold') {
+                    return \Carbon::parse($row->sold_date)->format('M d, Y h:i A');
+                }
+                return ''; // Blank for non-sold items
+            })
             ->editColumn('unit_price', function ($row) use ($allowed_selling_price_group) {
                 $html = '';
                 if (auth()->user()->can('access_default_selling_price')) {
@@ -642,7 +661,7 @@ public function getSerialStockReport(Request $request)
         ->with(compact('categories', 'brands', 'units', 'business_locations', 'show_manufacturing_data'));
 }
 
-private function getAvailableSerialNumbersWithSupplier($business_id, $product_id, $variation_id, $location_id, $status = null)
+private function getAvailableSerialNumbersWithSupplier($business_id, $product_id, $variation_id, $location_id, $status = null, $start_date = null, $end_date = null)
 {
     $query = DB::table('product_serials as ps')
         ->leftJoin('purchase_lines as pl', 'ps.purchase_line_id', '=', 'pl.id')
@@ -663,9 +682,19 @@ private function getAvailableSerialNumbersWithSupplier($business_id, $product_id
         $query->where('ps.status', $status);
     }
 
+    // APPLY DATE FILTER - Only for sold items
+    if (!empty($start_date) && !empty($end_date)) {
+        $query->whereBetween('ps.created_at', [$start_date . ' 00:00:00', $end_date . ' 23:59:59']);
+    } elseif (!empty($start_date)) {
+        $query->where('ps.created_at', '>=', $start_date . ' 00:00:00');
+    } elseif (!empty($end_date)) {
+        $query->where('ps.created_at', '<=', $end_date . ' 23:59:59');
+    }
+
     return $query->select(
             'ps.serial_number', 
             'ps.status',
+            'ps.created_at as sold_date', // Using created_at as sold date
             'c.name as supplier_name',
             'br.name as brand_name'
         )

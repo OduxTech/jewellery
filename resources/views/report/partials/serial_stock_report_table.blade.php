@@ -10,6 +10,7 @@
         <tr>
             <th>Serial Number</th>
             <th>Status</th>
+            <th>Sold Date</th> <!-- ADD THIS COLUMN -->
             <th>SKU</th>
             <th>@lang('business.product')</th>
             <th>Caret Value</th>
