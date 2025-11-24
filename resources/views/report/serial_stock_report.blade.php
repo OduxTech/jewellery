@@ -14,6 +14,16 @@
         <div class="col-md-12">
             @component('components.filters', ['title' => __('report.filters')])
               {!! Form::open(['url' => action([\App\Http\Controllers\ReportController::class, 'getSerialStockReport']), 'method' => 'get', 'id' => 'stock_report_filter_form' ]) !!}
+                <!-- Quick Filter Buttons -->
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label>Quick Filters:</label>
+                        <button type="button" id="last_week_btn" class="btn btn-primary btn-sm">Last 7 Days</button>
+                        <button type="button" id="last_month_btn" class="btn btn-default btn-sm">Last 30 Days</button>
+                        <button type="button" id="all_time_btn" class="btn btn-default btn-sm">All Time</button>
+                    </div>
+                </div>
+                
                 <div class="col-md-3">
                     <div class="form-group">
                         {!! Form::label('location_id',  __('purchase.business_location') . ':') !!}
@@ -47,13 +57,13 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         {!! Form::label('start_date', 'From Date:') !!}
-                        {!! Form::text('start_date', null, ['class' => 'form-control datepicker', 'readonly', 'placeholder' => 'YYYY-MM-DD']); !!}
+                        {!! Form::text('start_date', \Carbon\Carbon::now()->subDays(7)->format('Y-m-d'), ['class' => 'form-control datepicker', 'readonly', 'placeholder' => 'YYYY-MM-DD', 'id' => 'start_date']); !!}
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
                         {!! Form::label('end_date', 'To Date:') !!}
-                        {!! Form::text('end_date', null, ['class' => 'form-control datepicker', 'readonly', 'placeholder' => 'YYYY-MM-DD']); !!}
+                        {!! Form::text('end_date', \Carbon\Carbon::now()->format('Y-m-d'), ['class' => 'form-control datepicker', 'readonly', 'placeholder' => 'YYYY-MM-DD', 'id' => 'end_date']); !!}
                     </div>
                 </div>
                 <!-- PURCHASE REF NO FILTER -->
@@ -88,6 +98,33 @@
             $('.datepicker').datepicker({
                 format: 'yyyy-mm-dd',
                 autoclose: true
+            });
+
+            // Quick filter buttons
+            $('#last_week_btn').on('click', function() {
+                var startDate = new Date();
+                startDate.setDate(startDate.getDate() - 7);
+                var endDate = new Date();
+                
+                $('#start_date').val(startDate.toISOString().split('T')[0]);
+                $('#end_date').val(endDate.toISOString().split('T')[0]);
+                $('#serial_stock_report_table').DataTable().ajax.reload();
+            });
+
+            $('#last_month_btn').on('click', function() {
+                var startDate = new Date();
+                startDate.setDate(startDate.getDate() - 30);
+                var endDate = new Date();
+                
+                $('#start_date').val(startDate.toISOString().split('T')[0]);
+                $('#end_date').val(endDate.toISOString().split('T')[0]);
+                $('#serial_stock_report_table').DataTable().ajax.reload();
+            });
+
+            $('#all_time_btn').on('click', function() {
+                $('#start_date').val('');
+                $('#end_date').val('');
+                $('#serial_stock_report_table').DataTable().ajax.reload();
             });
         });
     </script>

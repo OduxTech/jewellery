@@ -198,7 +198,6 @@ $(document).ready(function() {
             }
         },
     });
-////////////////////////////////////////// serial stock report///////////////////////////////////////////////////
 $(document).ready(function() {
     var serial_stock_report_cols = [
         { data: 'serial_number', name: 'serial_number' },
@@ -240,7 +239,7 @@ $(document).ready(function() {
                     status: $('#status').val(),
                     start_date: $('#start_date').val(),
                     end_date: $('#end_date').val(),
-                    purchase_ref_no: $('#purchase_ref_no').val(), // ADD PURCHASE REF NO FILTER
+                    purchase_ref_no: $('#purchase_ref_no').val(),
                     only_mfg_products: $('#only_mfg_products').length && $('#only_mfg_products').is(':checked') ? 1 : 0
                 };
             }
@@ -258,7 +257,7 @@ $(document).ready(function() {
         }
     });
 
-    // Update event listeners to include purchase_ref_no filter
+    // Update event listeners
     $('#location_id, #category_id, #brand, #unit, #status, #start_date, #end_date, #purchase_ref_no').on('change keyup', function() {
         serialStockReportTable.ajax.reload();
     });
@@ -267,7 +266,6 @@ $(document).ready(function() {
         serialStockReportTable.ajax.reload();
     });
 });
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     if ($('#trending_product_date_range').length == 1) {
         get_sub_categories();
