@@ -207,11 +207,10 @@ $(document).ready(function() {
             data: 'sold_date', 
             name: 'sold_date',
             render: function(data, type, row) {
-                // Show sold date if available, otherwise blank
                 if (data && row.serial_status === 'sold') {
                     return data;
                 }
-                return ''; // Blank for non-sold items
+                return '';
             }
         },
         { data: 'sku', name: 'sku' },
@@ -221,6 +220,7 @@ $(document).ready(function() {
         { data: 'category_name', name: 'category_name' },
         { data: 'location_name', name: 'location_name' },
         { data: 'supplier_name', name: 'supplier_name' },
+        { data: 'purchase_ref_no', name: 'purchase_ref_no' },
         { data: 'unit_price', name: 'unit_price' },
         { data: 'stock', name: 'stock' }
     ];
@@ -238,8 +238,9 @@ $(document).ready(function() {
                     brand_id: $('#brand').val(),
                     unit_id: $('#unit').val(),
                     status: $('#status').val(),
-                    start_date: $('#start_date').val(), // ADD DATE FILTER
-                    end_date: $('#end_date').val(),     // ADD DATE FILTER
+                    start_date: $('#start_date').val(),
+                    end_date: $('#end_date').val(),
+                    purchase_ref_no: $('#purchase_ref_no').val(), // ADD PURCHASE REF NO FILTER
                     only_mfg_products: $('#only_mfg_products').length && $('#only_mfg_products').is(':checked') ? 1 : 0
                 };
             }
@@ -257,8 +258,8 @@ $(document).ready(function() {
         }
     });
 
-    // Update event listeners to include date filters
-    $('#location_id, #category_id, #brand, #unit, #status, #start_date, #end_date').on('change', function() {
+    // Update event listeners to include purchase_ref_no filter
+    $('#location_id, #category_id, #brand, #unit, #status, #start_date, #end_date, #purchase_ref_no').on('change keyup', function() {
         serialStockReportTable.ajax.reload();
     });
 
@@ -266,6 +267,7 @@ $(document).ready(function() {
         serialStockReportTable.ajax.reload();
     });
 });
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     if ($('#trending_product_date_range').length == 1) {
         get_sub_categories();

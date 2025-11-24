@@ -18,6 +18,7 @@
             <th>@lang('product.category')</th>
             <th>@lang('sale.location')</th>
             <th>Supplier</th>
+            <th>Purchase Ref No</th> <!-- ADD PURCHASE REFERENCE NUMBER COLUMN -->
             <th>@lang('purchase.unit_selling_price')</th>
             <th>@lang('report.current_stock')</th>
         </tr>

@@ -43,7 +43,7 @@
                         ], null, ['class' => 'form-control select2', 'style' => 'width:100%', 'id' => 'status']); !!}
                     </div>
                 </div>
-                <!-- ADD DATE FILTERS HERE -->
+                <!-- DATE FILTERS -->
                 <div class="col-md-3">
                     <div class="form-group">
                         {!! Form::label('start_date', 'From Date:') !!}
@@ -54,6 +54,13 @@
                     <div class="form-group">
                         {!! Form::label('end_date', 'To Date:') !!}
                         {!! Form::text('end_date', null, ['class' => 'form-control datepicker', 'readonly', 'placeholder' => 'YYYY-MM-DD']); !!}
+                    </div>
+                </div>
+                <!-- PURCHASE REF NO FILTER -->
+                <div class="col-md-3">
+                    <div class="form-group">
+                        {!! Form::label('purchase_ref_no', 'Purchase Ref No:') !!}
+                        {!! Form::text('purchase_ref_no', null, ['class' => 'form-control', 'placeholder' => 'e.g., PO2025/0024', 'id' => 'purchase_ref_no']); !!}
                     </div>
                 </div>
                 {!! Form::close() !!}
