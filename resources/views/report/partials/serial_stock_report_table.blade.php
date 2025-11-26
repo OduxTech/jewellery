@@ -10,6 +10,7 @@
         <tr>
             <th>Serial Number</th>
             <th>Status</th>
+            <th>Sold Date</th> <!-- ADD THIS COLUMN -->
             <th>SKU</th>
             <th>@lang('business.product')</th>
             <th>Caret Value</th>
@@ -17,30 +18,9 @@
             <th>@lang('product.category')</th>
             <th>@lang('sale.location')</th>
             <th>Supplier</th>
+            <th>Purchase Ref No</th> <!-- ADD PURCHASE REFERENCE NUMBER COLUMN -->
             <th>@lang('purchase.unit_selling_price')</th>
             <th>@lang('report.current_stock')</th>
-
         </tr>
     </thead>
-    {{-- REMOVE THE TFOOT TEMPORARILY --}}
-    {{--
-    <tfoot>
-        <tr class="bg-gray font-17 text-center footer-total">
-            <td colspan="7"><strong>@lang('sale.total'):</strong></td>
-            <td class="footer_total_stock"></td>
-            @can('view_product_stock_value')
-            <td class="footer_total_stock_price"></td>
-            <td class="footer_stock_value_by_sale_price"></td>
-            <td class="footer_potential_profit"></td>
-            @endcan
-            <td class="footer_total_sold"></td>
-            <td class="footer_total_transfered"></td>
-            <td class="footer_total_adjusted"></td>
-            <td colspan="4"></td>
-            @if($show_manufacturing_data)
-                <td class="footer_total_mfg_stock"></td>
-            @endif
-        </tr>
-    </tfoot>
-    --}}
 </table>

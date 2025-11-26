@@ -198,18 +198,28 @@ $(document).ready(function() {
             }
         },
     });
-////////////////////////////////////////// serial stock report///////////////////////////////////////////////////
 $(document).ready(function() {
     var serial_stock_report_cols = [
         { data: 'serial_number', name: 'serial_number' },
         { data: 'serial_status', name: 'serial_status' },
+        { 
+            data: 'sold_date', 
+            name: 'sold_date',
+            render: function(data, type, row) {
+                if (data && row.serial_status === 'sold') {
+                    return data;
+                }
+                return '';
+            }
+        },
         { data: 'sku', name: 'sku' },
         { data: 'product', name: 'product' },
-        { data: 'brand_name', name: 'brand_name' },
-        { data: 'variation', name: 'variation' },
+        { data: 'caret_value', name: 'caret_value' },
+        { data: 'weight', name: 'weight' },
         { data: 'category_name', name: 'category_name' },
         { data: 'location_name', name: 'location_name' },
-        { data: 'supplier_name', name: 'supplier_name' }, // Add this line for supplier
+        { data: 'supplier_name', name: 'supplier_name' },
+        { data: 'purchase_ref_no', name: 'purchase_ref_no' },
         { data: 'unit_price', name: 'unit_price' },
         { data: 'stock', name: 'stock' }
     ];
@@ -226,6 +236,10 @@ $(document).ready(function() {
                     category_id: $('#category_id').val(),
                     brand_id: $('#brand').val(),
                     unit_id: $('#unit').val(),
+                    status: $('#status').val(),
+                    start_date: $('#start_date').val(),
+                    end_date: $('#end_date').val(),
+                    purchase_ref_no: $('#purchase_ref_no').val(),
                     only_mfg_products: $('#only_mfg_products').length && $('#only_mfg_products').is(':checked') ? 1 : 0
                 };
             }
@@ -235,6 +249,7 @@ $(document).ready(function() {
         scrollY: "75vh",
         scrollX: true,
         scrollCollapse: true,
+        autoWidth: false,
         fnDrawCallback: function(oSettings) {
             if (typeof __currency_convert_recursively === 'function') {
                 __currency_convert_recursively($('#serial_stock_report_table'));
@@ -242,8 +257,8 @@ $(document).ready(function() {
         }
     });
 
-    // Your event listeners remain the same
-    $('#location_id, #category_id, #brand, #unit').on('change', function() {
+    // Update event listeners
+    $('#location_id, #category_id, #brand, #unit, #status, #start_date, #end_date, #purchase_ref_no').on('change keyup', function() {
         serialStockReportTable.ajax.reload();
     });
 

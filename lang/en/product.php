@@ -67,6 +67,7 @@ return [
     'variation_sku_format' => 'Weight SKU Format',
     'variation_sku_format_help_text' => 'Variation SKU Format -  When Weight SKU is empty this format will be used to generate SKU for WEight',
     'sku_number' => 'SKU-Number (Example -> ABC-1, ABC-2)',
+    'serial' => 'Serial Number',
     'sku_variation_number' => 'SKUWeight (Example -> ABCS, ABCM)'
 
 ];
