@@ -5,12 +5,13 @@
   $product_custom_field3 = !empty($custom_labels['product']['custom_field_3']) ? $custom_labels['product']['custom_field_3'] : __('lang_v1.product_custom_field3');
   $product_custom_field4 = !empty($custom_labels['product']['custom_field_4']) ? $custom_labels['product']['custom_field_4'] : __('lang_v1.product_custom_field4');
 @endphp
+
 <table class="table table-bordered table-striped" id="serial_stock_report_table">
     <thead>
         <tr>
             <th>Serial Number</th>
             <th>Status</th>
-            <th>Sold Date</th> <!-- ADD THIS COLUMN -->
+            <th>Date</th>
             <th>SKU</th>
             <th>@lang('business.product')</th>
             <th>Caret Value</th>
@@ -23,4 +24,7 @@
             <th>@lang('report.current_stock')</th>
         </tr>
     </thead>
+    <tbody>
+        {{-- Data will be populated by DataTables --}}
+    </tbody>
 </table>

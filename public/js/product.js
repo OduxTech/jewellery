@@ -203,51 +203,105 @@ $(document).ready(function() {
         });
     }
 
-    $(document).on('click', '.submit_product_form', function(e) {
-        e.preventDefault();
+   $(document).on('click', '.submit_product_form', function(e) {
+    e.preventDefault();
 
-        var is_valid_product_form = true;
-
-        var variation_skus = [];
-
-        var submit_type  = $(this).attr('value');
-
-        $('#product_form_part').find('.input_sub_sku').each( function(){
-            var element = $(this);
-            var row_variation_id = '';
-            if ($(this).closest('tr').find('.row_variation_id')) {
-                row_variation_id = $(this).closest('tr').find('.row_variation_id').val();
-            }
-
-            variation_skus.push({sku: element.val(), variation_id: row_variation_id});
+    var hasError = false;
+    var missingValues = [];
+    var emptyRows = [];
+    
+    // FIX 4: Validate all variation values have proper value fields and are not empty
+    // Check for variation type products
+    if ($('select#type').val() == 'variable') {
+        $('.variation_value_table tbody tr').each(function(index, row) {
+            // Try multiple possible selectors for the value field
+            var valueInput = $(row).find('input.variation_value_name, input[name*="[value]"], input[name*="[value]"]');
             
-        });
-
-        if (variation_skus.length > 0) {
-            $.ajax({
-                method: 'post',
-                url: '/products/validate_variation_skus',
-                data: { skus: variation_skus},
-                success: function(result) {
-                    if (result.success == true) {
-                        $('#submit_type').val(submit_type);
-                        if ($('form#product_add_form').valid()) {
-                            $('form#product_add_form').submit();
-                        }
-                    } else {
-                        toastr.error(__translate('skus_already_exists', {sku: result.sku}));
-                        return false;
+            if (valueInput.length === 0) {
+                // No value field found
+                emptyRows.push('Row ' + (index + 1));
+                $(row).addClass('has-error');
+                hasError = true;
+            } else {
+                var value = valueInput.val();
+                if (!value || value.trim() === '') {
+                    missingValues.push('Row ' + (index + 1));
+                    $(row).addClass('has-error');
+                    hasError = true;
+                } else {
+                    $(row).removeClass('has-error');
+                    
+                    // Ensure the value field has the correct name attribute
+                    var currentName = valueInput.attr('name');
+                    if (currentName && !currentName.includes('[value]')) {
+                        // Fix the name attribute if it doesn't have [value]
+                        var correctedName = currentName.replace(/\[[^\]]+\]$/, '[value]');
+                        valueInput.attr('name', correctedName);
+                        console.log('Corrected field name:', correctedName);
                     }
-                },
-            });
-        } else {
-            $('#submit_type').val(submit_type);
-            if ($('form#product_add_form').valid()) {
-                $('form#product_add_form').submit();
+                }
             }
-        }
+        });
         
+        if (hasError) {
+            var errorMessage = '';
+            if (missingValues.length > 0) {
+                errorMessage += 'Empty variation values in: ' + missingValues.join(', ');
+            }
+            if (emptyRows.length > 0) {
+                errorMessage += (errorMessage ? '. ' : '') + 'Missing value fields in: ' + emptyRows.join(', ');
+            }
+            toastr.error('Please fill in all variation values. ' + errorMessage);
+            return false;
+        }
+    }
+
+    // Validate variation SKUs
+    var variation_skus = [];
+    var submit_type = $(this).attr('value');
+
+    $('#product_form_part').find('.input_sub_sku').each(function() {
+        var element = $(this);
+        var row_variation_id = '';
+        if ($(this).closest('tr').find('.row_variation_id')) {
+            row_variation_id = $(this).closest('tr').find('.row_variation_id').val();
+        }
+        variation_skus.push({sku: element.val(), variation_id: row_variation_id});
     });
+
+    if (variation_skus.length > 0) {
+        $.ajax({
+            method: 'post',
+            url: '/products/validate_variation_skus',
+            data: { skus: variation_skus},
+            success: function(result) {
+                if (result.success == true) {
+                    $('#submit_type').val(submit_type);
+                    if ($('form#product_add_form').valid()) {
+                        // Disable submit button to prevent double submission
+                        $('.submit_product_form').prop('disabled', true).addClass('disabled');
+                        $('form#product_add_form').submit();
+                    }
+                } else {
+                    toastr.error(__translate('skus_already_exists', {sku: result.sku}));
+                    return false;
+                }
+            },
+            error: function(xhr) {
+                console.error('SKU validation error:', xhr);
+                toastr.error('Error validating SKUs. Please check console for details.');
+                $('.submit_product_form').prop('disabled', false).removeClass('disabled');
+            }
+        });
+    } else {
+        $('#submit_type').val(submit_type);
+        if ($('form#product_add_form').valid()) {
+            // Disable submit button to prevent double submission
+            $('.submit_product_form').prop('disabled', true).addClass('disabled');
+            $('form#product_add_form').submit();
+        }
+    }
+});
     //End for product type single
 
     //Start for product type Variable
@@ -364,45 +418,85 @@ $(document).ready(function() {
         __write_number(tr_obj.find('input.variable_profit_percent'), profit_percent);
     });
 
-    $(document).on('click', '.add_variation_value_row', function() {
-        var variation_row_index = $(this)
+// Update the add_variation_value_row function (around line 170 in your product.js)
+$(document).on('click', '.add_variation_value_row', function() {
+    var variation_row_index = $(this)
+        .closest('.variation_row')
+        .find('.row_index')
+        .val();
+    var variation_value_row_index = $(this)
+        .closest('table')
+        .find('tr:last .variation_row_index')
+        .val();
+
+    if (
+        $(this)
             .closest('.variation_row')
-            .find('.row_index')
-            .val();
-        var variation_value_row_index = $(this)
-            .closest('table')
-            .find('tr:last .variation_row_index')
-            .val();
+            .find('.row_edit').length >= 1
+    ) {
+        var row_type = 'edit';
+    } else {
+        var row_type = 'add';
+    }
 
-        if (
-            $(this)
-                .closest('.variation_row')
-                .find('.row_edit').length >= 1
-        ) {
-            var row_type = 'edit';
-        } else {
-            var row_type = 'add';
-        }
+    var table = $(this).closest('table');
 
-        var table = $(this).closest('table');
-
-        $.ajax({
-            method: 'GET',
-            url: '/products/get_variation_value_row',
-            data: {
-                variation_row_index: variation_row_index,
-                value_index: variation_value_row_index,
-                row_type: row_type,
-            },
-            dataType: 'html',
-            success: function(result) {
-                if (result) {
-                    table.append(result);
-                    toggle_dsp_input();
+    $.ajax({
+        method: 'GET',
+        url: '/products/get_variation_value_row',
+        data: {
+            variation_row_index: variation_row_index,
+            value_index: variation_value_row_index,
+            row_type: row_type,
+        },
+        dataType: 'html',
+        success: function(result) {
+            if (result) {
+                table.append(result);
+                toggle_dsp_input();
+                
+                // FIX 3: Ensure the new row has a value field with proper name
+                var newRow = table.find('tr:last');
+                var valueInput = newRow.find('input[name*="[value]"], input.variation_value_name');
+                
+                if (valueInput.length === 0) {
+                    console.warn('No value field found, adding one');
+                    // Try to find the variation name field
+                    var nameField = newRow.find('input[name*="[name]"], input.variation_name');
+                    if (nameField.length) {
+                        var nameAttr = nameField.attr('name');
+                        var valueNameAttr = nameAttr.replace(/\[name\]/, '[value]');
+                        $('<input>').attr({
+                            type: 'hidden',
+                            name: valueNameAttr,
+                            value: nameField.val() || 'weight_' + variation_value_row_index
+                        }).appendTo(newRow);
+                    } else {
+                        // If no name field found, add a default value field
+                        var variationsIndex = $('.variation_row').index($(this).closest('.variation_row'));
+                        $('<input>').attr({
+                            type: 'hidden',
+                            name: 'variations[' + variationsIndex + '][variations][' + variation_value_row_index + '][value]',
+                            value: 'weight_' + variation_value_row_index
+                        }).appendTo(newRow);
+                    }
                 }
-            },
-        });
+                
+                // Add input event listener to track changes
+                valueInput.on('input', function() {
+                    var currentValue = $(this).val();
+                    if (currentValue && currentValue.trim() !== '') {
+                        $(this).closest('tr').removeClass('has-error');
+                    }
+                });
+            }
+        },
+        error: function(xhr) {
+            console.error('Error loading variation value row:', xhr);
+            toastr.error('Error adding variation value');
+        }
     });
+});
     $(document).on('change', '.variation_template_values', function() {
         var tr_obj = $(this).closest('tr');
         var val = $(this).val();

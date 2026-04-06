@@ -91,8 +91,10 @@
 @endsection
 
 @section('javascript')
-    <script src="{{ asset('js/report.js?v=' . time()) }}"></script>
     <script>
+        console.log('Loading report.js with cache busting');
+        console.log('Current time:', new Date().toISOString());
+        
         $(document).ready(function() {
             // Initialize datepicker
             $('.datepicker').datepicker({
@@ -128,4 +130,5 @@
             });
         });
     </script>
+    <script src="{{ asset('js/report.js?v=' . time()) }}"></script>
 @endsection

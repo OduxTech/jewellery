@@ -199,12 +199,22 @@ $(document).ready(function() {
         },
     });
 $(document).ready(function() {
+    console.log('=== Initializing Serial Stock Report DataTable ===');
+    
+    // Clean up any existing DataTable instance
+    if ($.fn.DataTable.isDataTable('#serial_stock_report_table')) {
+        console.log('Destroying existing DataTable...');
+        $('#serial_stock_report_table').DataTable().destroy();
+        $('#serial_stock_report_table').empty();
+    }
+
+    // Define columns - UPDATED FIELD NAMES
     var serial_stock_report_cols = [
         { data: 'serial_number', name: 'serial_number' },
         { data: 'serial_status', name: 'serial_status' },
         { 
-            data: 'sold_date', 
-            name: 'sold_date',
+            data: 'item_date', 
+            name: 'item_date',
             render: function(data, type, row) {
                 if (data && row.serial_status === 'sold') {
                     return data;
@@ -214,8 +224,20 @@ $(document).ready(function() {
         },
         { data: 'sku', name: 'sku' },
         { data: 'product', name: 'product' },
-        { data: 'caret_value', name: 'caret_value' },
-        { data: 'weight', name: 'weight' },
+        { 
+            data: 'brand_name',  // CHANGED FROM 'caret_value' TO 'brand_name'
+            name: 'brand_name',
+            render: function(data, type, row) {
+                return data || 'N/A';
+            }
+        },
+        { 
+            data: 'variation_name',  // CHANGED FROM 'weight' TO 'variation_name'
+            name: 'variation_name',
+            render: function(data, type, row) {
+                return data ? data + 'g' : '';
+            }
+        },
         { data: 'category_name', name: 'category_name' },
         { data: 'location_name', name: 'location_name' },
         { data: 'supplier_name', name: 'supplier_name' },
@@ -230,8 +252,15 @@ $(document).ready(function() {
         serverSide: true,
         ajax: {
             url: '/reports/serial-stock-report',
+            type: 'GET',
             data: function(d) {
                 return {
+                    draw: d.draw,
+                    start: d.start,
+                    length: d.length,
+                    search: d.search,
+                    order: d.order,
+                    columns: d.columns,
                     location_id: $('#location_id').val(),
                     category_id: $('#category_id').val(),
                     brand_id: $('#brand').val(),
@@ -242,6 +271,21 @@ $(document).ready(function() {
                     purchase_ref_no: $('#purchase_ref_no').val(),
                     only_mfg_products: $('#only_mfg_products').length && $('#only_mfg_products').is(':checked') ? 1 : 0
                 };
+            },
+            dataSrc: function(json) {
+                console.log('AJAX response received - Data length:', json.data ? json.data.length : 0);
+                console.log('Draw:', json.draw, 'Records Total:', json.recordsTotal);
+                
+                // DEBUG: Check the first row's field names
+                if (json.data && json.data.length > 0) {
+                    console.log('First row fields:', Object.keys(json.data[0]));
+                }
+                
+                return json.data;
+            },
+            error: function(xhr, error, thrown) {
+                console.error('AJAX Error:', error);
+                console.error('Response:', xhr.responseText);
             }
         },
         columns: serial_stock_report_cols,
@@ -250,7 +294,16 @@ $(document).ready(function() {
         scrollX: true,
         scrollCollapse: true,
         autoWidth: false,
+        destroy: true,
+        retrieve: false,
+        deferRender: true,
+        pageLength: 25,
+        lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+        initComplete: function(settings, json) {
+            console.log('DataTable initialization complete');
+        },
         fnDrawCallback: function(oSettings) {
+            console.log('DataTable draw complete - Page:', this.api().page(), 'Draw:', oSettings.iDraw);
             if (typeof __currency_convert_recursively === 'function') {
                 __currency_convert_recursively($('#serial_stock_report_table'));
             }
