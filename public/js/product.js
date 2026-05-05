@@ -504,11 +504,13 @@ $(document).on('click', '.add_variation_value_row', function() {
             if(val.includes($(this).attr('data-variation_value_id'))) {
                 $(this).removeClass('hide');
                 $(this).find('.is_variation_value_hidden').val(0);
+                toggle_variation_row_inputs($(this), true);
             } else {
                 $(this).addClass('hide');
                 $(this).find('.is_variation_value_hidden').val(1);
+                toggle_variation_row_inputs($(this), false);
             }
-        })
+        });
     });
     $(document).on('change', '.variation_template', function() {
         tr_obj = $(this).closest('tr');
@@ -545,6 +547,8 @@ $(document).on('click', '.add_variation_value_row', function() {
                             .find('table.variation_value_table')
                             .find('tbody')
                             .html(result.html);
+
+                        sync_variation_template_rows(tr_obj);
 
                         toggle_dsp_input();
                     }
@@ -707,6 +711,26 @@ function toggle_dsp_input() {
                 $(this).removeClass('hide');
             });
     }
+}
+
+function toggle_variation_row_inputs(row, is_enabled) {
+    row.find(':input')
+        .not('.variation_row_index')
+        .prop('disabled', !is_enabled);
+}
+
+function sync_variation_template_rows(tr_obj) {
+    var selected_values = tr_obj.find('.variation_template_values').val() || [];
+
+    tr_obj.find('.variation_value_row').each(function() {
+        var row = $(this);
+        var variation_value_id = String(row.attr('data-variation_value_id') || '');
+        var is_selected = selected_values.includes(variation_value_id);
+
+        row.toggleClass('hide', !is_selected);
+        row.find('.is_variation_value_hidden').val(is_selected ? 0 : 1);
+        toggle_variation_row_inputs(row, is_selected);
+    });
 }
 
 function get_product_details(rowData) {
