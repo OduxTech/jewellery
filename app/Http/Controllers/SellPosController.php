@@ -515,19 +515,45 @@ class SellPosController extends Controller
                 $this->transactionUtil->createOrUpdateSellLines($transaction, $input['products'], $input['location_id']);
 
                 // // 🔁 Update status of sold serial numbers
-                // foreach ($input['products'] as $product_line) {
 
-                //     if (!empty($product_line['enable_serial']) && $product_line['enable_serial'] && !empty($product_line['serial_id'])) {
-                //         DB::table('product_serials')
-                //             ->where('id', $product_line['serial_id'])
-                //             ->update([
-                //                 'status' => 'sold',
-                //                 'sell_transaction_id' => $transaction->id ?? null,
-                //                 'updated_at' => now(),
-                //             ]);
-                //     }
-                // }
+\Log::info('Serial Update Debug', [
+    'transaction_id' => $transaction->id,
+    'products' => collect($input['products'])->map(function($p) {
+        return [
+            'product_id' => $p['product_id'] ?? null,
+            'variation_id' => $p['variation_id'] ?? null,
+            'serial_id' => $p['serial_id'] ?? null,
+            'enable_serial' => $p['enable_serial'] ?? null,
+        ];
+    })
+]);
+// ==================== UPDATE PRODUCT SERIALS ====================
+// ==================== UPDATE PRODUCT SERIALS ====================
+if (!empty($input['products'])) {
+    foreach ($input['products'] as $product_line) {
+        
+        if (!empty($product_line['serial_id']) && !empty($product_line['enable_serial'])) {
+            
+            $sell_line = TransactionSellLine::where('transaction_id', $transaction->id)
+                ->where('variation_id', $product_line['variation_id'])
+                ->where('serial_id', $product_line['serial_id'])   // ← Most reliable match
+                ->first();
 
+            if ($sell_line) {
+                DB::table('product_serials')
+                    ->where('id', $product_line['serial_id'])
+                    ->update([
+                        'status'                    => 'sold',
+                        'sell_transaction_id'       => $transaction->id,
+                        'transaction_sell_lines_id' => $sell_line->id,
+                        'updated_at'                => now(),
+                    ]);
+            } else {
+                \Log::warning("Sell line not found for serial_id: " . ($product_line['serial_id'] ?? 'null'));
+            }
+        }
+    }
+}
 
                 $change_return['amount'] = $input['change_return'] ?? 0;
                 $change_return['is_return'] = 1;
@@ -581,13 +607,7 @@ class SellPosController extends Controller
                                 $input['location_id'],
                                 $decrease_qty
                             );
-                            DB::table('product_serials')
-                            ->where('id', $product['serial_id'])
-                            ->update([
-                                'status' => 'sold',
-                                'sell_transaction_id' => $transaction->id ?? null,
-         
-                            ]);
+                            
                         }
 
 
@@ -1385,9 +1405,35 @@ class SellPosController extends Controller
                     }
                 }
 
-                //Update Sell lines
-                $deleted_lines = $this->transactionUtil->createOrUpdateSellLines($transaction, $input['products'], $input['location_id'], true, $status_before);
+     //Update Sell lines
+$deleted_lines = $this->transactionUtil->createOrUpdateSellLines($transaction, $input['products'], $input['location_id'], true, $status_before);
 
+// ==================== UPDATE PRODUCT SERIALS (on Edit) ====================
+if (!empty($input['products'])) {
+    foreach ($input['products'] as $product_line) {
+        
+        if (!empty($product_line['serial_id']) && !empty($product_line['enable_serial'])) {
+            
+            $sell_line = TransactionSellLine::where('transaction_id', $transaction->id)
+                ->where('variation_id', $product_line['variation_id'])
+                ->where('serial_id', $product_line['serial_id'])
+                ->first();
+
+            if ($sell_line) {
+                DB::table('product_serials')
+                    ->where('id', $product_line['serial_id'])
+                    ->update([
+                        'status'                    => 'sold',
+                        'sell_transaction_id'       => $transaction->id,
+                        'transaction_sell_lines_id' => $sell_line->id,
+                        'updated_at'                => now(),
+                    ]);
+            } else {
+                \Log::warning("Sell line not found for serial_id (edit): " . ($product_line['serial_id'] ?? 'null'));
+            }
+        }
+    }
+}
                 //Update update lines
                 $is_credit_sale = isset($input['is_credit_sale']) && $input['is_credit_sale'] == 1 ? true : false;
 

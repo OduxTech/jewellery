@@ -497,18 +497,18 @@ class ReportController extends Controller
 
 public function getSerialStockReport(Request $request)
 {    
+    // Add cache control headers
     header("Cache-Control: no-cache, no-store, must-revalidate");
     header("Pragma: no-cache");
     header("Expires: 0");
     
-    if (! auth()->user()->can('stock_report.view')) {
+    if (!auth()->user()->can('stock_report.view')) {
         abort(403, 'Unauthorized action.');
     }
 
     $business_id = $request->session()->get('user.business_id');
 
-    $selling_price_groups = SellingPriceGroup::where('business_id', $business_id)
-                                            ->get();
+    $selling_price_groups = SellingPriceGroup::where('business_id', $business_id)->get();
     $allowed_selling_price_group = false;
     foreach ($selling_price_groups as $selling_price_group) {
         if (auth()->user()->can('selling_price_group.'.$selling_price_group->id)) {
@@ -517,13 +517,12 @@ public function getSerialStockReport(Request $request)
         }
     }
 
-    // Set manufacturing data to 0 since we're not using it
     $show_manufacturing_data = 0;
 
     if ($request->ajax()) {
         $filters = request()->only(['location_id', 'category_id', 'sub_category_id', 'brand_id', 'unit_id', 'tax_id', 'type',
             'only_mfg_products', 'active_state',  'not_for_selling', 'repair_model_id', 'product_id', 'active_state', 'status', 
-            'start_date', 'end_date', 'purchase_ref_no']); // ADD purchase_ref_no TO FILTERS
+            'start_date', 'end_date', 'purchase_ref_no']);
 
         $filters['not_for_selling'] = isset($filters['not_for_selling']) && $filters['not_for_selling'] == 'true' ? 1 : 0;
         $filters['show_manufacturing_data'] = $show_manufacturing_data;
@@ -532,16 +531,17 @@ public function getSerialStockReport(Request $request)
         $productsQuery = $this->productUtil->getProductStockDetails($business_id, $filters, 'datatables');
         $products = $productsQuery->get();
 
-        // NEW LOGIC: Expand each product into multiple rows for serial numbers
+        // Expand each product into multiple rows for serial numbers
         $expandedProducts = [];
         
         foreach ($products as $product) {
-            // Skip any product that has no stock
+            // Skip products with no stock
             if (empty($product->stock) || $product->stock <= 0) {
                 continue;
             }
+            
             if ($product->enable_serial && $product->stock > 0) {
-                // Get serial numbers from product_serials table with supplier info
+                // Get serial numbers from product_serials table
                 $serialNumbers = $this->getAvailableSerialNumbersWithSupplier(
                     $business_id, 
                     $product->product_id, 
@@ -550,7 +550,7 @@ public function getSerialStockReport(Request $request)
                     $filters['status'] ?? null,
                     $filters['start_date'] ?? null,
                     $filters['end_date'] ?? null,
-                    $filters['purchase_ref_no'] ?? null // PASS PURCHASE REF NO FILTER
+                    $filters['purchase_ref_no'] ?? null
                 );
                 
                 // Create one row for each serial number
@@ -563,23 +563,23 @@ public function getSerialStockReport(Request $request)
                     $expandedRow->brand_name = $serial->brand_name ?? 'N/A';
                     $expandedRow->purchase_ref_no = $serial->purchase_ref_no ?? 'N/A';
                     
-                    // USE created_at AS SOLD DATE - Only show for sold items
-                    if ($serial->status === 'sold' && $serial->sold_date) {
-                        $expandedRow->sold_date = \Carbon::parse($serial->sold_date)->format('Y-m-d H:i:s');
+                    // Only set item_date if it exists
+                    if (isset($serial->item_date) && $serial->item_date) {
+                        $expandedRow->item_date = \Carbon::parse($serial->item_date)->format('Y-m-d H:i:s');
                     } else {
-                        $expandedRow->sold_date = null;
+                        $expandedRow->item_date = null;
                     }
                     
                     $expandedProducts[] = $expandedRow;
                 }
             } else {
-                // For non-serialized products, keep as single row with default status
+                // For non-serialized products
                 $product->serial_number = 'N/A';
                 $product->serial_status = 'non-serialized';
                 $product->supplier_name = 'N/A';
                 $product->brand_name = 'N/A';
                 $product->purchase_ref_no = 'N/A';
-                $product->sold_date = null;
+                $product->item_date = null; // Explicitly set item_date
                 
                 if (!isset($filters['status']) || $filters['status'] === '' || $filters['status'] === 'available') {
                     $expandedProducts[] = $product;
@@ -587,21 +587,34 @@ public function getSerialStockReport(Request $request)
             }
         }
 
-        // If no expanded products, return empty result
+        // Get total records count
+        $totalRecords = count($expandedProducts);
+        
+        // Apply server-side pagination if requested
+        $start = $request->get('start', 0);
+        $length = $request->get('length', 25);
+        
+        if ($length != -1) {
+            $expandedProducts = array_slice($expandedProducts, $start, $length);
+        }
+
+        // Return empty result if no products
         if (empty($expandedProducts)) {
             return response()->json([
-                'draw' => (int) $request->get('draw'),
+                'draw' => (int) $request->get('draw', 1),
                 'recordsTotal' => 0,
                 'recordsFiltered' => 0,
                 'data' => []
             ]);
         }
 
+        // Create DataTables response
         $datatable = Datatables::of($expandedProducts)
             ->editColumn('stock', function ($row) {
-                if ($row->enable_stock ) {
+                if ($row->enable_stock) {
                     $stock = $row->stock ? $row->stock : 0;
-                    return '<span class="current_stock" data-orig-value="'.(float) $stock.'" data-unit="'.$row->unit.'"> '.$this->transactionUtil->num_f($stock, false, null, true).'</span>'.' '.$row->unit;
+                    return '<span class="current_stock" data-orig-value="'.(float)$stock.'" data-unit="'.$row->unit.'"> '
+                        .$this->transactionUtil->num_f($stock, false, null, true).'</span> '.$row->unit;
                 } else {
                     return '--';
                 }
@@ -613,11 +626,10 @@ public function getSerialStockReport(Request $request)
                 return $row->brand_name ?? $row->brand_id;
             })
             ->addColumn('weight', function ($row) {
-                $variation = '';
                 if ($row->type == 'variable') {
-                    $variation .= $row->variation_name . 'g';
+                    return $row->variation_name . 'g';
                 }
-                return $variation;
+                return '';
             })
             ->addColumn('supplier_name', function ($row) {
                 return $row->supplier_name ?? 'N/A';
@@ -625,9 +637,10 @@ public function getSerialStockReport(Request $request)
             ->addColumn('purchase_ref_no', function ($row) {
                 return $row->purchase_ref_no ?? 'N/A';
             })
-            ->editColumn('sold_date', function ($row) {
-                if ($row->sold_date && $row->serial_status === 'sold') {
-                    return \Carbon::parse($row->sold_date)->format('M d, Y h:i A');
+            ->editColumn('item_date', function ($row) {
+                // Check if item_date exists and is not null
+                if (isset($row->item_date) && $row->item_date) {
+                    return \Carbon::parse($row->item_date)->format('M d, Y h:i A');
                 }
                 return '';
             })
@@ -638,7 +651,10 @@ public function getSerialStockReport(Request $request)
                 }
 
                 if ($allowed_selling_price_group) {
-                    $html .= ' <button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-primary tw-w-max btn-modal no-print" data-container=".view_modal" data-href="'.action([\App\Http\Controllers\ProductController::class, 'viewGroupPrice'], [$row->product_id]).'">'.__('lang_v1.view_group_prices').'</button>';
+                    $html .= ' <button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-primary tw-w-max btn-modal no-print" 
+                        data-container=".view_modal" 
+                        data-href="'.action([\App\Http\Controllers\ProductController::class, 'viewGroupPrice'], [$row->product_id]).'">'
+                        .__('lang_v1.view_group_prices').'</button>';
                 }
 
                 return $html;
@@ -646,19 +662,22 @@ public function getSerialStockReport(Request $request)
             ->setRowClass(function ($row) {
                 return $row->enable_stock && $row->stock <= $row->alert_quantity ? 'bg-danger' : '';
             })
-            ->removeColumn('enable_stock')
-            ->removeColumn('unit')
-            ->removeColumn('id');
+            ->removeColumn(['enable_stock', 'unit', 'id'])
+            ->rawColumns(['unit_price', 'stock']);
 
-        $raw_columns = ['unit_price', 'stock'];
-
-        return $datatable->rawColumns($raw_columns)->make(true);
+        // Return DataTables JSON response with proper structure
+        return response()->json([
+            'draw' => (int) $request->get('draw', 1),
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $totalRecords,
+            'data' => $expandedProducts
+        ]);
     }
 
+    // Non-AJAX request - return the view
     $categories = Category::forDropdown($business_id, 'product');
     $brands = Brands::forDropdown($business_id);
-    $units = Unit::where('business_id', $business_id)
-                        ->pluck('short_name', 'id');
+    $units = Unit::where('business_id', $business_id)->pluck('short_name', 'id');
     $business_locations = BusinessLocation::forDropdown($business_id, true);
 
     return view('report.serial_stock_report')
@@ -681,7 +700,7 @@ private function getAvailableSerialNumbersWithSupplier($business_id, $product_id
                   ->orWhereNull('ps.location_id');
         });
 
-    // APPLY STATUS FILTER
+    // Apply status filter
     if (!empty($status)) {
         $query->where('ps.status', $status);
     }
